@@ -136,7 +136,7 @@ export function LandingHero() {
                       <Badge tone="success" className="text-[10px]">Ouvert</Badge>
                     </div>
                     <p className="text-xs text-text-muted mt-0.5">
-                      Aujourd'hui · Cotonou, Bénin
+                      Aujourd&apos;hui · Cotonou, Bénin
                     </p>
                   </div>
 
@@ -201,11 +201,11 @@ export function LandingHero() {
                           <Badge tone="success" className="text-[10px]">Prête</Badge>
                         </div>
                         <p className="text-xs font-bold text-text">Robe cérémonie — Aïcha D.</p>
-                        <p className="text-[11px] text-text-muted">Livraison : Aujourd'hui (16h) · Wax Hollandais</p>
+                        <p className="text-[11px] text-text-muted">Livraison : Aujourd&apos;hui (16h) · Wax Hollandais</p>
                       </div>
 
                       <div className="sm:text-right">
-                        <span className="text-[11px] font-bold text-text block">Échéance : Aujourd'hui</span>
+                        <span className="text-[11px] font-bold text-text block">Échéance : Aujourd&apos;hui</span>
                         <span className="text-[10px] text-success">Client notifié WhatsApp</span>
                       </div>
                     </div>

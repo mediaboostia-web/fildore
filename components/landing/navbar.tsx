@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Menu, X, ArrowRight } from "lucide-react";
+import { FildorLogo } from "@/components/brand/fildor-logo";
 
 export function LandingNavbar({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -21,15 +21,12 @@ export function LandingNavbar({ isLoggedIn = false }: { isLoggedIn?: boolean }) 
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
-          <Image
-            src="/Logo fildor.png"
-            alt="Logo Fildor"
-            width={36}
-            height={36}
-            className="size-9 rounded-xl object-contain shadow-xs transition-transform group-hover:scale-105"
+          <FildorLogo
+            variant="lockup"
+            height={30}
             priority
+            className="transition-transform group-hover:scale-105"
           />
-          <span className="text-xl font-bold tracking-tight text-primary-950">Fildor</span>
         </Link>
 
         {/* Liens Desktop */}

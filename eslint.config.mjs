@@ -13,6 +13,14 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    // Outillage Node exécuté à la main (`node scripts/...`), hors bundle
+    // applicatif : CommonJS assumé, les règles Next/React ne s'y appliquent pas.
+    files: ["scripts/**/*.js"],
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;

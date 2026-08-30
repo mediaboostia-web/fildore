@@ -53,14 +53,14 @@ export function LandingProblemsSection() {
         {/* En-tête de section */}
         <div className="mx-auto max-w-3xl text-center space-y-3">
           <span className="text-xs font-bold uppercase tracking-wider text-accent-600">
-            Le quotidien d'un atelier ne devrait pas être compliqué
+            Le quotidien d&apos;un atelier ne devrait pas être compliqué
           </span>
           <h2 className="text-2xl font-bold tracking-tight text-primary-950 sm:text-4xl">
             Trop de commandes se perdent entre le cahier, le téléphone et WhatsApp.
           </h2>
           <p className="text-sm text-text-muted sm:text-base leading-relaxed">
             Quand les mesures sont dans un cahier, les inspirations dans la galerie du téléphone et les
-            échanges dans les messages, il devient difficile de tout suivre. Fildor rassemble l'essentiel au même endroit.
+            échanges dans les messages, il devient difficile de tout suivre. Fildor rassemble l&apos;essentiel au même endroit.
           </p>
         </div>
 

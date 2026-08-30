@@ -19,7 +19,7 @@ export function LandingPilotProgram() {
             </h2>
 
             <p className="text-sm text-text-muted sm:text-base leading-relaxed">
-              Nous travaillons étroitement avec des couturiers, stylistes et chefs d'ateliers pour concevoir
+              Nous travaillons étroitement avec des couturiers, stylistes et chefs d&apos;ateliers pour concevoir
               une application qui correspond réellement à vos habitudes de travail, à vos contraintes de terrain
               et à votre relation client sur WhatsApp.
             </p>
@@ -73,7 +73,7 @@ export function LandingPilotProgram() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
             <div className="absolute bottom-4 left-4 right-4 text-white space-y-1">
               <p className="text-xs font-bold uppercase tracking-wider text-accent-100">
-                Communauté d'ateliers partenaires
+                Communauté d&apos;ateliers partenaires
               </p>
               <p className="text-xs text-white/90">
                 Cotonou, Lomé, Abidjan, Dakar, Bamako, Yaoundé.

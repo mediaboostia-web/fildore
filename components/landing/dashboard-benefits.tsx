@@ -26,7 +26,7 @@ export function LandingDashboardBenefits() {
           <div className="space-y-6">
             <div className="space-y-2">
               <span className="text-xs font-bold uppercase tracking-wider text-primary-800">
-                Votre atelier en un coup d'œil
+                Votre atelier en un coup d&apos;œil
               </span>
               <h2 className="text-2xl font-bold tracking-tight text-primary-950 sm:text-4xl">
                 Chaque matin, sachez exactement quoi faire.
@@ -75,7 +75,7 @@ export function LandingDashboardBenefits() {
                 </div>
                 <div>
                   <h4 className="text-sm font-bold text-text">Tableau de bord opérationnel</h4>
-                  <p className="text-xs text-text-muted">Vue d'ensemble matinale</p>
+                  <p className="text-xs text-text-muted">Vue d&apos;ensemble matinale</p>
                 </div>
               </div>
               <span className="text-xs font-semibold text-success bg-success-bg px-2.5 py-1 rounded-full">

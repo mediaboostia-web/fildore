@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
 
 interface SidebarContextValue {
   isCollapsed: boolean;
@@ -10,20 +10,23 @@ interface SidebarContextValue {
 
 const SidebarContext = createContext<SidebarContextValue | undefined>(undefined);
 
-export function SidebarProvider({ children }: { children: ReactNode }) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+/**
+ * Lecture de la préférence au tout premier rendu, via un initialiseur paresseux :
+ * `localStorage` n'existe pas côté serveur, d'où la garde `window`. Un effet qui
+ * ferait `setState` après le montage provoquerait un rendu en cascade (et un
+ * clignotement visible de la barre latérale).
+ */
+function readCollapsedPreference(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return localStorage.getItem("fildor_sidebar_collapsed") === "true";
+  } catch {
+    return false;
+  }
+}
 
-  // Charger la préférence depuis le localStorage au montage
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem("fildor_sidebar_collapsed");
-      if (saved !== null) {
-        setIsCollapsed(saved === "true");
-      }
-    } catch {
-      // Ignore les erreurs de stockage
-    }
-  }, []);
+export function SidebarProvider({ children }: { children: ReactNode }) {
+  const [isCollapsed, setIsCollapsed] = useState(readCollapsedPreference);
 
   const toggleCollapsed = () => {
     setIsCollapsed((prev) => {

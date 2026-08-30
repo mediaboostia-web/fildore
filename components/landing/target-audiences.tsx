@@ -1,123 +1,236 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { User, Users, Building2, Palette, Layers, ArrowRight } from "lucide-react";
+import { User, Users, Building2, Palette, CheckCircle2, ArrowRight, Sparkles, Shield, Clock } from "lucide-react";
+import { cn } from "@/lib/utils/cn";
+
+const AUDIENCES = [
+  {
+    id: "solo",
+    tabLabel: "Couturier Solo",
+    icon: User,
+    badge: "Indépendant & Créateur",
+    title: "Pour les couturiers et couturières solo",
+    description:
+      "Finis les cahiers égarés et les oublis de mesures. Enregistrez chaque commande sur votre smartphone et travaillez l'esprit libre.",
+    image: "/Une Couturière Africaine Coud Avec Diligence Des Vêtements à Laide De Machines Dans Son Bureau De Tailleur Photo Et Image en Téléchargement Gratuit - Pngtree.jpg",
+    benefits: [
+      {
+        icon: CheckCircle2,
+        iconTone: "text-success",
+        title: "Mesures protégées à vie",
+        text: "Retrouvez instantanément le tour de poitrine, longueur robe ou épaule de chaque client.",
+      },
+      {
+        icon: Clock,
+        iconTone: "text-primary-800",
+        title: "Alertes d'échéances sans stress",
+        text: "Visualisez les tenues à livrer cette semaine et prévenez vos clients à temps.",
+      },
+      {
+        icon: Sparkles,
+        iconTone: "text-accent-600",
+        title: "Reçus WhatsApp en 1 clic",
+        text: "Partagez un récapitulatif clair de commande et le solde restant sans calculatrice.",
+      },
+    ],
+    stats: { number: "100%", label: "Disponible sur smartphone Android & iPhone" },
+  },
+  {
+    id: "atelier",
+    tabLabel: "Atelier & Équipe",
+    icon: Users,
+    badge: "2 à 10 personnes",
+    title: "Pour les ateliers de confection en équipe",
+    description:
+      "Répartissez la coupe, la couture et le repassage entre vos apprentis et couturiers. Éliminez les retards et les confusions de tissus.",
+    image: "/Images pro.jpg",
+    benefits: [
+      {
+        icon: CheckCircle2,
+        iconTone: "text-success",
+        title: "Suivi des étapes en temps réel",
+        text: "Coupe, assemblage, essayage, retouche : tout le monde sait exactement quoi faire.",
+      },
+      {
+        icon: Shield,
+        iconTone: "text-primary-800",
+        title: "Sécurisation des acomptes",
+        text: "Tracez chaque versement pour financer les tissus et fournitures en toute transparence.",
+      },
+      {
+        icon: Sparkles,
+        iconTone: "text-accent-600",
+        title: "Fiches de travail claires",
+        text: "Chaque commande a sa fiche imprimable ou consultable sans risque d'erreur.",
+      },
+    ],
+    stats: { number: "0", label: "Retard de livraison évitable grâce au suivi" },
+  },
+  {
+    id: "styliste",
+    tabLabel: "Styliste & Modéliste",
+    icon: Palette,
+    badge: "Maison de mode & Créateurs",
+    title: "Pour les stylistes, créateurs et sur-mesure",
+    description:
+      "Valorisez vos collections, partagez votre catalogue de modèles avec vos clients et traitez les commandes sur-mesure avec standing.",
+    image: "/Je suis votre modéliste.jpg",
+    benefits: [
+      {
+        icon: CheckCircle2,
+        iconTone: "text-success",
+        title: "Catalogue de créations soigné",
+        text: "Ajoutez photos, prix de confection et métrages de tissus recommandés.",
+      },
+      {
+        icon: Sparkles,
+        iconTone: "text-accent-600",
+        title: "Factures & Devis de standing",
+        text: "Générez des factures professionnelles à l'image de votre marque.",
+      },
+      {
+        icon: Clock,
+        iconTone: "text-primary-800",
+        title: "Commandes de groupe & cérémonies",
+        text: "Gérez les mariages, uniformes et cortèges avec des mesures multiples.",
+      },
+    ],
+    stats: { number: "2 sec", label: "Pour générer et partager un devis ou modèle" },
+  },
+];
 
 export function LandingTargetAudiences() {
-  const audiences = [
-    {
-      icon: User,
-      title: "Couturier ou couturière solo",
-      text: "Gardez vos commandes, mesures et acomptes bien rangés sur votre smartphone sans risquer de perdre vos cahiers.",
-      image: "/Une Couturière Africaine Coud Avec Diligence Des Vêtements à Laide De Machines Dans Son Bureau De Tailleur Photo Et Image en Téléchargement Gratuit - Pngtree.jpg",
-      objectPosition: "object-top",
-    },
-    {
-      icon: Users,
-      title: "Petit atelier (2 à 5 personnes)",
-      text: "Répartissez la coupe et la couture, suivez les dates d'essayage et éliminez les retards de livraison.",
-      image: "/Images pro.jpg",
-      objectPosition: "object-center",
-    },
-    {
-      icon: Building2,
-      title: "Maison de couture (5 à 20 personnes)",
-      text: "Gérez les commandes sur mesure complexes, générez des factures professionnelles et coordonnez votre équipe.",
-      image: "/Construction of $11_07-mn garment factory begins in northern Ghana.jpg",
-      objectPosition: "object-center",
-    },
-    {
-      icon: Palette,
-      title: "Styliste ou créateur de mode",
-      text: "Valorisez vos créations en un catalogue soigné et partagez vos modèles directement avec vos clients.",
-      image: "/Je suis votre modéliste.jpg",
-      objectPosition: "object-top",
-    },
-    {
-      icon: Layers,
-      title: "Commandes de groupe & uniformes",
-      text: "Centralisez les mensurations multiples, les livraisons en série pour écoles ou entreprises et les factures globales.",
-      image: "/La couture et la mode inclusive.jpg",
-      objectPosition: "object-center",
-    },
-  ];
+  const [activeTab, setActiveTab] = useState<string>("solo");
+  const current = AUDIENCES.find((a) => a.id === activeTab) || AUDIENCES[0];
 
   return (
-    <section className="py-16 md:py-24 bg-surface">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-12">
+    <section className="relative overflow-hidden py-16 md:py-24 bg-surface">
+      {/* Accent de fond doux */}
+      <div className="absolute top-1/2 left-0 -translate-y-1/2 size-96 rounded-full bg-primary-100/40 blur-3xl pointer-events-none" />
+
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-10">
         {/* En-tête de section */}
         <div className="mx-auto max-w-3xl text-center space-y-3">
-          <span className="text-xs font-bold uppercase tracking-wider text-accent-600">
-            Fildor s'adapte à votre façon de travailler
+          <span className="inline-block text-xs font-bold uppercase tracking-wider text-accent-600 bg-accent-50 px-3 py-1 rounded-full border border-accent-100">
+            Fildor s&apos;adapte à votre façon de travailler
           </span>
-          <h2 className="text-2xl font-bold tracking-tight text-primary-950 sm:text-4xl">
+          <h2 className="text-2xl font-extrabold tracking-tight text-primary-950 sm:text-4xl">
             Que vous travailliez seul ou en équipe, Fildor vous aide à rester serein.
           </h2>
         </div>
 
-        {/* Grille des profils */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {audiences.map((aud, idx) => {
-            const Icon = aud.icon;
-            return (
-              <div
-                key={idx}
-                className="group flex flex-col justify-between rounded-2xl border border-border bg-surface overflow-hidden shadow-xs transition-all duration-200 hover:border-primary-800 hover:shadow-xl"
-              >
-                {/* Photo bien proportionnée sans découpage des visages */}
-                <div className="relative h-52 sm:h-56 w-full overflow-hidden bg-primary-950">
-                  <Image
-                    src={aud.image}
-                    alt={aud.title}
-                    fill
-                    className={`object-cover ${aud.objectPosition} transition-transform duration-500 group-hover:scale-105`}
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
-                </div>
+        {/* Barre de navigation d'onglets (Pills inspirés de 21st.dev) */}
+        <div className="flex justify-center">
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-surface-muted/70 p-1.5 shadow-xs backdrop-blur-sm">
+            {AUDIENCES.map((aud) => {
+              const active = aud.id === activeTab;
+              const Icon = aud.icon;
+              return (
+                <button
+                  key={aud.id}
+                  type="button"
+                  onClick={() => setActiveTab(aud.id)}
+                  className={cn(
+                    "inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs sm:text-sm font-semibold transition-all duration-150 cursor-pointer",
+                    active
+                      ? "bg-primary-900 text-white shadow-sm"
+                      : "text-text-muted hover:text-text hover:bg-surface"
+                  )}
+                >
+                  <Icon className="size-4" />
+                  <span>{aud.tabLabel}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
-                {/* Contenu textuel aéré avec icône et titre */}
-                <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-3">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2.5">
-                      <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary-900 shadow-xs">
-                        <Icon className="size-4.5" />
+        {/* Grand Panneau Interactif avec 3 Cartes / Avantages + Photo Pro */}
+        <div className="rounded-3xl border border-border/80 bg-canvas/60 p-5 sm:p-8 lg:p-10 shadow-xl backdrop-blur-md">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+            {/* Colonne Gauche : Titre + 3 Points Clés */}
+            <div className="lg:col-span-7 space-y-6">
+              <div className="space-y-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-primary-800">
+                  {current.badge}
+                </span>
+                <h3 className="text-xl sm:text-2xl font-extrabold text-primary-950">
+                  {current.title}
+                </h3>
+                <p className="text-sm text-text-muted leading-relaxed">
+                  {current.description}
+                </p>
+              </div>
+
+              {/* 3 Avantages avec icônes distinctes */}
+              <div className="space-y-3.5 pt-1">
+                {current.benefits.map((b, idx) => {
+                  const Icon = b.icon;
+                  return (
+                    <div
+                      key={idx}
+                      className="flex items-start gap-3.5 rounded-2xl border border-border/70 bg-surface p-4 shadow-xs transition-transform hover:scale-[1.01]"
+                    >
+                      <div className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary-50">
+                        <Icon className={cn("size-5", b.iconTone)} />
                       </div>
-                      <h3 className="text-base font-bold text-text">
-                        {aud.title}
-                      </h3>
+                      <div className="space-y-0.5">
+                        <h4 className="text-sm font-bold text-text">{b.title}</h4>
+                        <p className="text-xs text-text-muted leading-relaxed">{b.text}</p>
+                      </div>
                     </div>
+                  );
+                })}
+              </div>
 
-                    <p className="text-xs sm:text-sm text-text-muted leading-relaxed pt-1">
-                      {aud.text}
-                    </p>
-                  </div>
+              {/* Action CTA + Stat clé */}
+              <div className="pt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-border/60">
+                <Link
+                  href="/inscription"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary-900 px-6 py-3 text-sm font-semibold text-white shadow-md hover:bg-primary-800 transition-all cursor-pointer"
+                >
+                  <span>Créer mon atelier gratuit</span>
+                  <ArrowRight className="size-4" />
+                </Link>
+
+                <div className="flex items-center gap-2 text-xs text-text-muted">
+                  <span className="text-lg font-extrabold text-primary-900">
+                    {current.stats.number}
+                  </span>
+                  <span className="max-w-[200px] leading-tight">
+                    {current.stats.label}
+                  </span>
                 </div>
               </div>
-            );
-          })}
-
-          {/* Carte CTA d'intégration */}
-          <div className="flex flex-col justify-between rounded-2xl border border-primary-800 bg-primary-900 p-6 sm:p-7 text-white shadow-xl">
-            <div className="space-y-4">
-              <span className="inline-block text-xs font-bold uppercase tracking-wider text-accent-100 bg-primary-950/40 px-3 py-1 rounded-full">
-                Rejoignez le mouvement
-              </span>
-              <h3 className="text-xl font-bold text-white leading-snug">
-                Votre atelier mérite le meilleur outil
-              </h3>
-              <p className="text-xs sm:text-sm text-white/80 leading-relaxed">
-                Testez Fildor dès aujourd'hui sur vos premières commandes et constatez la différence.
-              </p>
             </div>
 
-            <div className="pt-6">
-              <Link
-                href="/inscription"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-primary-950 shadow-md hover:bg-surface-muted transition-all cursor-pointer"
-              >
-                <span>Fildor est fait pour mon atelier</span>
-                <ArrowRight className="size-4" />
-              </Link>
+            {/* Colonne Droite : Photo Immersion Cadrée avec Badge */}
+            <div className="lg:col-span-5 relative">
+              <div className="relative h-[360px] sm:h-[420px] w-full rounded-2xl overflow-hidden border border-border bg-primary-950 shadow-2xl">
+                <Image
+                  src={current.image}
+                  alt={current.title}
+                  fill
+                  className="object-cover object-top transition-transform duration-700 hover:scale-105"
+                  sizes="(max-width: 1024px) 100vw, 40vw"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                
+                {/* Pastille flottante en bas de l'image */}
+                <div className="absolute bottom-4 left-4 right-4 rounded-xl border border-white/20 bg-black/50 backdrop-blur-md p-3 text-white">
+                  <div className="flex items-center gap-2">
+                    <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <p className="text-xs font-bold">{current.tabLabel} — Conçu pour votre quotidien</p>
+                  </div>
+                  <p className="text-[11px] text-white/80 mt-0.5">
+                    Simple, rapide et sans formation technique préalable.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

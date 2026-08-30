@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import { FildorLogo } from "@/components/brand/fildor-logo";
 
 export function LandingFooter() {
   return (
@@ -9,14 +9,7 @@ export function LandingFooter() {
           {/* Marque & Slogan */}
           <div className="col-span-2 lg:col-span-2 space-y-4">
             <Link href="/" className="flex items-center gap-2.5">
-              <Image
-                src="/Logo fildor.png"
-                alt="Logo Fildor"
-                width={36}
-                height={36}
-                className="size-9 rounded-xl object-contain shadow-xs"
-              />
-              <span className="text-xl font-bold tracking-tight text-primary-950">Fildor</span>
+              <FildorLogo variant="lockup" height={30} />
             </Link>
 
             <p className="text-xs text-text-muted max-w-sm leading-relaxed">
@@ -111,7 +104,7 @@ export function LandingFooter() {
                 <span className="text-text-subtle">Confidentialité</span>
               </li>
               <li>
-                <span className="text-text-subtle">Conditions d'utilisation</span>
+                <span className="text-text-subtle">Conditions d&apos;utilisation</span>
               </li>
             </ul>
           </div>
@@ -119,7 +112,7 @@ export function LandingFooter() {
 
         <div className="mt-12 border-t border-border pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-text-muted">
           <p>© 2026 Fildor. Tous droits réservés.</p>
-          <p>Conçu avec passion pour l'artisanat et la mode africaine.</p>
+          <p>Conçu avec passion pour l&apos;artisanat et la mode africaine.</p>
         </div>
       </div>
     </footer>

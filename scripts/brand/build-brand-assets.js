@@ -24,7 +24,7 @@ const THREAD = "#C45A32";
 const THREAD_LIGHT = "#D97945";
 const CANVAS = "#FAFAF7";
 
-const EPSILON = 0.4; // simplification RDP, en pixels source
+const EPSILON = 0.75; // simplification RDP, en pixels source
 
 const dir = (...p) => {
   const target = path.join(OUT, ...p);
@@ -79,17 +79,23 @@ const write = (file, contents) => {
   const threadField = new Float32Array(width * height);
   const fullGreen = Math.sqrt(d2(greenRef, bg));
   const fullThread = Math.sqrt(d2(threadRef, bg));
+  // Tri par « rougeur » (r − moyenne(v,b)) et non par distance RGB brute : un
+  // pixel de bord antialiasé vert/crème (~50 % de couverture) tombe en RGB plus
+  // près du terracotta — teinte moyenne — que du vert foncé, ce qui frangeait
+  // les lettres d'orange et ouvrait des coutures blanches dans les pleins.
+  // La rougeur, elle, reste ≤ celle du fond sur toute la rampe verte.
+  const redness = (c) => c[0] - (c[1] + c[2]) / 2;
+  const REDNESS_BG = redness(bg);
+  const REDNESS_CUT = REDNESS_BG + 10;
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       const c = px(x, y);
-      const dg = d2(c, greenRef);
-      const dt = d2(c, threadRef);
       const dist = Math.sqrt(d2(c, bg));
       const idx = y * width + x;
-      if (dg <= dt) {
-        greenField[idx] = Math.max(0, Math.min(1, dist / fullGreen));
-      } else {
+      if (redness(c) > REDNESS_CUT) {
         threadField[idx] = Math.max(0, Math.min(1, dist / fullThread));
+      } else {
+        greenField[idx] = Math.max(0, Math.min(1, dist / fullGreen));
       }
     }
   }
@@ -255,7 +261,7 @@ const write = (file, contents) => {
         const o = (y * box.w + x) * 4;
         let rgb = [r, g, b];
         if (recolor) {
-          rgb = d2([r, g, b], threadRef) < d2([r, g, b], greenRef) ? recolor.thread : recolor.green;
+          rgb = redness([r, g, b]) > REDNESS_CUT ? recolor.thread : recolor.green;
         }
         out[o] = rgb[0];
         out[o + 1] = rgb[1];

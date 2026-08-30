@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
+import { FildorLogo } from "@/components/brand/fildor-logo";
 import {
   LayoutGrid,
   ClipboardList,
@@ -54,17 +54,18 @@ export function SidebarDesktop() {
             className="flex items-center gap-2.5 group overflow-hidden"
             title="Fildor"
           >
-            <Image
-              src="/Logo fildor.png"
-              alt="Logo Fildor"
-              width={32}
-              height={32}
-              className="size-8 shrink-0 rounded-xl object-contain shadow-xs transition-transform group-hover:scale-105"
-            />
-            {!isCollapsed && (
-              <span className="text-lg font-bold text-primary-900 tracking-tight truncate">
-                Fildor
-              </span>
+            {isCollapsed ? (
+              <FildorLogo
+                variant="mark"
+                height={30}
+                className="shrink-0 transition-transform group-hover:scale-105"
+              />
+            ) : (
+              <FildorLogo
+                variant="lockup"
+                height={28}
+                className="shrink-0 transition-transform group-hover:scale-105"
+              />
             )}
           </Link>
 

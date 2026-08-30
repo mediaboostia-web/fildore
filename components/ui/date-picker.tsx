@@ -1,13 +1,12 @@
 "use client";
 
 import { useId, useState } from "react";
-import { CalendarDays, Calendar as CalendarIcon } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import { DayPicker } from "react-day-picker";
 import { fr } from "react-day-picker/locale";
 import "react-day-picker/style.css";
 import * as Popover from "@radix-ui/react-popover";
 import { cn } from "@/lib/utils/cn";
-import { Button } from "./button";
 
 export interface DatePickerProps {
   value?: Date;
@@ -144,7 +143,7 @@ export function DatePicker({
                 onClick={handleSelectToday}
                 className="flex-1 rounded-lg bg-primary-50 py-1.5 px-2 text-xs font-semibold text-primary-900 hover:bg-primary-100 transition-colors cursor-pointer text-center"
               >
-                Aujourd'hui
+                Aujourd&apos;hui
               </button>
               <button
                 type="button"

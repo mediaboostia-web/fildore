@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Bell, Check, Clock, AlertTriangle, MessageSquare, X } from "lucide-react";
+import { Bell, Clock, AlertTriangle, MessageSquare, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export function NotificationPopover({ compact = false }: { compact?: boolean }) {
@@ -87,7 +87,7 @@ export function NotificationPopover({ compact = false }: { compact?: boolean }) 
             <div className="flex items-center justify-between border-b border-border bg-surface-muted/60 px-4 py-3">
               <div className="flex items-center gap-2">
                 <Bell className="size-4 text-primary-900" />
-                <span className="text-sm font-bold text-text">Notifications d'atelier</span>
+                <span className="text-sm font-bold text-text">Notifications d&apos;atelier</span>
                 {unreadCount > 0 && (
                   <Badge tone="danger" className="text-[10px]">
                     {unreadCount} nouvelles
