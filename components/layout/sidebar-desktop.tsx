@@ -25,7 +25,7 @@ const NAV_ITEMS = [
   { href: "/commandes", label: "Commandes", icon: ClipboardList },
   { href: "/clients", label: "Clients", icon: Users },
   { href: "/modeles", label: "Modèles", icon: Shirt },
-  { href: "/messages", label: "Messagerie", icon: MessageCircle },
+  { href: "/messages", label: "Relances", icon: MessageCircle },
   { href: "/factures", label: "Factures & Documents", icon: Receipt },
   { href: "/parametres", label: "Paramètres", icon: Settings },
 ] as const;

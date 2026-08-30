@@ -15,7 +15,7 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from "@
 import { logoutAction } from "@/features/auth/actions";
 
 const MORE_ITEMS = [
-  { href: "/messages", label: "Messages & WhatsApp", icon: MessageCircle, badge: "WhatsApp" },
+  { href: "/messages", label: "Relances", icon: MessageCircle, badge: "WhatsApp" },
   { href: "/factures", label: "Factures & Devis", icon: Receipt },
   { href: "/paiements", label: "Paiements & Acomptes", icon: CreditCard },
   { href: "/planning", label: "Planning des livraisons", icon: CalendarClock },
