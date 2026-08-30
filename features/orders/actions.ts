@@ -2,8 +2,19 @@
 
 import { revalidatePath } from "next/cache";
 import { requireCurrentUser, requireRole } from "@/lib/auth/session";
-import { orderFormSchema, orderStatusUpdateSchema, orderCancelSchema } from "./schemas";
-import { createOrder, updateOrderStatus, cancelOrder } from "@/lib/mock-data/orders";
+import {
+  orderFormSchema,
+  orderStatusUpdateSchema,
+  orderCancelSchema,
+  orderUpdateSchema,
+} from "./schemas";
+import {
+  createOrder,
+  updateOrder,
+  updateOrderStatus,
+  cancelOrder,
+  getOrderById,
+} from "@/lib/mock-data/orders";
 import { getProfileById, getProfilesByClient } from "@/lib/mock-data/measurement-profiles";
 import { createDocument } from "@/lib/mock-data/documents";
 import type { ActionResult } from "@/features/clients/actions";
@@ -33,6 +44,7 @@ export async function createOrderAction(input: unknown): Promise<ActionResult<{ 
     description: parsed.data.description,
     items: parsed.data.items,
     measurementProfile: profile,
+    catalogItemId: parsed.data.catalogItemId,
     totalAmount: parsed.data.totalAmount,
     discountAmount: parsed.data.discountAmount,
     eventDate: parsed.data.eventDate,
@@ -54,6 +66,51 @@ export async function createOrderAction(input: unknown): Promise<ActionResult<{ 
   revalidatePath("/commandes");
   revalidatePath("/factures");
   return { success: true, data: { id: order.id, reference: order.reference } };
+}
+
+/**
+ * Modification d'une commande existante.
+ *
+ * Passe obligatoirement par une Server Action : le formulaire d'édition écrivait
+ * auparavant dans `getDb()` depuis le navigateur, ce qui touchait une copie
+ * client du seed — la modification était silencieusement perdue au rechargement,
+ * sans contrôle de session, de payload ni d'atelier.
+ */
+export async function updateOrderAction(input: unknown): Promise<ActionResult<{ id: string }>> {
+  const user = await requireCurrentUser();
+  const parsed = orderUpdateSchema.safeParse(input);
+  if (!parsed.success) {
+    return { success: false, fieldErrors: parsed.error.flatten().fieldErrors };
+  }
+
+  const existing = await getOrderById(parsed.data.orderId);
+  if (!existing || existing.workshopId !== user.workshopId) {
+    return { success: false, error: "Commande introuvable." };
+  }
+  if (existing.status === "annulee") {
+    return { success: false, error: "Une commande annulée ne peut plus être modifiée." };
+  }
+
+  const order = await updateOrder(
+    parsed.data.orderId,
+    {
+      title: parsed.data.title,
+      garmentType: parsed.data.garmentType,
+      description: parsed.data.description,
+      priority: parsed.data.priority,
+      totalAmount: parsed.data.totalAmount,
+      discountAmount: parsed.data.discountAmount,
+      eventDate: parsed.data.eventDate,
+      deliveryDate: parsed.data.deliveryDate,
+      depositDueDate: parsed.data.depositDueDate,
+    },
+    user.id
+  );
+
+  revalidatePath("/commandes");
+  revalidatePath(`/commandes/${order.id}`);
+  revalidatePath("/tableau-de-bord");
+  return { success: true, data: { id: order.id } };
 }
 
 export async function updateOrderStatusAction(input: unknown): Promise<ActionResult<{ id: string }>> {

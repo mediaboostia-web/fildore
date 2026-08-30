@@ -108,8 +108,12 @@ describe("recordPayment / cancelPayment (repository mock)", () => {
       recordedByUserId: user.id,
     });
 
-    const cancelled = await cancelPayment(payment.id);
+    const cancelled = await cancelPayment(payment.id, "Erreur de saisie", user.id);
     expect(cancelled.status).toBe("annule");
+    // L'annulation reste traçable : motif et auteur conservés (PROJECT_RULES.md §6).
+    expect(cancelled.cancellationReason).toBe("Erreur de saisie");
+    expect(cancelled.cancelledByUserId).toBe(user.id);
+    expect(cancelled.cancelledAt).toBeTruthy();
 
     const after = await getPaidAmountForOrder(order.id);
     expect(after).toBe(before);

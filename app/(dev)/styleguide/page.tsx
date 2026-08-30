@@ -661,7 +661,10 @@ export default function StyleguidePage() {
           className="overflow-auto rounded-[var(--radius-lg)] border border-border"
           style={{ contain: "layout", height: 560 }}
         >
-          <AppShell user={{ name: "Amina Chabi", role: "Owner", email: "amina@atelier-elegance.bj" }}>
+          <AppShell
+            user={{ name: "Amina Chabi", role: "Owner", email: "amina@atelier-elegance.bj" }}
+            notifications={[]}
+          >
             <div className="flex flex-col gap-4">
               <PageHeader title="Tableau de bord" description="Aperçu de l'atelier aujourd'hui" />
               <Card padding="sm">

@@ -1,10 +1,22 @@
 import Link from "next/link";
-import { ArrowLeft, CheckCircle2, Lock } from "lucide-react";
+import { ArrowLeft, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PasswordInput } from "@/components/auth/password-input";
 import { resetPasswordAction } from "@/features/auth/actions";
 
-export default function ReinitialiserMotDePassePage() {
+const ERROR_MESSAGES: Record<string, string> = {
+  password: "Le mot de passe doit contenir au moins 8 caractères.",
+  confirmPassword: "Les deux mots de passe ne correspondent pas.",
+};
+
+export default async function ReinitialiserMotDePassePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ erreur?: string }>;
+}) {
+  const { erreur } = await searchParams;
+  const errorMessage = erreur ? (ERROR_MESSAGES[erreur] ?? "Vérifiez votre saisie.") : undefined;
+
   return (
     <div className="space-y-6">
       {/* En-tête */}
@@ -21,12 +33,21 @@ export default function ReinitialiserMotDePassePage() {
       </div>
 
       <form action={resetPasswordAction} className="space-y-4">
+        {errorMessage ? (
+          <div
+            role="alert"
+            className="rounded-xl border border-danger/30 bg-danger-bg p-3.5 text-xs font-semibold text-danger"
+          >
+            {errorMessage}
+          </div>
+        ) : null}
+
         <div className="space-y-1.5">
           <label className="block text-xs font-semibold text-text">
             Nouveau mot de passe *
           </label>
           <PasswordInput
-            name="newPassword"
+            name="password"
             placeholder="Au moins 8 caractères"
             required
           />

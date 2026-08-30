@@ -15,7 +15,10 @@ export default function OrderWizardPricingStep() {
   const draft = useOrderWizardStore((state) => state.draft);
   const setStepData = useOrderWizardStore((state) => state.setStepData);
 
-  const [totalAmount, setTotalAmount] = useState<number>(draft.totalAmount || 25000);
+  // Pas de prix par défaut inventé : le montant vient du modèle du catalogue
+  // quand la commande en vient, sinon le couturier le saisit. Un tarif suggéré
+  // au hasard finirait tôt ou tard facturé tel quel.
+  const [totalAmount, setTotalAmount] = useState<number>(draft.totalAmount ?? 0);
   const [discountAmount, setDiscountAmount] = useState<number>(draft.discountAmount || 0);
   const [depositDueDate, setDepositDueDate] = useState<string>(draft.depositDueDate || "");
   const [errorMsg, setErrorMsg] = useState("");
@@ -30,7 +33,7 @@ export default function OrderWizardPricingStep() {
       setErrorMsg("Le montant total de la commande doit être supérieur à 0.");
       return;
     }
-    if (discountAmount >= totalAmount && totalAmount > 0 && discountAmount > totalAmount) {
+    if (discountAmount > totalAmount) {
       setErrorMsg("La remise ne peut pas être supérieure au montant total.");
       return;
     }

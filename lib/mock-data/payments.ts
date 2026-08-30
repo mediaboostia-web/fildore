@@ -78,11 +78,29 @@ export async function recordPayment(input: RecordPaymentInput): Promise<Payment>
   return payment;
 }
 
-export async function cancelPayment(paymentId: string): Promise<Payment> {
+export async function getPaymentById(paymentId: string): Promise<Payment | undefined> {
+  await wait();
+  return getDb().payments.find((p) => p.id === paymentId);
+}
+
+/**
+ * Annule un paiement sans jamais le supprimer : la ligne reste au journal avec
+ * son motif et son auteur, et le reçu déjà émis reste consultable — un document
+ * remis au client ne disparaît pas de l'historique (PROJECT_RULES.md §6).
+ * Le montant cesse simplement de compter dans le solde via `sumConfirmedPayments`.
+ */
+export async function cancelPayment(
+  paymentId: string,
+  reason: string,
+  byUserId: string
+): Promise<Payment> {
   await wait();
   const db = getDb();
   const payment = db.payments.find((p) => p.id === paymentId);
   if (!payment) throw new Error(`Paiement introuvable : ${paymentId}`);
   payment.status = "annule";
+  payment.cancelledAt = new Date().toISOString();
+  payment.cancelledByUserId = byUserId;
+  payment.cancellationReason = reason;
   return payment;
 }

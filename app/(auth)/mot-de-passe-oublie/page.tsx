@@ -28,20 +28,26 @@ export default async function MotDePasseOubliePage({
 
       {/* Message de succès */}
       {isSuccess ? (
-        <div className="rounded-2xl border border-success/30 bg-success-bg p-5 space-y-3">
-          <div className="flex items-center gap-2.5 text-success font-bold text-sm">
+        <div className="rounded-2xl border border-info/30 bg-info-bg p-5 space-y-3">
+          <div className="flex items-center gap-2.5 text-info font-bold text-sm">
             <CheckCircle2 className="size-5 shrink-0" />
-            <span>Email de réinitialisation envoyé !</span>
+            <span>Demande enregistrée</span>
           </div>
+          {/*
+            L'envoi d'e-mail n'est pas encore branché : on le dit clairement plutôt
+            que d'annoncer un message « e-mail envoyé » que le couturier attendrait
+            en vain (PROJECT_RULES.md §2). Le lien ci-dessous ouvre l'écran final.
+          */}
           <p className="text-xs text-text leading-relaxed">
-            Consultez votre boîte de réception. Cliquez sur le lien pour définir un nouveau mot de passe sécurisé.
+            L&apos;envoi automatique d&apos;e-mail n&apos;est pas encore activé sur cette version.
+            Continuez ci-dessous pour choisir un nouveau mot de passe.
           </p>
           <div className="pt-2">
             <Link
               href="/reinitialiser-mot-de-passe"
               className="inline-flex items-center text-xs font-bold text-primary-900 hover:underline"
             >
-              Simuler le lien de réinitialisation →
+              Choisir un nouveau mot de passe →
             </Link>
           </div>
         </div>
@@ -61,7 +67,7 @@ export default async function MotDePasseOubliePage({
               <input
                 type="email"
                 name="email"
-                placeholder="amina@elegance.bj"
+                placeholder="amina@atelier-elegance.bj"
                 required
                 className="w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 pl-10 text-sm text-text placeholder:text-text-subtle focus:border-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-800/20 transition-all"
               />

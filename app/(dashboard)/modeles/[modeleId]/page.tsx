@@ -29,7 +29,10 @@ export default async function ModeleDetailPage({
         title={item.name}
         description={`Catégorie : ${CATALOG_CATEGORY_LABELS[item.category] || item.category}`}
         action={
-          <LinkButton href="/commandes/nouveau/client" icon={<ShoppingBag className="size-4" />}>
+          <LinkButton
+            href={`/commandes/nouveau/client?modele=${item.id}`}
+            icon={<ShoppingBag className="size-4" />}
+          >
             Créer une commande avec ce modèle
           </LinkButton>
         }

@@ -33,6 +33,7 @@ export interface CreateOrderInput {
   measurementProfile: MeasurementProfile;
   totalAmount: number;
   discountAmount: number;
+  catalogItemId?: string;
   eventDate?: string;
   deliveryDate: string;
   depositDueDate?: string;
@@ -56,6 +57,7 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
     description: input.description,
     items: input.items.map((item) => ({ ...item, id: generateId("item") })),
     measurementSnapshot: toMeasurementSnapshot(input.measurementProfile),
+    catalogItemId: input.catalogItemId,
     totalAmount: input.totalAmount,
     discountAmount: input.discountAmount,
     eventDate: input.eventDate,
@@ -67,6 +69,57 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
     updatedAt: now,
   };
   db.orders.push(order);
+  return order;
+}
+
+export interface UpdateOrderInput {
+  title: string;
+  garmentType: GarmentType;
+  description?: string;
+  priority: "normale" | "urgente";
+  totalAmount: number;
+  discountAmount: number;
+  eventDate?: string;
+  deliveryDate: string;
+  depositDueDate?: string;
+}
+
+/**
+ * Modification d'une commande existante. Le snapshot de mesures, le client et
+ * l'historique de statut ne sont jamais réécrits ici : une commande garde la
+ * trace de ce qui a été convenu (PROJECT_RULES.md §6).
+ */
+export async function updateOrder(
+  orderId: string,
+  patch: UpdateOrderInput,
+  byUserId: string
+): Promise<Order> {
+  await wait();
+  const db = getDb();
+  const order = db.orders.find((o) => o.id === orderId);
+  if (!order) throw new Error(`Commande introuvable : ${orderId}`);
+
+  const now = new Date().toISOString();
+  order.title = patch.title;
+  order.garmentType = patch.garmentType;
+  order.description = patch.description;
+  order.priority = patch.priority;
+  order.totalAmount = patch.totalAmount;
+  order.discountAmount = patch.discountAmount;
+  order.eventDate = patch.eventDate;
+  order.deliveryDate = patch.deliveryDate;
+  order.depositDueDate = patch.depositDueDate;
+  order.updatedAt = now;
+
+  // Une modification de commande reste tracée : le statut ne change pas, mais on
+  // note qui a modifié et quand, comme pour un changement de statut.
+  order.statusHistory.push({
+    status: order.status,
+    at: now,
+    byUserId,
+    note: "Commande modifiée",
+  });
+
   return order;
 }
 

@@ -5,7 +5,6 @@ import {
   ArrowRight,
   ChevronRight,
   Clock,
-  CreditCard,
   MessageSquare,
   Plus,
   Receipt,

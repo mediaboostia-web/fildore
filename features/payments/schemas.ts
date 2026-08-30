@@ -25,3 +25,11 @@ export const paymentFormSchema = z.object({
 });
 
 export type PaymentFormValues = z.infer<typeof paymentFormSchema>;
+
+/** Un paiement annulé garde son motif : c'est ce qui rend l'annulation traçable. */
+export const paymentCancelSchema = z.object({
+  paymentId: z.string().min(1),
+  reason: z.string().trim().min(1, "Indiquez le motif de l'annulation."),
+});
+
+export type PaymentCancelValues = z.infer<typeof paymentCancelSchema>;

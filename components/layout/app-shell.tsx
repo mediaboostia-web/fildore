@@ -8,13 +8,16 @@ import { Toaster } from "@/components/ui/toast";
 import { SidebarProvider, useSidebar } from "./sidebar-context";
 import { cn } from "@/lib/utils/cn";
 import type { UserMenuUser } from "./user-menu";
+import type { WorkshopNotification } from "@/features/dashboard/notifications";
 
 export interface AppShellProps {
   children: ReactNode;
   user: UserMenuUser;
+  /** Alertes calculées par le layout serveur — voir `buildWorkshopNotifications`. */
+  notifications: WorkshopNotification[];
 }
 
-function AppShellContent({ children, user }: AppShellProps) {
+function AppShellContent({ children, user, notifications }: AppShellProps) {
   const { isCollapsed } = useSidebar();
 
   return (
@@ -26,7 +29,7 @@ function AppShellContent({ children, user }: AppShellProps) {
           isCollapsed ? "md:pl-18" : "md:pl-60"
         )}
       >
-        <Topbar user={user} />
+        <Topbar user={user} notifications={notifications} />
         <main className="min-w-0 flex-1 px-4 pb-24 pt-4 md:px-6 md:pb-6 md:pt-6">
           {children}
         </main>

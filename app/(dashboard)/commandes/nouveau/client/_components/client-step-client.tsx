@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Check, MapPin, Phone, Plus, Search, UserPlus } from "lucide-react";
+import { ArrowRight, Check, MapPin, Phone, Plus, Scissors, Search, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -11,12 +11,15 @@ import { createClientAction } from "@/features/clients/actions";
 import { formatPhoneDisplay } from "@/lib/utils/phone";
 import type { Client } from "@/features/clients/types";
 import { clientDisplayName } from "@/features/clients/types";
+import type { WizardCatalogItem } from "@/features/orders/wizard-actions";
 
 interface Props {
   initialClients: Client[];
+  /** Modèle du catalogue à l'origine de la commande, si elle vient d'une fiche modèle. */
+  catalogItem?: WizardCatalogItem | null;
 }
 
-export function OrderWizardClientStepClient({ initialClients }: Props) {
+export function OrderWizardClientStepClient({ initialClients, catalogItem }: Props) {
   const router = useRouter();
   const { draft, setStepData } = useOrderWizardStore();
   const [clients, setClients] = useState<Client[]>(initialClients);
@@ -32,6 +35,20 @@ export function OrderWizardClientStepClient({ initialClients }: Props) {
   const [newPhone, setNewPhone] = useState("");
   const [newCity, setNewCity] = useState("Cotonou");
   const [newDistrict, setNewDistrict] = useState("");
+
+  // Préremplissage depuis une fiche modèle. Écrit une seule fois, à l'arrivée sur
+  // l'étape : le couturier reste libre de tout modifier aux étapes suivantes.
+  const catalogItemId = catalogItem?.id;
+  useEffect(() => {
+    if (!catalogItem || draft.catalogItemId === catalogItem.id) return;
+    setStepData({
+      catalogItemId: catalogItem.id,
+      garmentType: catalogItem.garmentType,
+      title: catalogItem.name,
+      description: catalogItem.description,
+      totalAmount: catalogItem.indicativePrice,
+    });
+  }, [catalogItem, catalogItemId, draft.catalogItemId, setStepData]);
 
   const filteredClients = clients.filter((c) => {
     if (!search.trim()) return true;
@@ -73,22 +90,11 @@ export function OrderWizardClientStepClient({ initialClients }: Props) {
     startTransition(async () => {
       const res = await createClientAction(formData);
       if (res.success && res.data) {
-        const newClientObj: Client = {
-          id: res.data.id,
-          workshopId: "workshop_amina",
-          firstName: newFirstName.trim(),
-          lastName: newLastName.trim(),
-          phone: newPhone.trim(),
-          whatsappPhone: newPhone.trim(),
-          city: newCity.trim(),
-          district: newDistrict.trim(),
-          status: "active",
-          tags: [],
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-        setClients((prev) => [newClientObj, ...prev]);
+        // Le client renvoyé par le serveur fait foi (téléphone normalisé,
+        // identifiant d'atelier réel) — on n'en refabrique pas une copie ici.
+        setClients((prev) => [res.data!.client, ...prev]);
         setSelectedClientId(res.data.id);
+        setStepData({ clientId: res.data.id });
         setIsCreatingNew(false);
         // Reset
         setNewFirstName("");
@@ -109,6 +115,16 @@ export function OrderWizardClientStepClient({ initialClients }: Props) {
           Sélectionnez le client pour qui cette commande est réalisée, ou ajoutez-en un rapidement.
         </p>
       </div>
+
+      {catalogItem ? (
+        <div className="flex items-start gap-3 rounded-[var(--radius-md)] border border-primary-100 bg-primary-50/60 p-3.5">
+          <Scissors className="mt-0.5 size-4 shrink-0 text-primary-800" aria-hidden="true" />
+          <p className="text-sm text-text">
+            Commande basée sur le modèle <strong>{catalogItem.name}</strong>. Le titre, le type de
+            vêtement et le prix indicatif sont préremplis — vous pourrez les ajuster.
+          </p>
+        </div>
+      ) : null}
 
       {isCreatingNew ? (
         <form

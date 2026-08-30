@@ -5,7 +5,22 @@ import { Button } from "@/components/ui/button";
 import { signupAction } from "@/features/auth/actions";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 
-export default function InscriptionPage() {
+const ERROR_MESSAGES: Record<string, string> = {
+  fullName: "Indiquez votre nom complet.",
+  workshopName: "Indiquez le nom de votre atelier.",
+  email: "Cette adresse e-mail n'est pas valide.",
+  password: "Le mot de passe doit contenir au moins 8 caractères.",
+  email_existant: "Un compte existe déjà avec cette adresse e-mail.",
+};
+
+export default async function InscriptionPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ erreur?: string }>;
+}) {
+  const { erreur } = await searchParams;
+  const errorMessage = erreur ? (ERROR_MESSAGES[erreur] ?? "Vérifiez votre saisie.") : undefined;
+
   return (
     <div className="space-y-6">
       {/* Titre & Sous-titre */}
@@ -35,6 +50,15 @@ export default function InscriptionPage() {
 
       {/* Formulaire standard */}
       <form action={signupAction} className="space-y-4">
+        {errorMessage ? (
+          <div
+            role="alert"
+            className="rounded-xl border border-danger/30 bg-danger-bg p-3.5 text-xs font-semibold text-danger"
+          >
+            {errorMessage}
+          </div>
+        ) : null}
+
         <div className="space-y-1.5">
           <label className="block text-xs font-semibold text-text">
             Votre nom complet *

@@ -10,7 +10,6 @@ import {
   Scissors,
   User,
   AlertTriangle,
-  Receipt,
   ArrowLeft,
 } from "lucide-react";
 import { PageHeader } from "@/components/shared/page-header";
@@ -29,11 +28,12 @@ import { formatAmount } from "@/lib/money/format";
 import { formatDateFr } from "@/lib/utils/dates";
 import { formatPhoneDisplay } from "@/lib/utils/phone";
 import { clientDisplayName } from "@/features/clients/types";
-import { sumConfirmedPayments, PAYMENT_METHOD_LABELS } from "@/features/payments/types";
+import { sumConfirmedPayments } from "@/features/payments/types";
 import { getOrderComputedFlags } from "@/features/orders/selectors";
 import { ORDER_STATUS_LABELS } from "@/features/orders/types";
 import { GARMENT_TYPE_LABELS } from "@/features/measurements/constants";
 import { OrderActionsBar } from "./_components/order-actions-bar";
+import { PaymentHistory } from "./_components/payment-history";
 import { Printer } from "lucide-react";
 
 export default async function OrderDetailPage({
@@ -262,37 +262,7 @@ export default async function OrderDetailPage({
             />
 
             {/* Historique des paiements de cette commande */}
-            <div className="rounded-lg border border-border bg-surface p-4 shadow-sm space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">
-                  Règlements reçus ({payments.length})
-                </span>
-                <Receipt className="size-4 text-text-subtle" />
-              </div>
-
-              {payments.length === 0 ? (
-                <p className="text-xs text-text-muted italic">Aucun paiement encaissé pour l&apos;instant.</p>
-              ) : (
-                <div className="space-y-2">
-                  {payments.map((p) => (
-                    <div
-                      key={p.id}
-                      className="flex items-center justify-between rounded border border-border bg-canvas/50 p-2.5 text-xs"
-                    >
-                      <div>
-                        <span className="font-semibold text-text">{formatAmount(p.amount)}</span>
-                        <p className="text-text-muted">
-                          {PAYMENT_METHOD_LABELS[p.method]} · {formatDateFr(p.createdAt)}
-                        </p>
-                      </div>
-                      <Badge tone="success" className="text-xs">
-                        {p.receiptNumber}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            <PaymentHistory payments={payments} currentUserRole={currentUser?.role} />
 
             {/* Factures & Documents émis */}
             <div className="rounded-lg border border-border bg-surface p-4 shadow-sm space-y-3">

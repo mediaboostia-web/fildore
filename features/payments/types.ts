@@ -40,6 +40,14 @@ export interface Payment {
   receiptNumber: string; // REC-2026-000001
   recordedByUserId: string;
   createdAt: string;
+  /**
+   * Un paiement annulé n'est jamais supprimé : il reste dans le journal avec son
+   * motif et son auteur (PROJECT_RULES.md §6 « Paiements »). Il cesse simplement
+   * de compter dans `sumConfirmedPayments`.
+   */
+  cancelledAt?: string;
+  cancelledByUserId?: string;
+  cancellationReason?: string;
 }
 
 export function sumConfirmedPayments(payments: Payment[]): number {

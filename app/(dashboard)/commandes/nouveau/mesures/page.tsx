@@ -13,15 +13,17 @@ import {
   GARMENT_TYPE_LABELS,
   MEASUREMENT_FIELDS_BY_GARMENT_TYPE,
 } from "@/features/measurements/constants";
-import { getProfilesByClient } from "@/lib/mock-data/measurement-profiles";
-import type { MeasurementProfile } from "@/features/measurements/types";
+import {
+  getWizardProfilesAction,
+  type WizardMeasurementProfile,
+} from "@/features/orders/wizard-actions";
 
 export default function OrderWizardMeasurementsStep() {
   const router = useRouter();
   const draft = useOrderWizardStore((state) => state.draft);
   const setStepData = useOrderWizardStore((state) => state.setStepData);
 
-  const [profiles, setProfiles] = useState<MeasurementProfile[]>([]);
+  const [profiles, setProfiles] = useState<WizardMeasurementProfile[]>([]);
   const [loading, setLoading] = useState(() => Boolean(draft.clientId));
   const [selectedProfileId, setSelectedProfileId] = useState<string>(
     draft.measurementProfileId || ""
@@ -39,7 +41,7 @@ export default function OrderWizardMeasurementsStep() {
     if (!draft.clientId) return;
 
     let isMounted = true;
-    getProfilesByClient(draft.clientId).then((data) => {
+    getWizardProfilesAction(draft.clientId).then((data) => {
       if (isMounted) {
         setProfiles(data);
         if (data.length > 0) {

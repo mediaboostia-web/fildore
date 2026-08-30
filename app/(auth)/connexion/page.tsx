@@ -7,11 +7,14 @@ import { getUsers } from "@/lib/mock-data/users";
 import { getWorkshop } from "@/lib/mock-data/workshop";
 import { ROLE_LABELS } from "@/features/auth/types";
 import { loginAction } from "@/features/auth/actions";
-import { ArrowRight, Sparkles, UserCheck } from "lucide-react";
+import { ArrowRight, UserCheck } from "lucide-react";
 
 const ERROR_MESSAGES: Record<string, string> = {
   selection: "Veuillez renseigner votre email ou choisir un profil.",
-  utilisateur: "Utilisateur introuvable. Réessayez.",
+  utilisateur: "Ce profil n'existe plus. Choisissez-en un autre.",
+  identifiants: "Aucun compte ne correspond à cette adresse e-mail.",
+  email: "Cette adresse e-mail n'est pas valide.",
+  password: "Saisissez votre mot de passe.",
 };
 
 const SUCCESS_MESSAGES: Record<string, string> = {
@@ -79,7 +82,7 @@ export default async function ConnexionPage({
           <input
             type="email"
             name="email"
-            defaultValue="amina@elegance.bj"
+            defaultValue="amina@atelier-elegance.bj"
             placeholder="votre-email@atelier.com"
             required
             className="w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-text placeholder:text-text-subtle focus:border-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-800/20 transition-all"

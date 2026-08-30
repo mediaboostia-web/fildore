@@ -118,7 +118,7 @@ export function LandingTargetAudiences() {
         {/* En-tête de section */}
         <div className="mx-auto max-w-3xl text-center space-y-3">
           <span className="inline-block text-xs font-bold uppercase tracking-wider text-accent-600 bg-accent-50 px-3 py-1 rounded-full border border-accent-100">
-            Fildor s'adapte à votre façon de travailler
+            Fildor s&apos;adapte à votre façon de travailler
           </span>
           <h2 className="text-2xl font-extrabold tracking-tight text-primary-950 sm:text-4xl">
             Que vous travailliez seul ou en équipe, Fildor vous aide à rester serein.

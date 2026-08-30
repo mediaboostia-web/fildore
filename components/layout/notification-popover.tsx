@@ -2,158 +2,145 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Bell, Clock, AlertTriangle, MessageSquare, X } from "lucide-react";
+import { Bell, AlertTriangle, Clock, Wallet, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import type { WorkshopNotification } from "@/features/dashboard/notifications";
 
-export function NotificationPopover({ compact = false }: { compact?: boolean }) {
+export interface NotificationPopoverProps {
+  /**
+   * Alertes calculées côté serveur à partir des vraies commandes
+   * (`buildWorkshopNotifications`). Ce composant n'invente aucune donnée : un
+   * atelier sans échéance affiche un état vide, pas un exemple.
+   */
+  notifications: WorkshopNotification[];
+  compact?: boolean;
+}
+
+const TONE_STYLES: Record<WorkshopNotification["tone"], string> = {
+  danger: "bg-danger-bg text-danger",
+  warning: "bg-warning-bg text-warning",
+  info: "bg-info-bg text-info",
+};
+
+function NotificationIcon({ notification }: { notification: WorkshopNotification }) {
+  const Icon =
+    notification.kind === "paiement"
+      ? Wallet
+      : notification.tone === "danger"
+        ? AlertTriangle
+        : Clock;
+
+  return (
+    <div
+      className={`flex size-7 items-center justify-center rounded-lg ${TONE_STYLES[notification.tone]}`}
+    >
+      <Icon className="size-3.5" aria-hidden="true" />
+    </div>
+  );
+}
+
+export function NotificationPopover({ notifications, compact = false }: NotificationPopoverProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [notifications, setNotifications] = useState([
-    {
-      id: "notif-1",
-      type: "urgent",
-      title: "Livraison aujourd'hui",
-      desc: "Robe cérémonie — Aïcha D. (FIL-CTN-000124)",
-      time: "Aujourd'hui à 16h",
-      href: "/commandes",
-      read: false,
-    },
-    {
-      id: "notif-2",
-      type: "warning",
-      title: "Livraison imminente",
-      desc: "Ensemble homme brodé — Koffi A. (FIL-CTN-000125)",
-      time: "Demain",
-      href: "/commandes",
-      read: false,
-    },
-    {
-      id: "notif-3",
-      type: "message",
-      title: "Message WhatsApp prêt",
-      desc: "Invitation essayage prête pour Sandrine Codjo",
-      time: "Il y a 1h",
-      href: "/messages",
-      read: true,
-    },
-  ]);
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
-
-  const markAllAsRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-  };
+  // Une alerte reste une alerte tant que la commande n'a pas avancé : rien à
+  // « marquer comme lu » ici, le compteur suit l'état réel de l'atelier.
+  const count = notifications.length;
 
   return (
     <div className="relative">
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        aria-label={`Notifications (${unreadCount} non lues)`}
+        aria-label={
+          count > 0 ? `Notifications : ${count} à traiter` : "Notifications : rien à signaler"
+        }
+        aria-expanded={isOpen}
         className={
           compact
-            ? "relative flex size-9 items-center justify-center rounded-lg border border-border bg-surface text-text-muted hover:bg-surface-muted hover:text-text transition-colors cursor-pointer"
-            : "relative flex w-full items-center gap-2.5 rounded-[var(--radius-md)] px-2.5 py-2 text-sm font-medium text-text-muted hover:bg-surface-muted hover:text-text transition-colors cursor-pointer"
+            ? "relative flex size-9 cursor-pointer items-center justify-center rounded-lg border border-border bg-surface text-text-muted transition-colors hover:bg-surface-muted hover:text-text"
+            : "relative flex w-full cursor-pointer items-center gap-2.5 rounded-[var(--radius-md)] px-2.5 py-2 text-sm font-medium text-text-muted transition-colors hover:bg-surface-muted hover:text-text"
         }
       >
         <div className="relative">
-          <Bell className="size-5 shrink-0" />
-          {unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 flex size-2.5 rounded-full bg-danger ring-2 ring-surface" />
+          <Bell className="size-5 shrink-0" aria-hidden="true" />
+          {count > 0 && (
+            <span className="absolute -right-1 -top-1 flex size-2.5 rounded-full bg-danger ring-2 ring-surface" />
           )}
         </div>
         {!compact && (
           <div className="flex flex-1 items-center justify-between">
             <span>Notifications</span>
-            {unreadCount > 0 && (
-              <Badge tone="danger" className="text-[10px] px-1.5 py-0">
-                {unreadCount}
+            {count > 0 && (
+              <Badge tone="danger" className="px-1.5 py-0 text-[10px]">
+                {count}
               </Badge>
             )}
           </div>
         )}
       </button>
 
-      {/* Panneau des notifications */}
       {isOpen && (
         <>
-          {/* Overlay clic pour fermer */}
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setIsOpen(false)}
-          />
+          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} aria-hidden="true" />
 
-          <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 rounded-2xl border border-border bg-surface shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            {/* Header */}
+          <div className="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-2xl border border-border bg-surface shadow-2xl sm:w-96">
             <div className="flex items-center justify-between border-b border-border bg-surface-muted/60 px-4 py-3">
               <div className="flex items-center gap-2">
-                <Bell className="size-4 text-primary-900" />
-                <span className="text-sm font-bold text-text">Notifications d&apos;atelier</span>
-                {unreadCount > 0 && (
+                <Bell className="size-4 text-primary-900" aria-hidden="true" />
+                <span className="text-sm font-bold text-text">À traiter</span>
+                {count > 0 && (
                   <Badge tone="danger" className="text-[10px]">
-                    {unreadCount} nouvelles
+                    {count}
                   </Badge>
                 )}
               </div>
 
-              <div className="flex items-center gap-2">
-                {unreadCount > 0 && (
-                  <button
-                    type="button"
-                    onClick={markAllAsRead}
-                    className="text-[11px] font-semibold text-primary-800 hover:underline cursor-pointer"
-                  >
-                    Tout lire
-                  </button>
-                )}
-                <button
-                  type="button"
-                  onClick={() => setIsOpen(false)}
-                  className="rounded p-1 text-text-muted hover:bg-surface-muted cursor-pointer"
-                >
-                  <X className="size-4" />
-                </button>
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                aria-label="Fermer les notifications"
+                className="cursor-pointer rounded p-1 text-text-muted hover:bg-surface-muted"
+              >
+                <X className="size-4" aria-hidden="true" />
+              </button>
+            </div>
+
+            {count === 0 ? (
+              <div className="px-4 py-8 text-center">
+                <p className="text-sm font-medium text-text">Rien à signaler.</p>
+                <p className="mt-1 text-xs text-text-muted">
+                  Aucune livraison proche ni acompte en retard.
+                </p>
               </div>
-            </div>
-
-            {/* Liste */}
-            <div className="divide-y divide-border max-h-80 overflow-y-auto">
-              {notifications.map((n) => (
-                <Link
-                  key={n.id}
-                  href={n.href}
-                  onClick={() => setIsOpen(false)}
-                  className={`flex items-start gap-3 p-3.5 transition-colors hover:bg-canvas ${
-                    !n.read ? "bg-primary-50/30" : ""
-                  }`}
-                >
-                  <div className="mt-0.5 shrink-0">
-                    {n.type === "urgent" ? (
-                      <div className="flex size-7 items-center justify-center rounded-lg bg-danger-bg text-danger">
-                        <AlertTriangle className="size-3.5" />
-                      </div>
-                    ) : n.type === "warning" ? (
-                      <div className="flex size-7 items-center justify-center rounded-lg bg-warning-bg text-warning">
-                        <Clock className="size-3.5" />
-                      </div>
-                    ) : (
-                      <div className="flex size-7 items-center justify-center rounded-lg bg-[#E7F7EE] text-[#128C7E]">
-                        <MessageSquare className="size-3.5" />
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex-1 min-w-0 space-y-0.5">
-                    <div className="flex items-center justify-between gap-1">
-                      <p className="text-xs font-bold text-text truncate">{n.title}</p>
-                      <span className="text-[10px] text-text-subtle">{n.time}</span>
+            ) : (
+              <div className="max-h-80 divide-y divide-border overflow-y-auto">
+                {notifications.map((notification) => (
+                  <Link
+                    key={notification.id}
+                    href={notification.href}
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-start gap-3 p-3.5 transition-colors hover:bg-canvas"
+                  >
+                    <div className="mt-0.5 shrink-0">
+                      <NotificationIcon notification={notification} />
                     </div>
-                    <p className="text-xs text-text-muted leading-tight line-clamp-2">{n.desc}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
 
-            {/* Footer */}
+                    <div className="min-w-0 flex-1 space-y-0.5">
+                      <div className="flex items-center justify-between gap-1">
+                        <p className="truncate text-xs font-bold text-text">{notification.title}</p>
+                        <span className="shrink-0 text-[10px] text-text-subtle">
+                          {notification.timing}
+                        </span>
+                      </div>
+                      <p className="line-clamp-2 text-xs leading-tight text-text-muted">
+                        {notification.description}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+
             <div className="border-t border-border bg-surface-muted/40 p-2.5 text-center">
               <Link
                 href="/tableau-de-bord"

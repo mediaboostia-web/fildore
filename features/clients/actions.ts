@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireCurrentUser } from "@/lib/auth/session";
 import { clientFormSchema } from "./schemas";
 import { createClient, updateClient, archiveClient, findClientByPhone } from "@/lib/mock-data/clients";
+import type { Client } from "./types";
 
 export interface ActionResult<T> {
   success: boolean;
@@ -18,7 +19,9 @@ export interface ActionResult<T> {
  * en V1 (cahier des charges §7.2) — pour l'instant, tout utilisateur
  * authentifié de l'atelier peut gérer les clients.
  */
-export async function createClientAction(formData: FormData): Promise<ActionResult<{ id: string }>> {
+export async function createClientAction(
+  formData: FormData
+): Promise<ActionResult<{ id: string; client: Client }>> {
   const user = await requireCurrentUser();
 
   const parsed = clientFormSchema.safeParse({
@@ -45,7 +48,9 @@ export async function createClientAction(formData: FormData): Promise<ActionResu
 
   const client = await createClient({ workshopId: user.workshopId, ...parsed.data });
   revalidatePath("/clients");
-  return { success: true, data: { id: client.id } };
+  // On renvoie le client complet : l'appelant (wizard de commande) l'affiche
+  // immédiatement au lieu d'en reconstruire une copie approximative côté client.
+  return { success: true, data: { id: client.id, client } };
 }
 
 export async function updateClientAction(

@@ -16,23 +16,24 @@ import { LinkButton } from "@/components/ui/link-button";
 import { Badge } from "@/components/ui/badge";
 import { useOrderWizardStore } from "@/features/orders/store";
 import { createOrderAction } from "@/features/orders/actions";
-import { getClientById } from "@/lib/mock-data/clients";
-import { getProfileById } from "@/lib/mock-data/measurement-profiles";
+import {
+  getWizardSummaryAction,
+  type WizardClient,
+  type WizardMeasurementProfile,
+} from "@/features/orders/wizard-actions";
 import { formatAmount } from "@/lib/money/format";
 import { formatDateFr } from "@/lib/utils/dates";
 import { formatPhoneDisplay } from "@/lib/utils/phone";
 import { clientDisplayName } from "@/features/clients/types";
 import { GARMENT_TYPE_LABELS } from "@/features/measurements/constants";
-import type { Client } from "@/features/clients/types";
-import type { MeasurementProfile } from "@/features/measurements/types";
 
 export default function OrderWizardVerificationStep() {
   const router = useRouter();
   const draft = useOrderWizardStore((state) => state.draft);
   const reset = useOrderWizardStore((state) => state.reset);
 
-  const [client, setClient] = useState<Client | null>(null);
-  const [profile, setProfile] = useState<MeasurementProfile | null>(null);
+  const [client, setClient] = useState<WizardClient | null>(null);
+  const [profile, setProfile] = useState<WizardMeasurementProfile | null>(null);
   const [loading, setLoading] = useState(() => Boolean(draft.clientId));
   const [isPending, startTransition] = useTransition();
   const [errorMsg, setErrorMsg] = useState("");
@@ -40,12 +41,12 @@ export default function OrderWizardVerificationStep() {
   useEffect(() => {
     if (!draft.clientId) return;
 
-    Promise.all([
-      getClientById(draft.clientId),
-      draft.measurementProfileId ? getProfileById(draft.measurementProfileId) : Promise.resolve(undefined),
-    ]).then(([clientData, profileData]) => {
-      if (clientData) setClient(clientData);
-      if (profileData) setProfile(profileData);
+    getWizardSummaryAction({
+      clientId: draft.clientId,
+      measurementProfileId: draft.measurementProfileId,
+    }).then(({ client: clientData, profile: profileData }) => {
+      setClient(clientData);
+      setProfile(profileData);
       setLoading(false);
     });
   }, [draft.clientId, draft.measurementProfileId]);
@@ -58,13 +59,22 @@ export default function OrderWizardVerificationStep() {
       return;
     }
 
+    // Un montant absent est une erreur à corriger à l'étape Prix, jamais un prix
+    // par défaut inventé : facturer un montant que le couturier n'a pas saisi est
+    // le pire bug possible dans un outil qui encaisse (PROJECT_RULES.md §6).
+    const totalAmount = Number(draft.totalAmount);
+    if (!Number.isInteger(totalAmount) || totalAmount <= 0) {
+      setErrorMsg("Indiquez le montant total de la commande à l'étape Prix avant de confirmer.");
+      return;
+    }
+
     const resolvedGarmentType = draft.garmentType || "robe";
     const resolvedItems = (draft.items && draft.items.length > 0 ? draft.items : [
       {
         label: draft.title!,
         garmentType: resolvedGarmentType,
         quantity: 1,
-        unitPrice: draft.totalAmount || 25000,
+        unitPrice: totalAmount,
       }
     ]).map((it) => ({
       label: it.label || draft.title!,
@@ -81,7 +91,8 @@ export default function OrderWizardVerificationStep() {
         description: draft.description || undefined,
         items: resolvedItems,
         measurementProfileId: draft.measurementProfileId!,
-        totalAmount: Number(draft.totalAmount) || 25000,
+        catalogItemId: draft.catalogItemId || undefined,
+        totalAmount,
         discountAmount: Number(draft.discountAmount) || 0,
         eventDate: draft.eventDate ? draft.eventDate : undefined,
         deliveryDate: draft.deliveryDate!,
