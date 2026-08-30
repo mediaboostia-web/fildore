@@ -56,7 +56,7 @@ export function LandingFAQSection() {
               {/* Photo 1 (En haut à gauche) */}
               <div className="absolute top-0 left-0 w-[58%] h-[52%] rounded-3xl overflow-hidden border-2 border-white shadow-xl bg-primary-950">
                 <Image
-                  src="/Images pro.jpg"
+                  src="/images/tailor-workshop.jpg"
                   alt="Équipe d'atelier de couture"
                   fill
                   className="object-cover object-top"
@@ -67,8 +67,8 @@ export function LandingFAQSection() {
               {/* Photo 2 (En haut à droite) */}
               <div className="absolute top-4 right-0 w-[50%] h-[48%] rounded-3xl overflow-hidden border-2 border-white shadow-xl bg-primary-950">
                 <Image
-                  src="/Je suis votre modéliste.jpg"
-                  alt="Styliste et créateur souriant"
+                  src="/images/tailor-fabrics.jpg"
+                  alt="Tissus et créations en atelier"
                   fill
                   className="object-cover object-top"
                   sizes="(max-width: 1024px) 50vw, 25vw"
@@ -78,8 +78,8 @@ export function LandingFAQSection() {
               {/* Photo 3 (Au centre / en bas - mise en avant) */}
               <div className="absolute bottom-0 left-6 right-6 h-[54%] rounded-3xl overflow-hidden border-4 border-white shadow-2xl bg-primary-950 z-10">
                 <Image
-                  src="/Une Couturière Africaine Coud Avec Diligence Des Vêtements à Laide De Machines Dans Son Bureau De Tailleur Photo Et Image en Téléchargement Gratuit - Pngtree.jpg"
-                  alt="Couturière en plein travail de confection"
+                  src="/images/tailor-craft.jpg"
+                  alt="Travail minutieux de confection sur-mesure"
                   fill
                   className="object-cover object-top"
                   sizes="(max-width: 1024px) 80vw, 30vw"

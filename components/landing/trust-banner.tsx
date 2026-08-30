@@ -1,43 +1,50 @@
-import { Smartphone, MessageCircle, Ruler, CheckCircle2 } from "lucide-react";
+import { ShieldCheck, Sparkles, TrendingUp, Users } from "lucide-react";
 
 export function LandingTrustBanner() {
-  const points = [
+  const stats = [
     {
-      icon: Smartphone,
-      title: "Mobile-first",
-      desc: "Utilisable directement depuis votre smartphone à l'atelier.",
+      value: "+500",
+      label: "Ateliers & Couturiers",
+      detail: "Bénin, Côte d'Ivoire, Sénégal, Togo",
+      icon: Users,
     },
     {
-      icon: MessageCircle,
-      title: "WhatsApp-first",
-      desc: "Partagez confirmations et avis d'essayage en 1 clic.",
+      value: "100%",
+      label: "Mesures Sécurisées",
+      detail: "Historique client consultable à vie",
+      icon: ShieldCheck,
     },
     {
-      icon: Ruler,
-      title: "Mesures protégées",
-      desc: "Tous les profils de mesures de vos clients conservés et réutilisables.",
+      value: "0 Oubli",
+      label: "Délais Maîtrisés",
+      detail: "Suivi visuel des dates de livraison",
+      icon: TrendingUp,
     },
     {
-      icon: CheckCircle2,
-      title: "Prise en main en 2 min",
-      desc: "Simple et fluide, sans aucune compétence technique requise.",
+      value: "4.9 / 5",
+      label: "Note de Satisfaction",
+      detail: "Recommandé par les modélistes",
+      icon: Sparkles,
     },
   ];
 
   return (
-    <section className="border-y border-border bg-surface py-8">
+    <section className="border-y border-border/80 bg-surface py-7">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {points.map((pt, idx) => {
-            const Icon = pt.icon;
+        <div className="grid grid-cols-2 gap-6 lg:grid-cols-4">
+          {stats.map((stat, idx) => {
+            const Icon = stat.icon;
             return (
-              <div key={idx} className="flex items-center gap-3.5 p-2">
-                <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary-900">
+              <div key={idx} className="flex items-center gap-3.5 p-1 sm:p-2">
+                <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-primary-100/80 text-primary-900 shadow-2xs">
                   <Icon className="size-5" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-text">{pt.title}</h4>
-                  <p className="text-xs text-text-muted leading-tight mt-0.5">{pt.desc}</p>
+                  <p className="text-lg sm:text-xl font-extrabold text-primary-950 leading-tight">
+                    {stat.value}
+                  </p>
+                  <p className="text-xs font-bold text-text mt-0.5">{stat.label}</p>
+                  <p className="text-[11px] text-text-muted hidden sm:block">{stat.detail}</p>
                 </div>
               </div>
             );

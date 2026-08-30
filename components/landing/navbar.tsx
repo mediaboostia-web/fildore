@@ -10,10 +10,9 @@ export function LandingNavbar({ isLoggedIn = false }: { isLoggedIn?: boolean }) 
 
   const navLinks = [
     { href: "#fonctionnalites", label: "Fonctionnalités" },
-    { href: "#comment-ca-marche", label: "Comment ça marche" },
-    { href: "#whatsapp", label: "Communication WhatsApp" },
-    { href: "#tarifs", label: "Tarifs" },
+    { href: "#temoignages", label: "Témoignages" },
     { href: "#faq", label: "FAQ" },
+    { href: "#tarifs", label: "Tarifs" },
   ];
 
   return (

@@ -3,14 +3,8 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { LandingNavbar } from "@/components/landing/navbar";
 import { LandingHero } from "@/components/landing/hero";
 import { LandingTrustBanner } from "@/components/landing/trust-banner";
-import { LandingProblemsSection } from "@/components/landing/problems-section";
-import { LandingHowItWorks } from "@/components/landing/how-it-works";
 import { LandingFeaturesSection } from "@/components/landing/features-section";
-import { LandingDashboardBenefits } from "@/components/landing/dashboard-benefits";
-import { LandingTargetAudiences } from "@/components/landing/target-audiences";
-import { LandingWhatsAppSection } from "@/components/landing/whatsapp-section";
-import { LandingPilotProgram } from "@/components/landing/pilot-program";
-import { LandingPricingSection } from "@/components/landing/pricing-section";
+import { LandingTestimonialsSection } from "@/components/landing/testimonials-section";
 import { LandingFAQSection } from "@/components/landing/faq-section";
 import { LandingFinalCTA } from "@/components/landing/final-cta";
 import { LandingFooter } from "@/components/landing/footer";
@@ -26,49 +20,31 @@ export default async function HomePage() {
   const isLoggedIn = Boolean(user);
 
   return (
-    <div className="min-h-screen bg-background text-text flex flex-col selection:bg-primary-900 selection:text-white">
-      {/* 1. Barre de navigation */}
+    <div className="min-h-screen bg-canvas text-text flex flex-col selection:bg-primary-900 selection:text-white">
+      {/* Section 1 : Barre de navigation */}
       <LandingNavbar isLoggedIn={isLoggedIn} />
 
       <main className="flex-1">
-        {/* 2. Hero avec titre compris en 3s & aperçu produit plat et réaliste */}
+        {/* Section 2 : Hero avec animation orbitale, badges flottants et aperçu d'application */}
         <LandingHero />
 
-        {/* 3. Bande de réassurance */}
+        {/* Section 3 : Bandeau de réassurance & chiffres d'impact */}
         <LandingTrustBanner />
 
-        {/* 4. Problèmes résolus */}
-        <LandingProblemsSection />
-
-        {/* 5. Comment Fildor fonctionne */}
-        <LandingHowItWorks />
-
-        {/* 6. Fonctionnalités principales */}
+        {/* Section 4 : Fonctionnalités clés (Grille de cartes épurées avec bordures d'accent) */}
         <LandingFeaturesSection />
 
-        {/* 7. Vue dashboard & bénéfices */}
-        <LandingDashboardBenefits />
+        {/* Section 5 : Témoignages réels de couturiers et modélistes vérifiés */}
+        <LandingTestimonialsSection />
 
-        {/* 8. Pour qui est Fildor ? */}
-        <LandingTargetAudiences />
-
-        {/* 9. Scénarios WhatsApp interactifs */}
-        <LandingWhatsAppSection />
-
-        {/* 10. Engagement Ateliers Pilotes */}
-        <LandingPilotProgram />
-
-        {/* 11. Tarifs transparents */}
-        <LandingPricingSection />
-
-        {/* 12. FAQ */}
+        {/* Section 6 : Questions fréquemment posées (FAQ avec montage photo) */}
         <LandingFAQSection />
 
-        {/* 13. CTA final */}
+        {/* Section 7 : Appel à l'action final & Communauté */}
         <LandingFinalCTA />
       </main>
 
-      {/* 14. Footer */}
+      {/* Footer */}
       <LandingFooter />
     </div>
   );

@@ -76,7 +76,7 @@ export function LandingFinalCTA() {
             <div className="lg:col-span-5 relative">
               <div className="relative h-[340px] sm:h-[400px] w-full rounded-2xl overflow-hidden border border-border bg-primary-950 shadow-2xl">
                 <Image
-                  src="/Images pro.jpg"
+                  src="/images/tailor-designer.jpg"
                   alt="Équipe d'atelier et communauté Fildor"
                   fill
                   className="object-cover object-top transition-transform duration-700 hover:scale-105"
