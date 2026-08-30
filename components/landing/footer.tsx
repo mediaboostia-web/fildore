@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export function LandingFooter() {
   return (
@@ -8,9 +9,13 @@ export function LandingFooter() {
           {/* Marque & Slogan */}
           <div className="col-span-2 lg:col-span-2 space-y-4">
             <Link href="/" className="flex items-center gap-2.5">
-              <span className="flex size-9 items-center justify-center rounded-xl bg-primary-900 text-white font-black text-sm">
-                F
-              </span>
+              <Image
+                src="/Logo fildor.png"
+                alt="Logo Fildor"
+                width={36}
+                height={36}
+                className="size-9 rounded-xl object-contain shadow-xs"
+              />
               <span className="text-xl font-bold tracking-tight text-primary-950">Fildor</span>
             </Link>
 

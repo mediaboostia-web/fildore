@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { User, Users, Building2, Palette, Layers, ArrowRight } from "lucide-react";
 
 export function LandingTargetAudiences() {
@@ -7,26 +8,31 @@ export function LandingTargetAudiences() {
       icon: User,
       title: "Couturier ou couturière solo",
       text: "Gardez vos commandes, mesures et acomptes bien rangés sur votre smartphone sans risquer de perdre vos cahiers.",
+      image: "/Une Couturière Africaine Coud Avec Diligence Des Vêtements à Laide De Machines Dans Son Bureau De Tailleur Photo Et Image en Téléchargement Gratuit - Pngtree.jpg",
     },
     {
       icon: Users,
       title: "Petit atelier (2 à 5 personnes)",
       text: "Répartissez la coupe et la couture, suivez les dates d'essayage et éliminez les retards de livraison.",
+      image: "/Images pro.jpg",
     },
     {
       icon: Building2,
       title: "Maison de couture (5 à 20 personnes)",
       text: "Gérez les commandes sur mesure complexes, générez des factures professionnelles et coordonnez votre équipe.",
+      image: "/Construction of $11_07-mn garment factory begins in northern Ghana.jpg",
     },
     {
       icon: Palette,
       title: "Styliste ou créateur de mode",
       text: "Valorisez vos créations en un catalogue soigné et partagez vos modèles directement avec vos clients.",
+      image: "/Je suis votre modéliste.jpg",
     },
     {
       icon: Layers,
       title: "Commandes de groupe & uniformes",
       text: "Centralisez les mensurations multiples, les livraisons en série pour écoles ou entreprises et les factures globales.",
+      image: "/La couture et la mode inclusive.jpg",
     },
   ];
 
@@ -50,13 +56,26 @@ export function LandingTargetAudiences() {
             return (
               <div
                 key={idx}
-                className="flex flex-col justify-between rounded-2xl border border-border bg-canvas/40 p-6 transition-all hover:border-primary-800 hover:bg-surface hover:shadow-md"
+                className="group flex flex-col justify-between rounded-2xl border border-border bg-canvas/40 overflow-hidden transition-all hover:border-primary-800 hover:bg-surface hover:shadow-lg"
               >
-                <div className="space-y-3">
-                  <div className="flex size-11 items-center justify-center rounded-xl bg-primary-900 text-white">
-                    <Icon className="size-5" />
+                <div className="relative h-36 w-full overflow-hidden bg-primary-950">
+                  <Image
+                    src={aud.image}
+                    alt={aud.title}
+                    fill
+                    className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                  <div className="absolute bottom-3 left-3 flex items-center gap-2 text-white">
+                    <div className="flex size-8 items-center justify-center rounded-lg bg-surface/90 text-primary-950 shadow-xs">
+                      <Icon className="size-4" />
+                    </div>
+                    <span className="text-xs font-bold">{aud.title}</span>
                   </div>
-                  <h3 className="text-base font-bold text-text">{aud.title}</h3>
+                </div>
+
+                <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
                   <p className="text-xs sm:text-sm text-text-muted leading-relaxed">
                     {aud.text}
                   </p>
@@ -80,7 +99,7 @@ export function LandingTargetAudiences() {
             <div className="pt-4">
               <Link
                 href="/inscription"
-                className="inline-flex items-center gap-1.5 rounded-lg bg-white px-4 py-2.5 text-xs font-bold text-primary-950 shadow-sm hover:bg-surface-muted transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-white px-4 py-2.5 text-xs font-bold text-primary-950 shadow-sm hover:bg-surface-muted transition-colors cursor-pointer"
               >
                 <span>Fildor est fait pour mon atelier</span>
                 <ArrowRight className="size-3.5" />
