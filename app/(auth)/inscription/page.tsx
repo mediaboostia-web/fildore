@@ -1,52 +1,119 @@
 import Link from "next/link";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { AuthGoogleButton } from "@/components/auth/auth-google-button";
+import { PasswordInput } from "@/components/auth/password-input";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { signupAction } from "@/features/auth/actions";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
 
 export default function InscriptionPage() {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Créer votre atelier</CardTitle>
-        <CardDescription>
-          Inscrivez votre atelier de couture sur Fildor et commencez à gérer vos commandes et clients.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form action="/onboarding" className="space-y-4">
-          <div>
-            <label className="mb-1 block text-xs font-medium text-text">Votre nom complet *</label>
-            <Input placeholder="Ex. Amina Sossou" required />
-          </div>
+    <div className="space-y-6">
+      {/* Titre & Sous-titre */}
+      <div className="space-y-2">
+        <div className="inline-flex items-center gap-1.5 rounded-full bg-accent-50 px-3 py-1 text-xs font-bold text-accent-600 border border-accent-100">
+          <span>Création instantanée</span>
+        </div>
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-primary-950">
+          Créer votre atelier Fildor
+        </h1>
+        <p className="text-sm text-text-muted">
+          Prenez le contrôle de vos commandes, mesures et paiements en 2 minutes.
+        </p>
+      </div>
 
-          <div>
-            <label className="mb-1 block text-xs font-medium text-text">Nom de l&apos;atelier *</label>
-            <Input placeholder="Ex. Atelier Élégance Mode" required />
-          </div>
+      {/* Moyen rapide : Inscription 1-clic avec Google */}
+      <div className="space-y-3">
+        <AuthGoogleButton label="S'inscrire avec Google en 1 clic" />
 
-          <div>
-            <label className="mb-1 block text-xs font-medium text-text">Email professionnel *</label>
-            <Input type="email" placeholder="amina@elegance.bj" required />
-          </div>
+        <div className="relative flex items-center justify-center py-2">
+          <div className="w-full border-t border-border" />
+          <span className="absolute bg-surface px-3 text-xs font-semibold uppercase tracking-wider text-text-subtle">
+            ou inscription par formulaire
+          </span>
+        </div>
+      </div>
 
-          <div>
-            <label className="mb-1 block text-xs font-medium text-text">Mot de passe *</label>
-            <Input type="password" placeholder="••••••••" required />
-          </div>
+      {/* Formulaire standard */}
+      <form action={signupAction} className="space-y-4">
+        <div className="space-y-1.5">
+          <label className="block text-xs font-semibold text-text">
+            Votre nom complet *
+          </label>
+          <input
+            type="text"
+            name="fullName"
+            placeholder="Ex. Amina Sossou"
+            required
+            className="w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-text placeholder:text-text-subtle focus:border-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-800/20 transition-all"
+          />
+        </div>
 
-          <Button type="submit" fullWidth>
-            Créer mon compte atelier
-          </Button>
-        </form>
-      </CardContent>
-      <CardFooter className="justify-center border-t border-border pt-4">
+        <div className="space-y-1.5">
+          <label className="block text-xs font-semibold text-text">
+            Nom de l&apos;atelier de couture *
+          </label>
+          <input
+            type="text"
+            name="workshopName"
+            placeholder="Ex. Atelier Élégance Mode"
+            required
+            className="w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-text placeholder:text-text-subtle focus:border-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-800/20 transition-all"
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="block text-xs font-semibold text-text">
+            Email professionnel *
+          </label>
+          <input
+            type="email"
+            name="email"
+            placeholder="amina@elegance.bj"
+            required
+            className="w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-text placeholder:text-text-subtle focus:border-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-800/20 transition-all"
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="block text-xs font-semibold text-text">
+            Créer un mot de passe *
+          </label>
+          <PasswordInput
+            name="password"
+            placeholder="Au moins 8 caractères"
+            required
+          />
+        </div>
+
+        <div className="space-y-2 pt-1 text-xs text-text-muted">
+          <div className="flex items-start gap-2">
+            <CheckCircle2 className="size-4 text-success shrink-0 mt-0.5" />
+            <span>Aucune carte bancaire requise · Prêt pour smartphone</span>
+          </div>
+          <div className="flex items-start gap-2">
+            <CheckCircle2 className="size-4 text-success shrink-0 mt-0.5" />
+            <span>Vos mesures et données protégées à vie</span>
+          </div>
+        </div>
+
+        <Button type="submit" fullWidth size="lg" className="mt-2">
+          <span>Créer mon espace atelier</span>
+          <ArrowRight className="size-4" />
+        </Button>
+      </form>
+
+      {/* Lien vers Connexion */}
+      <div className="text-center pt-2">
         <p className="text-xs text-text-muted">
           Vous avez déjà un compte ?{" "}
-          <Link href="/connexion" className="font-semibold text-primary-900 hover:underline">
+          <Link
+            href="/connexion"
+            className="font-bold text-primary-800 hover:text-primary-950 underline underline-offset-4"
+          >
             Se connecter
           </Link>
         </p>
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   );
 }
