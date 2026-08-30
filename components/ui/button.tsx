@@ -34,9 +34,9 @@ export const VARIANT_CLASSES: Record<ButtonVariant, string> = {
 };
 
 export const SIZE_CLASSES: Record<ButtonSize, string> = {
-  sm: "h-9 px-3.5 text-xs font-semibold gap-1.5 [&_svg]:size-3.5",
-  md: "h-10 px-4 text-sm font-semibold gap-2 [&_svg]:size-4",
-  lg: "h-12 px-6 text-base font-semibold gap-2.5 [&_svg]:size-5",
+  sm: "h-10 px-4 text-xs font-semibold gap-2 [&_svg]:size-4",
+  md: "h-11 px-5 text-sm font-semibold gap-2.5 [&_svg]:size-4",
+  lg: "h-12 px-6 text-base font-semibold gap-3 [&_svg]:size-5",
 };
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {

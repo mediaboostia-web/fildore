@@ -1,0 +1,51 @@
+{
+  "color": {
+    "primary-950": "#102B28",
+    "primary-900": "#173B36",
+    "primary-800": "#215149",
+    "primary-700": "#2C675C",
+    "primary-600": "#3A7B6C",
+    "primary-100": "#DCECE6",
+    "primary-50": "#F1F8F5",
+    "accent-700": "#A64B2A",
+    "accent-600": "#C45A32",
+    "accent-500": "#D97945",
+    "accent-100": "#F8E1D5",
+    "accent-50": "#FFF5F0",
+    "background": "#FAFAF7",
+    "surface": "#FFFFFF",
+    "surface-muted": "#F4F6F4",
+    "border": "#D9E0DD",
+    "border-strong": "#B8C4BF",
+    "text": "#1B2422",
+    "text-muted": "#64716D",
+    "text-subtle": "#88938F",
+    "success": "#237A52",
+    "success-bg": "#E6F4EC",
+    "warning": "#A86412",
+    "warning-bg": "#FFF3D6",
+    "danger": "#B33A3A",
+    "danger-bg": "#FCE8E8",
+    "info": "#2F6687",
+    "info-bg": "#E8F2F8",
+    "whatsapp": "#25D366"
+  },
+  "radius": {
+    "sm": "6px",
+    "md": "10px",
+    "lg": "14px",
+    "xl": "18px"
+  },
+  "spacing": [
+    "4px",
+    "8px",
+    "12px",
+    "16px",
+    "20px",
+    "24px",
+    "32px",
+    "40px",
+    "48px",
+    "64px"
+  ]
+}
