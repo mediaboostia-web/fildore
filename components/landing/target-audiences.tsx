@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { User, Users, Building2, Palette, CheckCircle2, ArrowRight, Sparkles, Shield, Clock } from "lucide-react";
+import { User, Users, Palette, CheckCircle2, ArrowRight, MessageCircle, ClipboardList, Receipt, Shield, Clock } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
 const AUDIENCES = [
@@ -30,7 +30,7 @@ const AUDIENCES = [
         text: "Visualisez les tenues à livrer cette semaine et prévenez vos clients à temps.",
       },
       {
-        icon: Sparkles,
+        icon: MessageCircle,
         iconTone: "text-accent-600",
         title: "Reçus WhatsApp en 1 clic",
         text: "Partagez un récapitulatif clair de commande et le solde restant sans calculatrice.",
@@ -61,7 +61,7 @@ const AUDIENCES = [
         text: "Tracez chaque versement pour financer les tissus et fournitures en toute transparence.",
       },
       {
-        icon: Sparkles,
+        icon: ClipboardList,
         iconTone: "text-accent-600",
         title: "Fiches de travail claires",
         text: "Chaque commande a sa fiche imprimable ou consultable sans risque d'erreur.",
@@ -86,7 +86,7 @@ const AUDIENCES = [
         text: "Ajoutez photos, prix de confection et métrages de tissus recommandés.",
       },
       {
-        icon: Sparkles,
+        icon: Receipt,
         iconTone: "text-accent-600",
         title: "Factures & Devis de standing",
         text: "Générez des factures professionnelles à l'image de votre marque.",

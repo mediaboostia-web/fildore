@@ -14,6 +14,7 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
+  Plus,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { logoutAction } from "@/features/auth/actions";
@@ -33,7 +34,7 @@ function isActive(pathname: string, href: string): boolean {
   return href === "/" ? pathname === "/" : pathname.startsWith(href);
 }
 
-/** Navigation principale desktop rétractable avec déconnexion uniquement en bas. */
+/** Navigation principale desktop rétractable avec action commande & déconnexion en bas. */
 export function SidebarDesktop() {
   const pathname = usePathname();
   const { isCollapsed, toggleCollapsed } = useSidebar();
@@ -111,8 +112,20 @@ export function SidebarDesktop() {
         </div>
       </div>
 
-      {/* Seul bouton en bas : Déconnexion */}
-      <div className="border-t border-border pt-3">
+      {/* Actions en bas de la sidebar : Nouvelle commande + Déconnexion */}
+      <div className="border-t border-border pt-3 space-y-2">
+        <Link
+          href="/commandes/nouveau/client"
+          title="Nouvelle commande"
+          className={cn(
+            "flex items-center gap-2 rounded-xl bg-primary-900 px-3 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary-800 active:scale-[0.98] transition-all",
+            isCollapsed ? "justify-center px-0 size-11 mx-auto" : "w-full justify-center"
+          )}
+        >
+          <Plus className="size-4.5 shrink-0 text-white" aria-hidden="true" />
+          {!isCollapsed && <span className="truncate">Nouvelle commande</span>}
+        </Link>
+
         <form action={logoutAction} className="w-full">
           <button
             type="submit"
@@ -122,7 +135,7 @@ export function SidebarDesktop() {
               isCollapsed ? "justify-center px-0" : ""
             )}
           >
-            <LogOut className="size-5 shrink-0" aria-hidden="true" />
+            <LogOut className="size-4.5 shrink-0" aria-hidden="true" />
             {!isCollapsed && <span className="truncate">Se déconnecter</span>}
           </button>
         </form>

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, MessageCircle, Sparkles, Check } from "lucide-react";
+import { ArrowRight, MessageCircle } from "lucide-react";
 
 export function LandingFinalCTA() {
   return (

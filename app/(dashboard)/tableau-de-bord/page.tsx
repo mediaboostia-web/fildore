@@ -77,16 +77,6 @@ export default async function TableauDeBordPage() {
       <PageHeader
         title="Tableau de bord"
         description={`Bienvenue, ${user.fullName.split(" ")[0]}. Voici l'activité de l'atelier aujourd'hui.`}
-        action={
-          <LinkButton
-            href="/commandes/nouveau/client"
-            size="md"
-            icon={<Plus className="size-4.5" />}
-            className="bg-primary-900 text-white font-semibold shadow-sm hover:bg-primary-800"
-          >
-            Nouvelle commande
-          </LinkButton>
-        }
       />
 
       {/* Cartes KPI Principales */}

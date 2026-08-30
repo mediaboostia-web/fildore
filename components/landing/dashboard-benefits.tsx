@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LayoutDashboard, CheckCircle, ArrowRight, Clock, AlertTriangle, Ruler, Scissors } from "lucide-react";
+import { LayoutDashboard, CheckCircle, ArrowRight } from "lucide-react";
 
 export function LandingDashboardBenefits() {
   const kpis = [
