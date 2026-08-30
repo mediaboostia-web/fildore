@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { getCurrentUser } from "@/lib/auth/session";
 import { LandingNavbar } from "@/components/landing/navbar";
 import { LandingHero } from "@/components/landing/hero";
+import { LandingPainPointsSection } from "@/components/landing/pain-points-section";
+import { LandingWhyFildorSection } from "@/components/landing/why-fildor-section";
 import { LandingHowItWorks } from "@/components/landing/how-it-works";
 import { LandingFeaturesSection } from "@/components/landing/features-section";
 import { LandingTestimonialsSection } from "@/components/landing/testimonials-section";
@@ -22,29 +24,35 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-canvas text-text flex flex-col selection:bg-primary-900 selection:text-white">
-      {/* 1. Barre de navigation */}
+      {/* 1. Barre de navigation intelligente */}
       <LandingNavbar isLoggedIn={isLoggedIn} />
 
       <main className="flex-1">
-        {/* 2. Hero Section sobre, percutante et sans dégradés fluo */}
+        {/* 2. Hero Section lumineuse, titre 3s et description < 50 chars */}
         <LandingHero />
 
-        {/* 3. Comment ça marche avec numéros en filigrane (01, 02, 03) */}
+        {/* 3. Section Douleurs Réelles (Pertes d'argent, temps, confiance) */}
+        <LandingPainPointsSection />
+
+        {/* 4. Section Pourquoi Fildor (Situations concrètes d'atelier & solutions) */}
+        <LandingWhyFildorSection />
+
+        {/* 5. Comment ça marche (Étapes simples en cascade & chiffres clés) */}
         <LandingHowItWorks />
 
-        {/* 4. Fonctionnalités clés (Cartes épurées avec bordures d'accent) */}
+        {/* 6. Fonctionnalités clés (Cartes atelier avec bordures d'accent) */}
         <LandingFeaturesSection />
 
-        {/* 5. Témoignages réels de couturiers et modélistes vérifiés */}
+        {/* 7. Témoignages réels de couturiers et modélistes vérifiés */}
         <LandingTestimonialsSection />
 
-        {/* 6. Tarifs transparents en Franc CFA */}
+        {/* 8. Tarifs transparents en Franc CFA */}
         <LandingPricingSection />
 
-        {/* 7. Questions fréquentes (FAQ) */}
+        {/* 9. Questions fréquentes (FAQ) */}
         <LandingFAQSection />
 
-        {/* 8. Chiffres d'impact, Communauté WhatsApp & Appel à l'action final */}
+        {/* 10. Communauté WhatsApp à fort impact & Appel à l'action */}
         <LandingFinalCTA />
       </main>
 
