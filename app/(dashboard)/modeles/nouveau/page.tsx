@@ -7,7 +7,13 @@ export default function NouveauModelePage() {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div className="flex items-center gap-2">
-        <LinkButton href="/modeles" variant="tertiary" size="sm" icon={<ArrowLeft className="size-4" />}>
+        <LinkButton
+          href="/modeles"
+          variant="secondary"
+          size="sm"
+          icon={<ArrowLeft className="size-4" />}
+          className="border border-border font-bold bg-surface shadow-xs hover:bg-surface-muted"
+        >
           Tous les modèles
         </LinkButton>
       </div>

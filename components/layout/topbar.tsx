@@ -13,9 +13,9 @@ export interface TopbarProps {
 export function Topbar({ user, notifications }: TopbarProps) {
   return (
     <header className="flex h-14 shrink-0 items-center justify-between md:justify-end border-b border-border bg-surface px-4 md:px-6">
-      {/* Logo Fildor visible sur mobile */}
+      {/* Logo officiel Fildor mis en avant sur mobile */}
       <Link href="/tableau-de-bord" className="flex items-center gap-2 md:hidden">
-        <FildorLogo variant="lockup" height={26} />
+        <FildorLogo variant="lockup" height={30} priority className="transition-transform active:scale-95" />
       </Link>
 
       <div className="flex items-center gap-3 ml-auto md:ml-0">

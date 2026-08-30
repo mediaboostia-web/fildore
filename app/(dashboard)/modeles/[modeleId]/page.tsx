@@ -20,8 +20,14 @@ export default async function ModeleDetailPage({
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div className="flex items-center gap-2">
-        <LinkButton href="/modeles" variant="tertiary" size="sm" icon={<ArrowLeft className="size-4" />}>
-          Retour au catalogue
+        <LinkButton
+          href="/modeles"
+          variant="secondary"
+          size="sm"
+          icon={<ArrowLeft className="size-4" />}
+          className="border border-border font-bold bg-surface shadow-xs hover:bg-surface-muted"
+        >
+          Retour aux modèles
         </LinkButton>
       </div>
 

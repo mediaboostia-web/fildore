@@ -1,6 +1,5 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, CheckCircle2, Building2 } from "lucide-react";
 import { redirect } from "next/navigation";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -30,70 +29,80 @@ export default async function OnboardingPage({
   const { erreur } = await searchParams;
   const errorMessage = erreur ? (ERROR_MESSAGES[erreur] ?? "Vérifiez votre saisie.") : undefined;
 
-  // La configuration modifie les coordonnées de l'atelier : c'est une action
-  // authentifiée, pas un écran public de la page d'inscription.
   const user = await getCurrentUser();
   if (!user) redirect("/connexion?redirect=/onboarding");
 
   const workshop = await getWorkshop();
 
   return (
-    <Card className="max-w-lg">
-      <CardHeader>
-        <CardTitle>Configuration de votre atelier</CardTitle>
-        <CardDescription>
-          Ces coordonnées apparaîtront sur vos reçus, vos factures et vos messages WhatsApp.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form action={completeOnboardingAction} className="space-y-4">
-          {errorMessage ? (
-            <div
-              role="alert"
-              className="rounded-[var(--radius-md)] border border-danger/30 bg-danger-bg p-3 text-sm font-medium text-danger"
-            >
-              {errorMessage}
-            </div>
-          ) : null}
+    <div className="space-y-4">
+      <div className="space-y-1">
+        <div className="inline-flex items-center gap-1.5 rounded-full bg-primary-50 px-3 py-0.5 text-xs font-bold text-primary-900 border border-primary-200">
+          <Building2 className="size-3.5" />
+          <span>Étape finale de configuration</span>
+        </div>
+        <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-primary-950">
+          Coordonnées de l&apos;atelier
+        </h1>
+        <p className="text-xs text-text-muted">
+          Ces informations figureront sur vos devis, reçus et factures d&apos;atelier.
+        </p>
+      </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Select
-              label="Pays"
-              name="country"
-              required
-              defaultValue={workshop.country || "Bénin"}
-              options={COUNTRY_OPTIONS}
-            />
-            <Input
-              label="Ville principale"
-              name="city"
-              required
-              defaultValue={workshop.city || "Cotonou"}
-            />
+      <form action={completeOnboardingAction} className="space-y-3">
+        {errorMessage ? (
+          <div
+            role="alert"
+            className="rounded-xl border border-danger/30 bg-danger-bg p-2.5 text-xs font-semibold text-danger"
+          >
+            {errorMessage}
           </div>
+        ) : null}
 
-          <Input
-            label="Numéro WhatsApp de l'atelier"
-            name="whatsappPhone"
-            type="tel"
+        <div className="grid gap-2.5 sm:grid-cols-2">
+          <Select
+            label="Pays *"
+            name="country"
             required
-            defaultValue={workshop.whatsappPhone}
-            placeholder="+229 97 00 00 00"
-            hint="C'est le numéro que vos clients verront sur vos documents."
+            defaultValue={workshop.country || "Bénin"}
+            options={COUNTRY_OPTIONS}
           />
-
           <Input
-            label="Devise"
-            defaultValue="FCFA (XOF)"
-            disabled
-            hint="La gestion multidevise arrivera dans une prochaine version."
+            label="Ville principale *"
+            name="city"
+            required
+            defaultValue={workshop.city || "Cotonou"}
+            placeholder="Ex. Cotonou"
           />
+        </div>
 
-          <Button type="submit" fullWidth icon={<ArrowRight className="size-4" />}>
-            Enregistrer et accéder à mon tableau de bord
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+        <Input
+          label="Numéro WhatsApp de l'atelier *"
+          name="whatsappPhone"
+          type="tel"
+          required
+          defaultValue={workshop.whatsappPhone || "+229 97 00 00 00"}
+          placeholder="+229 97 00 00 00"
+          hint="Numéro affiché aux clients pour le suivi et les paiements."
+        />
+
+        <Input
+          label="Devise de facturation"
+          defaultValue="Franc CFA — FCFA (XOF)"
+          disabled
+          hint="Devise officielle supportée pour l'Afrique de l'Ouest & Centrale."
+        />
+
+        <div className="flex items-center gap-2 pt-1 text-[11px] text-text-muted">
+          <CheckCircle2 className="size-3.5 text-success shrink-0" />
+          <span>Vous pourrez modifier ces informations à tout moment dans Paramètres</span>
+        </div>
+
+        <Button type="submit" fullWidth size="md" className="mt-2">
+          <span>Enregistrer et ouvrir mon tableau de bord</span>
+          <ArrowRight className="size-4" />
+        </Button>
+      </form>
+    </div>
   );
 }

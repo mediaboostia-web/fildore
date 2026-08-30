@@ -27,9 +27,10 @@ function isActive(pathname: string, href: string): boolean {
 }
 
 /**
- * Navigation mobile pleine largeur fixe :
- * S'étend sur toute la largeur de l'écran avec 5 onglets directs + menu Plus,
- * fond solide avec léger flou, bordure supérieure nette et gestion de la zone de sécurité (safe-area).
+ * Navigation mobile 100% pleine largeur fixe et opaque :
+ * Occupe toute la largeur du bas de l'écran (left-0 right-0 w-full),
+ * fond totalement blanc et opaque pour masquer les contenus qui défilent derrière,
+ * bordure supérieure nette et gestion de la zone de sécurité (safe-area).
  */
 export function BottomTabBar() {
   const pathname = usePathname();
@@ -39,9 +40,9 @@ export function BottomTabBar() {
     <>
       <nav
         aria-label="Navigation mobile principale"
-        className="fixed inset-x-0 bottom-0 z-40 w-full border-t border-border bg-surface/98 backdrop-blur-md pb-[env(safe-area-inset-bottom)] md:hidden shadow-lg"
+        className="fixed inset-x-0 bottom-0 left-0 right-0 z-50 w-full border-t border-border bg-surface pb-[max(env(safe-area-inset-bottom),0.35rem)] md:hidden shadow-[0_-4px_16px_rgba(0,0,0,0.06)]"
       >
-        <div className="flex h-16 w-full items-center justify-around px-1">
+        <div className="flex h-15 w-full items-center justify-around px-2">
           {TAB_ITEMS.map((item) => {
             const active = isActive(pathname, item.href);
             const Icon = item.icon;
@@ -51,7 +52,7 @@ export function BottomTabBar() {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "relative flex flex-1 flex-col items-center justify-center py-1 text-[11px] font-semibold transition-colors duration-150",
+                  "relative flex flex-1 flex-col items-center justify-center py-1 text-[11px] font-semibold transition-all duration-150",
                   active
                     ? "text-primary-900 font-bold"
                     : "text-text-muted hover:text-text"
@@ -59,13 +60,13 @@ export function BottomTabBar() {
               >
                 <div
                   className={cn(
-                    "flex size-9 items-center justify-center rounded-xl transition-all",
-                    active ? "bg-primary-100 text-primary-900 scale-105" : "bg-transparent"
+                    "flex size-8.5 items-center justify-center rounded-xl transition-all",
+                    active ? "bg-primary-900 text-white shadow-xs scale-105" : "bg-transparent"
                   )}
                 >
-                  <Icon className="size-5 shrink-0" aria-hidden="true" />
+                  <Icon className="size-4.5 shrink-0" aria-hidden="true" />
                 </div>
-                <span className="mt-0.5 truncate">{item.label}</span>
+                <span className="mt-0.5 truncate text-[10px] sm:text-[11px]">{item.label}</span>
               </Link>
             );
           })}
@@ -76,19 +77,19 @@ export function BottomTabBar() {
             aria-label="Ouvrir le menu Plus"
             onClick={() => setMoreOpen(true)}
             className={cn(
-              "relative flex flex-1 flex-col items-center justify-center py-1 text-[11px] font-semibold transition-colors duration-150 cursor-pointer",
+              "relative flex flex-1 flex-col items-center justify-center py-1 text-[11px] font-semibold transition-all duration-150 cursor-pointer",
               moreOpen ? "text-primary-900 font-bold" : "text-text-muted hover:text-text"
             )}
           >
             <div
               className={cn(
-                "flex size-9 items-center justify-center rounded-xl transition-all",
-                moreOpen ? "bg-primary-100 text-primary-900 scale-105" : "bg-transparent"
+                "flex size-8.5 items-center justify-center rounded-xl transition-all",
+                moreOpen ? "bg-primary-900 text-white shadow-xs scale-105" : "bg-transparent"
               )}
             >
-              <MoreHorizontal className="size-5 shrink-0" aria-hidden="true" />
+              <MoreHorizontal className="size-4.5 shrink-0" aria-hidden="true" />
             </div>
-            <span className="mt-0.5 truncate">Plus</span>
+            <span className="mt-0.5 truncate text-[10px] sm:text-[11px]">Plus</span>
           </button>
         </div>
       </nav>

@@ -57,7 +57,13 @@ export default async function DocumentDetailPage({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between no-print">
-        <LinkButton href="/factures" variant="tertiary" size="sm" icon={<ArrowLeft className="size-4" />}>
+        <LinkButton
+          href="/factures"
+          variant="secondary"
+          size="sm"
+          icon={<ArrowLeft className="size-4" />}
+          className="border border-border font-bold bg-surface shadow-xs hover:bg-surface-muted"
+        >
           Tous les documents
         </LinkButton>
 

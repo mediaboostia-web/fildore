@@ -39,24 +39,35 @@ export default function OrderWizardLayout({ children }: { children: React.ReactN
   const currentStep = getCurrentStepIndex();
 
   return (
-    <div className="mx-auto max-w-2xl">
-      <div className="mb-6 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <LinkButton href="/commandes" variant="tertiary" size="sm" icon={<ArrowLeft className="size-4" />}>
-            Commandes
-          </LinkButton>
-        </div>
-        <Button variant="tertiary" size="sm" onClick={handleCancel} className="text-text-muted hover:text-danger">
-          <X className="size-4 mr-1" />
+    <div className="mx-auto max-w-2xl space-y-4">
+      {/* Boutons de navigation et d'annulation pleins et bien visibles */}
+      <div className="flex items-center justify-between gap-3">
+        <LinkButton
+          href="/commandes"
+          variant="secondary"
+          size="sm"
+          icon={<ArrowLeft className="size-4" />}
+          className="border border-border font-bold bg-surface shadow-xs hover:bg-surface-muted active:scale-98"
+        >
+          Retour aux commandes
+        </LinkButton>
+
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={handleCancel}
+          className="border border-danger/30 text-danger bg-danger-bg/60 hover:bg-danger-bg font-bold shadow-xs active:scale-98"
+        >
+          <X className="size-4 mr-1.5" />
           Annuler
         </Button>
       </div>
 
-      <div className="mb-8 rounded-lg border border-border bg-surface p-4 shadow-sm md:p-6">
+      <div className="rounded-2xl border border-border bg-surface p-4 shadow-xs md:p-6">
         <Stepper steps={STEPS} currentStep={currentStep} />
       </div>
 
-      <div className="rounded-lg border border-border bg-surface p-4 shadow-sm md:p-6">
+      <div className="rounded-2xl border border-border bg-surface p-4 shadow-xs md:p-6">
         {children}
       </div>
     </div>

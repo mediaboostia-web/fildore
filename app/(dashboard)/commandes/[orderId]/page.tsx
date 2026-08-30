@@ -69,7 +69,13 @@ export default async function OrderDetailPage({
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
-        <LinkButton href="/commandes" variant="tertiary" size="sm" icon={<ArrowLeft className="size-4" />}>
+        <LinkButton
+          href="/commandes"
+          variant="secondary"
+          size="sm"
+          icon={<ArrowLeft className="size-4" />}
+          className="border border-border font-bold bg-surface shadow-xs hover:bg-surface-muted"
+        >
           Toutes les commandes
         </LinkButton>
       </div>
