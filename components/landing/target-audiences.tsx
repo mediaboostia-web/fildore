@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { User, Users, Palette, CheckCircle2, ArrowRight, MessageCircle, ClipboardList, Receipt, Shield, Clock } from "lucide-react";
+import { User, Users, Palette, CheckCircle2, ArrowRight, Sparkles, Shield, Clock } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
 const AUDIENCES = [
@@ -15,7 +15,8 @@ const AUDIENCES = [
     title: "Pour les couturiers et couturières solo",
     description:
       "Finis les cahiers égarés et les oublis de mesures. Enregistrez chaque commande sur votre smartphone et travaillez l'esprit libre.",
-    image: "/Une Couturière Africaine Coud Avec Diligence Des Vêtements à Laide De Machines Dans Son Bureau De Tailleur Photo Et Image en Téléchargement Gratuit - Pngtree.jpg",
+    screenshot: "/screenshots/dashboard.png",
+    screenshotAlt: "Tableau de bord Fildor - Suivi de production et mesures",
     benefits: [
       {
         icon: CheckCircle2,
@@ -30,7 +31,7 @@ const AUDIENCES = [
         text: "Visualisez les tenues à livrer cette semaine et prévenez vos clients à temps.",
       },
       {
-        icon: MessageCircle,
+        icon: Sparkles,
         iconTone: "text-accent-600",
         title: "Reçus WhatsApp en 1 clic",
         text: "Partagez un récapitulatif clair de commande et le solde restant sans calculatrice.",
@@ -46,7 +47,8 @@ const AUDIENCES = [
     title: "Pour les ateliers de confection en équipe",
     description:
       "Répartissez la coupe, la couture et le repassage entre vos apprentis et couturiers. Éliminez les retards et les confusions de tissus.",
-    image: "/Images pro.jpg",
+    screenshot: "/screenshots/documents.png",
+    screenshotAlt: "Factures, reçus de paiement et documents d'atelier Fildor",
     benefits: [
       {
         icon: CheckCircle2,
@@ -61,7 +63,7 @@ const AUDIENCES = [
         text: "Tracez chaque versement pour financer les tissus et fournitures en toute transparence.",
       },
       {
-        icon: ClipboardList,
+        icon: Sparkles,
         iconTone: "text-accent-600",
         title: "Fiches de travail claires",
         text: "Chaque commande a sa fiche imprimable ou consultable sans risque d'erreur.",
@@ -77,7 +79,8 @@ const AUDIENCES = [
     title: "Pour les stylistes, créateurs et sur-mesure",
     description:
       "Valorisez vos collections, partagez votre catalogue de modèles avec vos clients et traitez les commandes sur-mesure avec standing.",
-    image: "/Je suis votre modéliste.jpg",
+    screenshot: "/screenshots/catalog.png",
+    screenshotAlt: "Catalogue de modèles et créations de mode Fildor",
     benefits: [
       {
         icon: CheckCircle2,
@@ -86,7 +89,7 @@ const AUDIENCES = [
         text: "Ajoutez photos, prix de confection et métrages de tissus recommandés.",
       },
       {
-        icon: Receipt,
+        icon: Sparkles,
         iconTone: "text-accent-600",
         title: "Factures & Devis de standing",
         text: "Générez des factures professionnelles à l'image de votre marque.",
@@ -115,14 +118,14 @@ export function LandingTargetAudiences() {
         {/* En-tête de section */}
         <div className="mx-auto max-w-3xl text-center space-y-3">
           <span className="inline-block text-xs font-bold uppercase tracking-wider text-accent-600 bg-accent-50 px-3 py-1 rounded-full border border-accent-100">
-            Fildor s&apos;adapte à votre façon de travailler
+            Fildor s'adapte à votre façon de travailler
           </span>
           <h2 className="text-2xl font-extrabold tracking-tight text-primary-950 sm:text-4xl">
             Que vous travailliez seul ou en équipe, Fildor vous aide à rester serein.
           </h2>
         </div>
 
-        {/* Barre de navigation d'onglets (Pills inspirés de 21st.dev) */}
+        {/* Barre de navigation d'onglets */}
         <div className="flex justify-center">
           <div className="inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-surface-muted/70 p-1.5 shadow-xs backdrop-blur-sm">
             {AUDIENCES.map((aud) => {
@@ -148,7 +151,7 @@ export function LandingTargetAudiences() {
           </div>
         </div>
 
-        {/* Grand Panneau Interactif avec 3 Cartes / Avantages + Photo Pro */}
+        {/* Grand Panneau Interactif avec 3 Cartes / Avantages + Vrai écran d'application */}
         <div className="rounded-3xl border border-border/80 bg-canvas/60 p-5 sm:p-8 lg:p-10 shadow-xl backdrop-blur-md">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
             {/* Colonne Gauche : Titre + 3 Points Clés */}
@@ -166,7 +169,7 @@ export function LandingTargetAudiences() {
               </div>
 
               {/* 3 Avantages avec icônes distinctes */}
-              <div className="space-y-3.5 pt-1">
+              <div className="space-y-3 pt-1">
                 {current.benefits.map((b, idx) => {
                   const Icon = b.icon;
                   return (
@@ -207,28 +210,29 @@ export function LandingTargetAudiences() {
               </div>
             </div>
 
-            {/* Colonne Droite : Photo Immersion Cadrée avec Badge */}
+            {/* Colonne Droite : Vraie capture d'écran de l'application correspondante */}
             <div className="lg:col-span-5 relative">
-              <div className="relative h-[360px] sm:h-[420px] w-full rounded-2xl overflow-hidden border border-border bg-primary-950 shadow-2xl">
-                <Image
-                  src={current.image}
-                  alt={current.title}
-                  fill
-                  className="object-cover object-top transition-transform duration-700 hover:scale-105"
-                  sizes="(max-width: 1024px) 100vw, 40vw"
-                  priority
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-                
-                {/* Pastille flottante en bas de l'image */}
-                <div className="absolute bottom-4 left-4 right-4 rounded-xl border border-white/20 bg-black/50 backdrop-blur-md p-3 text-white">
-                  <div className="flex items-center gap-2">
-                    <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <p className="text-xs font-bold">{current.tabLabel} — Conçu pour votre quotidien</p>
+              <div className="relative rounded-2xl overflow-hidden border border-border bg-surface shadow-2xl">
+                {/* Barre de fenêtre d'application */}
+                <div className="flex items-center justify-between border-b border-border bg-surface-muted px-3 py-2">
+                  <div className="flex items-center gap-1.5">
+                    <span className="size-2.5 rounded-full bg-red-400 inline-block" />
+                    <span className="size-2.5 rounded-full bg-amber-400 inline-block" />
+                    <span className="size-2.5 rounded-full bg-emerald-400 inline-block" />
                   </div>
-                  <p className="text-[11px] text-white/80 mt-0.5">
-                    Simple, rapide et sans formation technique préalable.
-                  </p>
+                  <span className="text-[10px] font-semibold text-text-muted">
+                    Fildor Web & Mobile
+                  </span>
+                </div>
+
+                <div className="relative w-full aspect-[4/3] bg-canvas overflow-hidden">
+                  <Image
+                    src={current.screenshot}
+                    alt={current.screenshotAlt}
+                    fill
+                    className="object-cover object-top transition-transform duration-500 hover:scale-105"
+                    sizes="(max-width: 1024px) 100vw, 40vw"
+                  />
                 </div>
               </div>
             </div>

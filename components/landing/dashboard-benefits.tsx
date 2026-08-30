@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { LayoutDashboard, CheckCircle, ArrowRight, Scissors, Clock, AlertTriangle, Wallet } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
+import { CheckCircle, ArrowRight } from "lucide-react";
 
 export function LandingDashboardBenefits() {
   const benefits = [
@@ -60,102 +60,31 @@ export function LandingDashboardBenefits() {
             </div>
           </div>
 
-          {/* Simulation Visuelle Réelle de l'App (7 cols - Correspondance exacte avec la capture utilisateur) */}
-          <div className="lg:col-span-7 rounded-2xl border border-border bg-surface p-4 sm:p-6 shadow-xl space-y-4">
-            {/* Header miniature */}
-            <div className="flex items-center justify-between border-b border-border/80 pb-3">
+          {/* Vraie Capture d'écran du Tableau de bord (7 cols) */}
+          <div className="lg:col-span-7 rounded-2xl border border-border bg-surface overflow-hidden shadow-2xl">
+            {/* Barre supérieure de fenêtre */}
+            <div className="flex items-center justify-between border-b border-border bg-surface-muted px-4 py-3">
               <div className="flex items-center gap-2">
-                <div className="flex size-8 items-center justify-center rounded-lg bg-primary-50 text-primary-900">
-                  <LayoutDashboard className="size-4" />
-                </div>
-                <div>
-                  <h4 className="text-xs font-bold text-text">Tableau de bord</h4>
-                  <p className="text-[10px] text-text-muted">Activité de l&apos;atelier en temps réel</p>
-                </div>
+                <span className="size-3 rounded-full bg-red-400/80 inline-block" />
+                <span className="size-3 rounded-full bg-amber-400/80 inline-block" />
+                <span className="size-3 rounded-full bg-emerald-400/80 inline-block" />
+                <span className="ml-2 text-xs font-semibold text-text-muted">
+                  Fildor — Tableau de bord
+                </span>
               </div>
-              <span className="text-[10px] font-bold text-success bg-success-bg px-2 py-0.5 rounded-full">
-                En direct
+              <span className="text-[10px] font-bold text-success bg-success-bg px-2.5 py-0.5 rounded-full">
+                Temps réel
               </span>
             </div>
 
-            {/* 4 KPIs Réels de l'App */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-              <div className="rounded-xl border border-border bg-surface p-3 shadow-xs space-y-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Production</span>
-                  <Scissors className="size-3.5 text-primary-800" />
-                </div>
-                <p className="text-xl font-black text-text">38</p>
-                <span className="text-[10px] text-text-subtle block truncate">En cours</span>
-              </div>
-
-              <div className="rounded-xl border border-border bg-surface p-3 shadow-xs space-y-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted">À livrer</span>
-                  <Clock className="size-3.5 text-warning" />
-                </div>
-                <p className="text-xl font-black text-text">3</p>
-                <span className="text-[10px] text-warning font-semibold block truncate">Sous 3 jours</span>
-              </div>
-
-              <div className="rounded-xl border border-border bg-surface p-3 shadow-xs space-y-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted">En retard</span>
-                  <AlertTriangle className="size-3.5 text-danger" />
-                </div>
-                <p className="text-xl font-black text-danger">2</p>
-                <span className="text-[10px] text-danger font-semibold block truncate">Prioritaire</span>
-              </div>
-
-              <div className="rounded-xl border border-border bg-surface p-3 shadow-xs space-y-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Solde</span>
-                  <Wallet className="size-3.5 text-success" />
-                </div>
-                <p className="text-sm font-black text-success mt-1 truncate">649 000 F</p>
-                <span className="text-[10px] text-text-subtle block truncate">À encaisser</span>
-              </div>
-            </div>
-
-            {/* Cadre Commandes urgentes & délais proches (Identique à la capture réelle) */}
-            <div className="rounded-xl border border-[#F6EBDD] bg-[#FFFBF7] p-3.5 space-y-2.5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900">
-                  <AlertTriangle className="size-3.5 text-warning" />
-                  <span>Commandes urgentes & Délais proches</span>
-                </div>
-                <span className="text-[10px] font-semibold text-text-muted">5 prioritaires</span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {/* Commande 1 */}
-                <div className="rounded-lg border border-border/80 bg-surface p-2.5 shadow-xs space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-primary-900">FIL-CTN-000001</span>
-                    <Badge tone="danger" className="text-[9px] px-1.5 py-0">En retard</Badge>
-                  </div>
-                  <p className="text-xs font-bold text-text">Robe soirée wax</p>
-                  <p className="text-[10px] text-text-muted">Client : Adjoavi Houngbédji</p>
-                  <div className="flex items-center justify-between pt-1 border-t border-border/40 text-[10px]">
-                    <span className="text-text-subtle">Échéance 22 août</span>
-                    <span className="font-bold text-danger">Reste 20 000 FCFA</span>
-                  </div>
-                </div>
-
-                {/* Commande 2 */}
-                <div className="rounded-lg border border-border/80 bg-surface p-2.5 shadow-xs space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-primary-900">FIL-CTN-000002</span>
-                    <Badge tone="warning" className="text-[9px] px-1.5 py-0">Livraison imminente</Badge>
-                  </div>
-                  <p className="text-xs font-bold text-text">Costume trois pièces</p>
-                  <p className="text-[10px] text-text-muted">Client : Serge Adjovi</p>
-                  <div className="flex items-center justify-between pt-1 border-t border-border/40 text-[10px]">
-                    <span className="text-text-subtle">Échéance 25 août</span>
-                    <span className="font-bold text-danger">Reste 30 000 FCFA</span>
-                  </div>
-                </div>
-              </div>
+            <div className="relative w-full aspect-[16/10] bg-canvas overflow-hidden">
+              <Image
+                src="/screenshots/dashboard.png"
+                alt="Tableau de bord de l'atelier Fildor"
+                fill
+                className="object-cover object-top"
+                sizes="(max-width: 1024px) 100vw, 60vw"
+              />
             </div>
           </div>
         </div>
