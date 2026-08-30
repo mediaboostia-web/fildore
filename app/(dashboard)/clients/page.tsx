@@ -11,7 +11,7 @@ import { clientDisplayName } from "@/features/clients/types";
 import type { Client } from "@/features/clients/types";
 import { formatPhoneDisplay } from "@/lib/utils/phone";
 import { ClientSearchBar } from "./_components/client-search-bar";
-import { LinkButton } from "./_components/link-button";
+import { LinkButton } from "@/components/ui/link-button";
 
 /**
  * Config de colonnes unique, partagée entre `Table` (desktop) et

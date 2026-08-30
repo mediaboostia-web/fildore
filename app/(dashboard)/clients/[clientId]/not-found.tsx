@@ -1,6 +1,6 @@
 import { UserX } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
-import { LinkButton } from "../_components/link-button";
+import { LinkButton } from "@/components/ui/link-button";
 
 /**
  * `not-found.tsx` local : le projet n'a pas encore de not-found.tsx racine,

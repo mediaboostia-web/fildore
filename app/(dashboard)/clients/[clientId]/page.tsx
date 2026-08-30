@@ -24,7 +24,7 @@ import { formatDateFr } from "@/lib/utils/dates";
 import { formatPhoneDisplay } from "@/lib/utils/phone";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ClientInfoTab } from "./_components/client-info-tab";
-import { LinkButton } from "../_components/link-button";
+import { LinkButton } from "@/components/ui/link-button";
 
 const ORDER_COLUMNS: DataTableColumn<Order>[] = [
   { key: "reference", label: "Référence", emphasis: true, render: (order) => order.reference },
