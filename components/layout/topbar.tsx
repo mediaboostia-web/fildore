@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { UserMenu, type UserMenuUser } from "./user-menu";
+import { NotificationPopover } from "./notification-popover";
 
 export interface TopbarProps {
   user: UserMenuUser;
@@ -12,8 +13,10 @@ export function Topbar({ user }: TopbarProps) {
       <Link href="/tableau-de-bord" className="text-base font-semibold text-primary-900 md:hidden">
         Fildor
       </Link>
-      <span className="hidden md:block" />
-      <UserMenu user={user} />
+      <div className="flex items-center gap-2">
+        <NotificationPopover compact />
+        <UserMenu user={user} />
+      </div>
     </header>
   );
 }
