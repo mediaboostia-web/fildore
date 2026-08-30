@@ -40,6 +40,7 @@ export interface CatalogItem {
   estimatedDelayDays?: number;
   tags: string[];
   imageIds: string[]; // référence vers des placeholders locaux
+  imageUrl?: string; // photo du modèle
   isArchived: boolean;
   createdAt: string;
 }

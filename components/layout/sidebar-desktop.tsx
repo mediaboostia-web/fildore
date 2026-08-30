@@ -24,7 +24,7 @@ const NAV_ITEMS = [
   { href: "/tableau-de-bord", label: "Tableau de bord", icon: LayoutGrid },
   { href: "/commandes", label: "Commandes", icon: ClipboardList },
   { href: "/clients", label: "Clients", icon: Users },
-  { href: "/modeles", label: "Modèles & Catalogue", icon: Shirt },
+  { href: "/modeles", label: "Modèles", icon: Shirt },
   { href: "/messages", label: "Messagerie", icon: MessageCircle },
   { href: "/factures", label: "Factures & Documents", icon: Receipt },
   { href: "/parametres", label: "Paramètres", icon: Settings },

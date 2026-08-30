@@ -26,6 +26,7 @@ import { formatDateFr } from "@/lib/utils/dates";
 import { formatPhoneDisplay } from "@/lib/utils/phone";
 import { clientDisplayName } from "@/features/clients/types";
 import { GARMENT_TYPE_LABELS } from "@/features/measurements/constants";
+import { toast } from "@/components/ui/toast";
 
 export default function OrderWizardVerificationStep() {
   const router = useRouter();
@@ -100,8 +101,10 @@ export default function OrderWizardVerificationStep() {
       });
 
       if (res.success && res.data) {
+        toast.success("Commande enregistrée avec succès !");
         reset();
         router.push(`/commandes/${res.data.id}`);
+        router.refresh();
       } else {
         const errorText = res.error || (res.fieldErrors ? JSON.stringify(res.fieldErrors) : "Une erreur est survenue lors de la création de la commande.");
         setErrorMsg(errorText);

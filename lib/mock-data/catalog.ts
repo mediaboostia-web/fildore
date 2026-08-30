@@ -21,6 +21,7 @@ export interface CreateCatalogItemInput {
   description?: string;
   indicativePrice?: number;
   estimatedDelayDays?: number;
+  imageUrl?: string;
   tags?: string[];
 }
 
@@ -36,12 +37,37 @@ export async function createCatalogItem(input: CreateCatalogItemInput): Promise<
     description: input.description,
     indicativePrice: input.indicativePrice,
     estimatedDelayDays: input.estimatedDelayDays,
+    imageUrl: input.imageUrl,
     tags: input.tags ?? [],
     imageIds: [],
     isArchived: false,
     createdAt: new Date().toISOString(),
   };
   db.catalogItems.push(item);
+  return item;
+}
+
+export type UpdateCatalogItemInput = Omit<CreateCatalogItemInput, "workshopId">;
+
+/** Met à jour un modèle du catalogue. Les commandes déjà passées ne changent pas :
+ *  elles portent leur propre titre, prix et snapshot de mesures. */
+export async function updateCatalogItem(
+  id: string,
+  patch: UpdateCatalogItemInput
+): Promise<CatalogItem> {
+  await wait();
+  const db = getDb();
+  const item = db.catalogItems.find((c) => c.id === id);
+  if (!item) throw new Error(`Modèle introuvable : ${id}`);
+
+  item.name = patch.name;
+  item.category = patch.category;
+  item.garmentType = patch.garmentType;
+  item.description = patch.description;
+  item.indicativePrice = patch.indicativePrice;
+  item.estimatedDelayDays = patch.estimatedDelayDays;
+  if (patch.imageUrl !== undefined) item.imageUrl = patch.imageUrl;
+  if (patch.tags) item.tags = patch.tags;
   return item;
 }
 

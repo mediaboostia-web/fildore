@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { ExternalLink } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { WhatsAppMessagePreview } from "@/components/ui/whatsapp-message-preview";
 import {
@@ -18,6 +16,7 @@ import type { Order } from "@/features/orders/types";
 import { clientDisplayName } from "@/features/clients/types";
 import { formatAmount } from "@/lib/money/format";
 import { formatDateFr } from "@/lib/utils/dates";
+import { formatPhoneDisplay } from "@/lib/utils/phone";
 
 export function MessagesHubClient({
   clients,
@@ -91,7 +90,7 @@ export function MessagesHubClient({
 
   const clientOptions = clients.map((c) => ({
     value: c.id,
-    label: `${clientDisplayName(c)} (${c.phone})`,
+    label: `${clientDisplayName(c)} (${formatPhoneDisplay(c.phone)})`,
   }));
 
   const orderOptions = clientOrders.map((o) => ({
@@ -105,7 +104,7 @@ export function MessagesHubClient({
   }));
 
   return (
-    <div className="grid gap-6 lg:grid-cols-12 rounded-lg border border-border bg-surface p-5 shadow-sm">
+    <div className="grid gap-6 lg:grid-cols-12 rounded-2xl border border-border bg-surface p-5 sm:p-6 shadow-xs">
       {/* Colonne configuration */}
       <div className="space-y-4 lg:col-span-5">
         <h2 className="font-bold text-base text-text">Préparer une communication</h2>
@@ -139,28 +138,18 @@ export function MessagesHubClient({
 
       {/* Colonne prévisualisation */}
       <div className="space-y-4 lg:col-span-7">
-        <h2 className="font-bold text-base text-text">Aperçu & Envoi</h2>
+        <h2 className="font-bold text-base text-text">Aperçu & Envoi direct</h2>
 
         {selectedClient ? (
-          <>
-            <WhatsAppMessagePreview
-              recipientName={clientDisplayName(selectedClient)}
-              message={activeMessage}
-              onMessageChange={setCustomBody}
-              whatsappHref={whatsappUrl}
-            />
-
-            <div className="flex justify-end pt-2">
-              <Button
-                variant="whatsapp"
-                onClick={handleSend}
-                isLoading={isPending}
-                icon={<ExternalLink className="size-4" />}
-              >
-                Ouvrir WhatsApp et enregistrer
-              </Button>
-            </div>
-          </>
+          <WhatsAppMessagePreview
+            recipientName={clientDisplayName(selectedClient)}
+            recipientPhone={formatPhoneDisplay(selectedClient.phone)}
+            message={activeMessage}
+            onMessageChange={setCustomBody}
+            whatsappHref={whatsappUrl}
+            onSendClick={handleSend}
+            isLoading={isPending}
+          />
         ) : (
           <p className="text-sm text-text-muted">Sélectionnez un client pour voir l&apos;aperçu.</p>
         )}

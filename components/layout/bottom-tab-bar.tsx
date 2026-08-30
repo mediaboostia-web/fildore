@@ -3,7 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, ClipboardList, Users, MessageCircle, MoreHorizontal } from "lucide-react";
+import {
+  Home,
+  ClipboardList,
+  Users,
+  Shirt,
+  MessageCircle,
+  MoreHorizontal,
+} from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { MoreMenuSheet } from "./more-menu-sheet";
 
@@ -11,16 +18,18 @@ const TAB_ITEMS = [
   { href: "/tableau-de-bord", label: "Accueil", icon: Home },
   { href: "/commandes", label: "Commandes", icon: ClipboardList },
   { href: "/clients", label: "Clients", icon: Users },
+  { href: "/modeles", label: "Modèles", icon: Shirt },
   { href: "/messages", label: "Messages", icon: MessageCircle },
 ] as const;
 
 function isActive(pathname: string, href: string): boolean {
-  return pathname.startsWith(href);
+  return href === "/" ? pathname === "/" : pathname.startsWith(href);
 }
 
 /**
- * Navigation mobile inspirée du Mac OS Dock :
- * Barre flottante avec effet de verre dépoli, pastilles d'icônes tactiles et retour d'état instantané.
+ * Navigation mobile pleine largeur fixe :
+ * S'étend sur toute la largeur de l'écran avec 5 onglets directs + menu Plus,
+ * fond solide avec léger flou, bordure supérieure nette et gestion de la zone de sécurité (safe-area).
  */
 export function BottomTabBar() {
   const pathname = usePathname();
@@ -28,11 +37,11 @@ export function BottomTabBar() {
 
   return (
     <>
-      <div className="fixed inset-x-0 bottom-3 z-40 flex justify-center px-4 md:hidden pointer-events-none pb-[env(safe-area-inset-bottom)]">
-        <nav
-          aria-label="Navigation mobile"
-          className="pointer-events-auto flex items-center gap-1 rounded-full border border-border/80 bg-surface/92 px-2.5 py-1.5 shadow-2xl backdrop-blur-xl transition-all"
-        >
+      <nav
+        aria-label="Navigation mobile principale"
+        className="fixed inset-x-0 bottom-0 z-40 w-full border-t border-border bg-surface/98 backdrop-blur-md pb-[env(safe-area-inset-bottom)] md:hidden shadow-lg"
+      >
+        <div className="flex h-16 w-full items-center justify-around px-1">
           {TAB_ITEMS.map((item) => {
             const active = isActive(pathname, item.href);
             const Icon = item.icon;
@@ -42,22 +51,24 @@ export function BottomTabBar() {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "relative flex size-12 flex-col items-center justify-center rounded-full text-xs font-semibold transition-all duration-150 active:scale-90",
+                  "relative flex flex-1 flex-col items-center justify-center py-1 text-[11px] font-semibold transition-colors duration-150",
                   active
-                    ? "bg-primary-900 text-white shadow-md shadow-primary-950/20"
-                    : "text-text-muted hover:bg-surface-muted hover:text-text"
+                    ? "text-primary-900 font-bold"
+                    : "text-text-muted hover:text-text"
                 )}
               >
-                <Icon className="size-5" aria-hidden="true" />
-                {active && (
-                  <span className="absolute -bottom-1 size-1 rounded-full bg-primary-900 md:hidden" />
-                )}
+                <div
+                  className={cn(
+                    "flex size-9 items-center justify-center rounded-xl transition-all",
+                    active ? "bg-primary-100 text-primary-900 scale-105" : "bg-transparent"
+                  )}
+                >
+                  <Icon className="size-5 shrink-0" aria-hidden="true" />
+                </div>
+                <span className="mt-0.5 truncate">{item.label}</span>
               </Link>
             );
           })}
-
-          {/* Séparateur subtil dock */}
-          <span className="h-6 w-px bg-border/80 mx-0.5" />
 
           {/* Bouton Plus */}
           <button
@@ -65,16 +76,22 @@ export function BottomTabBar() {
             aria-label="Ouvrir le menu Plus"
             onClick={() => setMoreOpen(true)}
             className={cn(
-              "relative flex size-12 flex-col items-center justify-center rounded-full text-xs font-semibold transition-all duration-150 active:scale-90 cursor-pointer",
-              moreOpen
-                ? "bg-primary-900 text-white shadow-md shadow-primary-950/20"
-                : "text-text-muted hover:bg-surface-muted hover:text-text"
+              "relative flex flex-1 flex-col items-center justify-center py-1 text-[11px] font-semibold transition-colors duration-150 cursor-pointer",
+              moreOpen ? "text-primary-900 font-bold" : "text-text-muted hover:text-text"
             )}
           >
-            <MoreHorizontal className="size-5" aria-hidden="true" />
+            <div
+              className={cn(
+                "flex size-9 items-center justify-center rounded-xl transition-all",
+                moreOpen ? "bg-primary-100 text-primary-900 scale-105" : "bg-transparent"
+              )}
+            >
+              <MoreHorizontal className="size-5 shrink-0" aria-hidden="true" />
+            </div>
+            <span className="mt-0.5 truncate">Plus</span>
           </button>
-        </nav>
-      </div>
+        </div>
+      </nav>
 
       <MoreMenuSheet open={moreOpen} onOpenChange={setMoreOpen} />
     </>

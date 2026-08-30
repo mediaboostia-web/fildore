@@ -46,7 +46,7 @@ export function resetDb(): MockDatabase {
   return globalThis.__FILDOR_DB__;
 }
 
-const ARTIFICIAL_DELAY_MS = process.env.NEXT_PUBLIC_MOCK_DELAY === "0" ? 0 : 300;
+const ARTIFICIAL_DELAY_MS = process.env.NEXT_PUBLIC_MOCK_DELAY ? Number(process.env.NEXT_PUBLIC_MOCK_DELAY) : 0;
 
 /** Délai artificiel désactivable, pour rendre les états `loading` observables. */
 export function wait(ms: number = ARTIFICIAL_DELAY_MS): Promise<void> {

@@ -39,10 +39,13 @@ export function RecordPaymentDialog({
 
   const [type, setType] = useState<PaymentType>("acompte");
   const [method, setMethod] = useState<PaymentMethod>("especes");
-  const [amount, setAmount] = useState<number>(balance > 0 ? balance : 10000);
+  // Le solde restant est la valeur attendue dans la quasi-totalité des cas ;
+  // à zéro on laisse le champ vide plutôt que de suggérer un montant arbitraire.
+  const [amount, setAmount] = useState<number>(balance > 0 ? balance : 0);
   const [reference, setReference] = useState("");
   const [note, setNote] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [amountError, setAmountError] = useState<string | undefined>(undefined);
 
   const typeOptions = [
     { value: "acompte", label: "Acompte initial" },
@@ -57,8 +60,11 @@ export function RecordPaymentDialog({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMsg("");
+    setAmountError(undefined);
+
     if (amount <= 0) {
-      setErrorMsg("Le montant du paiement doit être supérieur à 0.");
+      setAmountError("Indiquez le montant encaissé.");
       return;
     }
 
@@ -76,8 +82,14 @@ export function RecordPaymentDialog({
       if (res.success) {
         onClose();
         router.refresh();
-      } else {
-        setErrorMsg(res.error || "Erreur lors de l'enregistrement du paiement.");
+        return;
+      }
+
+      // Le serveur recalcule le solde : c'est lui qui refuse un encaissement
+      // supérieur au reste dû, et son message se rattache au champ Montant.
+      setAmountError(res.fieldErrors?.amount?.[0]);
+      if (!res.fieldErrors?.amount) {
+        setErrorMsg(res.error || "Le paiement n'a pas pu être enregistré. Réessayez.");
       }
     });
   };
@@ -115,17 +127,17 @@ export function RecordPaymentDialog({
             />
           </div>
 
-          <div>
-            <label className="mb-1 block text-xs font-medium text-text">Montant encaissé *</label>
-            <CurrencyInput
-              value={amount}
-              onChange={(val) => {
-                setAmount(val);
-                setErrorMsg("");
-              }}
-              required
-            />
-          </div>
+          <CurrencyInput
+            label="Montant encaissé"
+            required
+            value={amount}
+            onChange={(val) => {
+              setAmount(val);
+              setErrorMsg("");
+              setAmountError(undefined);
+            }}
+            error={amountError}
+          />
 
           <div>
             <label className="mb-1 block text-xs font-medium text-text">

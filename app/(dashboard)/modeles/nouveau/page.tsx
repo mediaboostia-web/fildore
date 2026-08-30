@@ -1,7 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import { PageHeader } from "@/components/shared/page-header";
 import { LinkButton } from "@/components/ui/link-button";
-import { ModelCreateForm } from "./_components/model-create-form";
+import { ModelForm } from "../_components/model-form";
 
 export default function NouveauModelePage() {
   return (
@@ -18,7 +18,7 @@ export default function NouveauModelePage() {
       />
 
       <div className="rounded-lg border border-border bg-surface p-6 shadow-sm">
-        <ModelCreateForm />
+        <ModelForm />
       </div>
     </div>
   );

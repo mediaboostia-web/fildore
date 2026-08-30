@@ -13,6 +13,8 @@ import { LinkButton } from "@/components/ui/link-button";
 import { OrderStatusSelector } from "@/components/ui/order-status-selector";
 import { RoleGate } from "@/components/shared/role-gate";
 import { updateOrderStatusAction } from "@/features/orders/actions";
+import { ORDER_STATUS_CONFIG } from "@/components/ui/status-badge";
+import { toast } from "@/components/ui/toast";
 import type { Order, OrderStatus } from "@/features/orders/types";
 import type { Client } from "@/features/clients/types";
 import type { Role } from "@/features/auth/types";
@@ -34,6 +36,7 @@ interface OrderActionsBarProps {
 export function OrderActionsBar({ order, client, balance, paidAmount, currentUserRole }: OrderActionsBarProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [currentStatus, setCurrentStatus] = useState<OrderStatus>(order.status);
 
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
   const [isWhatsAppOpen, setIsWhatsAppOpen] = useState(false);
@@ -45,23 +48,29 @@ export function OrderActionsBar({ order, client, balance, paidAmount, currentUse
       return;
     }
 
+    setCurrentStatus(newStatus);
     startTransition(async () => {
-      await updateOrderStatusAction({ orderId: order.id, status: newStatus });
-      router.refresh();
+      const res = await updateOrderStatusAction({ orderId: order.id, status: newStatus });
+      if (res.success) {
+        toast.success(`Statut mis à jour : ${ORDER_STATUS_CONFIG[newStatus]?.label || newStatus}`);
+        router.refresh();
+      } else {
+        toast.error("Erreur lors de la mise à jour du statut.");
+      }
     });
   };
 
-  const isCancelled = order.status === "annulee";
+  const isCancelled = currentStatus === "annulee";
 
   return (
     <>
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-surface p-4 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-surface p-4 shadow-xs">
         <div className="flex items-center gap-3">
           <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">
             Statut actuel :
           </span>
           <OrderStatusSelector
-            status={order.status}
+            status={currentStatus}
             onStatusChange={handleStatusChange}
             disabled={isPending || isCancelled}
           />

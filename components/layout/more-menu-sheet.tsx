@@ -7,7 +7,7 @@ import { logoutAction } from "@/features/auth/actions";
 
 const MORE_ITEMS = [
   { href: "/profil", label: "Mon profil", icon: User },
-  { href: "/modeles", label: "Modèles & Catalogue", icon: Shirt },
+  { href: "/modeles", label: "Modèles", icon: Shirt },
   { href: "/factures", label: "Factures & Documents", icon: Receipt },
   { href: "/paiements", label: "Paiements & Reçus", icon: CreditCard },
   { href: "/parametres", label: "Paramètres de l'atelier", icon: Settings },
