@@ -2,20 +2,24 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   ArrowRight,
-  CheckCircle2,
   MessageCircle,
   Ruler,
   Receipt,
   Star,
+  CheckCircle2,
 } from "lucide-react";
 
 export function LandingHero() {
   return (
-    <section className="relative overflow-hidden pt-12 pb-16 md:pt-20 md:pb-24 bg-canvas border-b border-border/60">
+    <section className="relative overflow-hidden pt-12 pb-16 md:pt-20 md:pb-24 bg-gradient-to-b from-[#F1F8F5] via-canvas to-surface border-b border-border/70">
+      {/* Halos ambiants doux aux couleurs de l'atelier */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-primary-100/45 rounded-full blur-3xl pointer-events-none -z-10" />
+      <div className="absolute top-1/3 right-10 w-72 h-72 bg-accent-100/35 rounded-full blur-3xl pointer-events-none -z-10" />
+
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center space-y-6">
-          {/* Badge social proof supérieur sobre */}
-          <div className="inline-flex items-center gap-2.5 rounded-full border border-border bg-surface px-4 py-1.5 shadow-2xs">
+          {/* Badge social proof supérieur */}
+          <div className="inline-flex items-center gap-2.5 rounded-full border border-border bg-surface/90 px-4 py-1.5 shadow-2xs backdrop-blur-xs">
             <div className="flex -space-x-1.5 overflow-hidden">
               <div className="relative size-6 rounded-full ring-2 ring-surface overflow-hidden">
                 <Image src="/images/tailor-craft.jpg" alt="Atelier Cotonou" fill className="object-cover" />
@@ -37,27 +41,26 @@ export function LandingHero() {
             </div>
           </div>
 
-          {/* Titre principal sans dégradé de texte (Police pleine à fort contraste) */}
-          <h1 className="text-3xl font-extrabold tracking-tight text-primary-950 sm:text-5xl lg:text-6xl sm:leading-[1.14]">
+          {/* Titre principal avec animation d'apparition */}
+          <h1 className="text-3xl font-extrabold tracking-tight text-primary-950 sm:text-5xl lg:text-6xl sm:leading-[1.14] animate-in fade-in slide-in-from-bottom-4 duration-700">
             Ne perdez plus jamais les mesures d&apos;un client.{" "}
             <span className="text-primary-800">
               Tout votre atelier réuni.
             </span>
           </h1>
 
-          {/* Sous-titre rédigé sans jargon */}
-          <p className="text-base text-text-muted sm:text-lg lg:text-xl max-w-2xl mx-auto leading-relaxed font-normal">
-            Remplacez vos cahiers papier par une application simple sur smartphone.
-            Suivez l&apos;avancement de vos confections, sécurisez vos acomptes et prévenez vos clients sur WhatsApp en 1 clic.
+          {/* Texte descriptif raccourci et percutant */}
+          <p className="text-base text-text-muted sm:text-lg max-w-xl mx-auto leading-relaxed font-normal">
+            L&apos;application simple sur smartphone pour enregistrer les mesures, suivre la confection et envoyer les reçus WhatsApp en 1 clic.
           </p>
 
           {/* Boutons d'action clairs */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1">
             <Link
               href="/inscription"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-primary-900 px-7 py-3.5 text-base font-semibold text-white shadow-sm hover:bg-primary-800 active:scale-98 transition-all cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-primary-900 px-8 py-3.5 text-base font-bold text-white shadow-sm hover:bg-primary-800 active:scale-98 transition-all cursor-pointer"
             >
-              <span>Créer mon atelier gratuitement</span>
+              <span>Essayer gratuitement</span>
               <ArrowRight className="size-4.5" />
             </Link>
 
@@ -65,7 +68,7 @@ export function LandingHero() {
               href="#comment-ca-marche"
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-surface px-6 py-3.5 text-base font-semibold text-text hover:bg-surface-muted hover:border-primary-800/40 transition-all cursor-pointer"
             >
-              <span>Voir comment ça marche</span>
+              <span>Comment ça marche</span>
             </Link>
           </div>
 
@@ -112,7 +115,6 @@ export function LandingHero() {
 
           {/* Cadre mockup épuré 2D */}
           <div className="relative rounded-2xl border border-border bg-surface shadow-xl overflow-hidden">
-            {/* Barre d'en-tête de fenêtre */}
             <div className="flex items-center justify-between border-b border-border bg-surface-muted px-4 py-3">
               <div className="flex items-center gap-2">
                 <span className="size-2.5 rounded-full bg-danger/70 inline-block" />
@@ -125,12 +127,11 @@ export function LandingHero() {
               <div className="flex items-center gap-2">
                 <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-success bg-success-bg px-2.5 py-0.5 rounded-full border border-success/20">
                   <span className="size-1.5 rounded-full bg-success" />
-                  Atelier en ligne
+                  Atelier connecté
                 </span>
               </div>
             </div>
 
-            {/* Capture réelle */}
             <div className="relative w-full aspect-[16/9] bg-surface-muted overflow-hidden">
               <Image
                 src="/screenshots/dashboard.png"

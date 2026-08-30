@@ -47,26 +47,17 @@ export function LandingNavbar({ isLoggedIn = false }: { isLoggedIn?: boolean }) 
           {isLoggedIn ? (
             <Link
               href="/tableau-de-bord"
-              className="inline-flex items-center justify-center rounded-full bg-primary-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary-800 transition-colors"
+              className="inline-flex items-center justify-center rounded-full bg-primary-900 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-primary-800 transition-colors"
             >
               Mon Atelier &rarr;
             </Link>
           ) : (
-            <>
-              <Link
-                href="/connexion"
-                className="px-4 py-2 text-sm font-medium text-text-muted hover:text-text transition-colors"
-              >
-                Connexion
-              </Link>
-              <Link
-                href="/inscription"
-                className="inline-flex items-center gap-2 rounded-full bg-primary-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary-800 active:bg-primary-950 transition-all"
-              >
-                <span>Essayer gratuitement</span>
-                <ArrowRight className="size-4" />
-              </Link>
-            </>
+            <Link
+              href="/inscription"
+              className="inline-flex items-center justify-center rounded-full bg-primary-900 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-primary-800 active:scale-98 transition-all cursor-pointer"
+            >
+              Essai gratuit &rarr;
+            </Link>
           )}
         </div>
 

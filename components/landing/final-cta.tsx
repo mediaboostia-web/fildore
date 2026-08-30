@@ -1,103 +1,57 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, MessageCircle, Users, ShieldCheck, TrendingUp, Star } from "lucide-react";
+import { ArrowRight, MessageCircle, CheckCircle2 } from "lucide-react";
 
 export function LandingFinalCTA() {
-  const stats = [
-    {
-      value: "+500",
-      label: "Ateliers Actifs",
-      detail: "Bénin, Côte d'Ivoire, Sénégal, Togo",
-      icon: Users,
-    },
-    {
-      value: "100%",
-      label: "Mesures Protégées",
-      detail: "Retrouvées en 2 secondes",
-      icon: ShieldCheck,
-    },
-    {
-      value: "0 Retard",
-      label: "Délais Maîtrisés",
-      detail: "Alertes automatiques d'essayage",
-      icon: TrendingUp,
-    },
-    {
-      value: "4.9 / 5",
-      label: "Satisfaction",
-      detail: "Par les maîtres tailleurs",
-      icon: Star,
-    },
-  ];
-
   return (
-    <section className="relative overflow-hidden py-16 md:py-24 bg-surface border-t border-border">
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-10">
-        {/* Bandeau Chiffres Clés & Impact d'Ateliers intégré */}
-        <div className="rounded-2xl border border-border bg-canvas/40 p-6 sm:p-8">
-          <div className="grid grid-cols-2 gap-6 lg:grid-cols-4">
-            {stats.map((stat, idx) => {
-              const Icon = stat.icon;
-              return (
-                <div key={idx} className="flex items-center gap-3.5">
-                  <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary-100 text-primary-900 shadow-2xs">
-                    <Icon className="size-5" />
-                  </div>
-                  <div>
-                    <p className="text-xl sm:text-2xl font-black text-primary-950 leading-tight">
-                      {stat.value}
-                    </p>
-                    <p className="text-xs font-bold text-text mt-0.5">{stat.label}</p>
-                    <p className="text-[11px] text-text-muted hidden sm:block">{stat.detail}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+    <section className="relative overflow-hidden py-16 md:py-24 bg-canvas border-t border-border">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Grand Cadre Communauté WhatsApp avec fond dégradé premium captivant */}
+        <div className="relative rounded-3xl border border-primary-800/40 bg-gradient-to-br from-[#102B28] via-[#173B36] to-[#1E4D45] p-6 sm:p-10 lg:p-14 shadow-2xl overflow-hidden text-white">
+          {/* Halos lumineux subtils d'ambiance */}
+          <div className="absolute -right-20 -top-20 size-80 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
+          <div className="absolute -left-20 -bottom-20 size-80 rounded-full bg-accent-500/10 blur-3xl pointer-events-none" />
 
-        {/* Grand Cadre Communauté WhatsApp */}
-        <div className="relative rounded-3xl border border-border bg-surface p-6 sm:p-10 lg:p-12 shadow-sm overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
             {/* Colonne Gauche : Titre + Bullets + CTAs */}
             <div className="lg:col-span-7 space-y-6">
-              <div className="inline-flex items-center gap-2 rounded-full bg-[#E7F7EE] px-3.5 py-1 text-xs font-bold text-[#128C7E] border border-[#25D366]/30">
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1 text-xs font-bold text-emerald-300 border border-white/15 backdrop-blur-xs">
                 <MessageCircle className="size-4 text-[#25D366]" />
                 <span>Espace d&apos;échange & entraide couturiers</span>
               </div>
 
-              <div className="space-y-2">
-                <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-primary-950 leading-tight">
+              <div className="space-y-3">
+                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-[1.15]">
                   Rejoignez la Communauté <br />
-                  <span className="text-[#128C7E]">WhatsApp Fildor</span>
+                  <span className="text-[#25D366]">WhatsApp Fildor</span>
                 </h2>
-                <p className="text-sm text-text-muted leading-relaxed">
-                  Échangez directement avec l&apos;équipe Fildor et des centaines d&apos;ateliers pour partager vos modèles, astuces et retours d&apos;expérience.
+                <p className="text-sm sm:text-base text-white/80 leading-relaxed max-w-xl">
+                  Échangez directement avec l&apos;équipe Fildor et des centaines d&apos;ateliers pour partager vos modèles, astuces de confection et retours d&apos;expérience.
                 </p>
               </div>
 
-              <ul className="space-y-2 text-xs sm:text-sm font-semibold text-text">
+              <ul className="space-y-2.5 pt-1 text-xs sm:text-sm font-semibold text-white/90">
                 <li className="flex items-center gap-2.5">
-                  <span className="text-primary-800 text-xs font-black">✔</span>
+                  <CheckCircle2 className="size-4 text-[#25D366] shrink-0" />
                   <span>Posez vos questions et obtenez des réponses directes de l&apos;équipe</span>
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <span className="text-primary-800 text-xs font-black">✔</span>
-                  <span>Découvrez de nouvelles coupes et modèles inspirants</span>
+                  <CheckCircle2 className="size-4 text-[#25D366] shrink-0" />
+                  <span>Découvrez de nouvelles coupes et modèles inspirants chaque semaine</span>
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <span className="text-primary-800 text-xs font-black">✔</span>
-                  <span>Support prioritaire et assistance gratuite</span>
+                  <CheckCircle2 className="size-4 text-[#25D366] shrink-0" />
+                  <span>Support prioritaire et entraide entre maîtres tailleurs</span>
                 </li>
               </ul>
 
               {/* CTAs */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-3">
                 <Link
                   href="https://wa.me/22997000000?text=Bonjour,%20je%20souhaite%20rejoindre%20la%20communaute%20Fildor"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#25D366] px-6 py-3.5 text-sm font-bold text-white shadow-sm hover:brightness-95 active:scale-98 transition-all cursor-pointer"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#25D366] px-6 py-3.5 text-sm font-extrabold text-white shadow-lg hover:brightness-95 active:scale-98 transition-all cursor-pointer"
                 >
                   <MessageCircle className="size-4.5" />
                   <span>Rejoindre sur WhatsApp</span>
@@ -105,17 +59,17 @@ export function LandingFinalCTA() {
 
                 <Link
                   href="/inscription"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary-900 px-6 py-3.5 text-sm font-bold text-white shadow-sm hover:bg-primary-800 active:scale-98 transition-all cursor-pointer"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-white text-primary-950 px-6 py-3.5 text-sm font-extrabold shadow-lg hover:bg-white/90 active:scale-98 transition-all cursor-pointer"
                 >
-                  <span>Créer mon atelier gratuit</span>
+                  <span>Essayer gratuitement</span>
                   <ArrowRight className="size-4" />
                 </Link>
               </div>
             </div>
 
-            {/* Colonne Droite : Photo Authentique Styliste */}
+            {/* Colonne Droite : Photo Styliste avec badge */}
             <div className="lg:col-span-5 relative">
-              <div className="relative h-[320px] sm:h-[360px] w-full rounded-2xl overflow-hidden border border-border bg-primary-950 shadow-md">
+              <div className="relative h-[320px] sm:h-[360px] w-full rounded-2xl overflow-hidden border border-white/20 bg-primary-950 shadow-2xl">
                 <Image
                   src="/images/tailor-designer.jpg"
                   alt="Styliste et créateur de mode Fildor"
@@ -124,7 +78,7 @@ export function LandingFinalCTA() {
                   sizes="(max-width: 1024px) 100vw, 40vw"
                   priority
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                 
                 <div className="absolute bottom-4 left-4 right-4 text-white">
                   <p className="text-sm font-bold">Groupe d&apos;entraide & Modélistes</p>

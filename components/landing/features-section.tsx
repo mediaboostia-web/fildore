@@ -246,13 +246,13 @@ export function LandingFeaturesSection() {
 
               <div className="grid grid-cols-2 gap-2 pt-1">
                 <div className="relative aspect-4/3 rounded-lg overflow-hidden border border-border">
-                  <Image src="/images/tailor-modeliste.jpg" alt="Modèle" fill className="object-cover" />
+                  <Image src="/images/fildor_modele_afrique.jpg" alt="Modèle Robe Kaba" fill className="object-cover object-top" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-1.5">
                     <span className="text-[10px] text-white font-bold">Robe Kaba</span>
                   </div>
                 </div>
                 <div className="relative aspect-4/3 rounded-lg overflow-hidden border border-border">
-                  <Image src="/images/tailor-couturiere.jpg" alt="Modèle" fill className="object-cover" />
+                  <Image src="/images/fildor_modele.jpg" alt="Modèle Ensemble Wax" fill className="object-cover object-top" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-1.5">
                     <span className="text-[10px] text-white font-bold">Ensemble Wax</span>
                   </div>
