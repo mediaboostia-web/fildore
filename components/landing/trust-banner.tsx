@@ -1,4 +1,4 @@
-import { ShieldCheck, Sparkles, TrendingUp, Users } from "lucide-react";
+import { ShieldCheck, Star, TrendingUp, Users } from "lucide-react";
 
 export function LandingTrustBanner() {
   const stats = [
@@ -24,7 +24,7 @@ export function LandingTrustBanner() {
       value: "4.9 / 5",
       label: "Note de Satisfaction",
       detail: "Recommandé par les modélistes",
-      icon: Sparkles,
+      icon: Star,
     },
   ];
 

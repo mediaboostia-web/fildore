@@ -2,7 +2,7 @@ import { formatXof } from "./currency-input";
 import { cn } from "@/lib/utils/cn";
 import { computeBalance } from "@/lib/money/balance";
 import { FildorLogo } from "@/components/brand/fildor-logo";
-import { Scissors, CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 
 export type FildorDocumentType = "devis" | "bon_commande" | "recu" | "facture" | "bon_livraison";
 
@@ -47,8 +47,10 @@ export function DocumentPreview({
   number,
   date,
   organizationName,
-  organizationPhone = "+229 97 00 00 00",
-  organizationAddress = "Cotonou, Bénin",
+  // Aucune valeur d'atelier inventée par défaut : ces coordonnées partent chez
+  // le client. L'appelant les lit sur l'atelier réel (`getWorkshop`).
+  organizationPhone,
+  organizationAddress,
   clientName,
   clientPhone,
   clientAddress,
@@ -79,7 +81,11 @@ export function DocumentPreview({
           <div>
             <p className="text-base font-extrabold text-primary-950">{organizationName}</p>
             <p className="text-xs text-text-muted">Maison de Couture & Confection Sur-Mesure</p>
-            <p className="text-xs text-text-muted mt-0.5">{organizationAddress} · {organizationPhone}</p>
+            {organizationAddress || organizationPhone ? (
+              <p className="mt-0.5 text-xs text-text-muted">
+                {[organizationAddress, organizationPhone].filter(Boolean).join(" · ")}
+              </p>
+            ) : null}
           </div>
         </div>
 

@@ -1,21 +1,19 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireRole } from "@/lib/auth/session";
+import { requireCan } from "@/lib/auth/session";
 import { updateWorkshop } from "@/lib/mock-data/workshop";
 import { createUser, findUserByEmail } from "@/lib/mock-data/users";
 import { workshopSettingsSchema, inviteMemberSchema } from "./schemas";
 import type { ActionResult } from "@/features/clients/actions";
 
 /**
- * Coordonnées de l'atelier et gestion d'équipe : réservées au propriétaire, ici
- * comme dans l'UI (`RoleGate` sur la page Paramètres). Le contrôle serveur est
- * le seul qui compte — les Server Actions ne passent pas par `proxy.ts`.
+ * Coordonnées de l'atelier et gestion d'équipe. Le contrôle serveur est le seul
+ * qui compte — les Server Actions ne passent pas par `proxy.ts`. L'interface
+ * masque les mêmes actions via `RoleGate`, à partir des mêmes droits.
  */
-const WORKSHOP_ADMIN_ROLES = ["owner"] as const;
-
 export async function updateWorkshopAction(input: unknown): Promise<ActionResult<{ name: string }>> {
-  await requireRole([...WORKSHOP_ADMIN_ROLES]);
+  await requireCan("atelier:parametres");
 
   const parsed = workshopSettingsSchema.safeParse(input);
   if (!parsed.success) {
@@ -35,7 +33,7 @@ export async function updateWorkshopAction(input: unknown): Promise<ActionResult
 export async function inviteMemberAction(
   input: unknown
 ): Promise<ActionResult<{ id: string; fullName: string }>> {
-  const currentUser = await requireRole([...WORKSHOP_ADMIN_ROLES]);
+  const currentUser = await requireCan("equipe:gerer");
 
   const parsed = inviteMemberSchema.safeParse(input);
   if (!parsed.success) {

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { User, Users, Palette, CheckCircle2, ArrowRight, Sparkles, Shield, Clock } from "lucide-react";
+import { User, Users, Palette, CheckCircle2, ArrowRight, MessageCircle, ClipboardList, Receipt, Shield, Clock } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
 const AUDIENCES = [
@@ -31,7 +31,7 @@ const AUDIENCES = [
         text: "Visualisez les tenues à livrer cette semaine et prévenez vos clients à temps.",
       },
       {
-        icon: Sparkles,
+        icon: MessageCircle,
         iconTone: "text-accent-600",
         title: "Reçus WhatsApp en 1 clic",
         text: "Partagez un récapitulatif clair de commande et le solde restant sans calculatrice.",
@@ -63,7 +63,7 @@ const AUDIENCES = [
         text: "Tracez chaque versement pour financer les tissus et fournitures en toute transparence.",
       },
       {
-        icon: Sparkles,
+        icon: ClipboardList,
         iconTone: "text-accent-600",
         title: "Fiches de travail claires",
         text: "Chaque commande a sa fiche imprimable ou consultable sans risque d'erreur.",
@@ -89,7 +89,7 @@ const AUDIENCES = [
         text: "Ajoutez photos, prix de confection et métrages de tissus recommandés.",
       },
       {
-        icon: Sparkles,
+        icon: Receipt,
         iconTone: "text-accent-600",
         title: "Factures & Devis de standing",
         text: "Générez des factures professionnelles à l'image de votre marque.",
@@ -111,8 +111,6 @@ export function LandingTargetAudiences() {
 
   return (
     <section className="relative overflow-hidden py-16 md:py-24 bg-surface">
-      {/* Accent de fond doux */}
-      <div className="absolute top-1/2 left-0 -translate-y-1/2 size-96 rounded-full bg-primary-100/40 blur-3xl pointer-events-none" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-10">
         {/* En-tête de section */}
@@ -127,7 +125,7 @@ export function LandingTargetAudiences() {
 
         {/* Barre de navigation d'onglets */}
         <div className="flex justify-center">
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-surface-muted/70 p-1.5 shadow-xs backdrop-blur-sm">
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-muted p-1.5 shadow-xs">
             {AUDIENCES.map((aud) => {
               const active = aud.id === activeTab;
               const Icon = aud.icon;
@@ -152,7 +150,7 @@ export function LandingTargetAudiences() {
         </div>
 
         {/* Grand Panneau Interactif avec 3 Cartes / Avantages + Vrai écran d'application */}
-        <div className="rounded-3xl border border-border/80 bg-canvas/60 p-5 sm:p-8 lg:p-10 shadow-xl backdrop-blur-md">
+        <div className="rounded-[var(--radius-xl)] border border-border bg-canvas p-5 sm:p-8 lg:p-10 shadow-sm">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
             {/* Colonne Gauche : Titre + 3 Points Clés */}
             <div className="lg:col-span-7 space-y-6">

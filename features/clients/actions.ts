@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireCurrentUser } from "@/lib/auth/session";
+import { requireCan } from "@/lib/auth/session";
 import { clientFormSchema } from "./schemas";
 import { createClient, updateClient, archiveClient, findClientByPhone } from "@/lib/mock-data/clients";
 import type { Client } from "./types";
@@ -14,15 +14,14 @@ export interface ActionResult<T> {
 }
 
 /**
- * Vérifie session + payload Zod avant toute mutation (règle non négociable #4
- * du cahier des charges). Le contrôle de rôle fin par membre d'équipe arrive
- * en V1 (cahier des charges §7.2) — pour l'instant, tout utilisateur
- * authentifié de l'atelier peut gérer les clients.
+ * Vérifie le droit métier puis le payload Zod avant toute mutation (règle non
+ * négociable #4 du cahier des charges). Les droits sont définis une seule fois
+ * dans `features/auth/permissions.ts`.
  */
 export async function createClientAction(
   formData: FormData
 ): Promise<ActionResult<{ id: string; client: Client }>> {
-  const user = await requireCurrentUser();
+  const user = await requireCan("client:creer");
 
   const parsed = clientFormSchema.safeParse({
     firstName: formData.get("firstName"),
@@ -57,7 +56,7 @@ export async function updateClientAction(
   clientId: string,
   formData: FormData
 ): Promise<ActionResult<{ id: string }>> {
-  await requireCurrentUser();
+  await requireCan("client:modifier");
 
   const parsed = clientFormSchema.partial().safeParse({
     firstName: formData.get("firstName") || undefined,
@@ -80,7 +79,7 @@ export async function updateClientAction(
 }
 
 export async function archiveClientAction(clientId: string): Promise<ActionResult<{ id: string }>> {
-  await requireCurrentUser();
+  await requireCan("client:archiver");
   const client = await archiveClient(clientId);
   revalidatePath("/clients");
   return { success: true, data: { id: client.id } };

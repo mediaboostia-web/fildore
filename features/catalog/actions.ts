@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireCurrentUser } from "@/lib/auth/session";
+import { requireCan } from "@/lib/auth/session";
 import { catalogItemFormSchema, catalogItemUpdateSchema } from "./schemas";
 import {
   createCatalogItem,
@@ -12,7 +12,7 @@ import {
 import type { ActionResult } from "@/features/clients/actions";
 
 export async function createCatalogItemAction(input: unknown): Promise<ActionResult<{ id: string }>> {
-  const user = await requireCurrentUser();
+  const user = await requireCan("catalogue:gerer");
   const parsed = catalogItemFormSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, fieldErrors: parsed.error.flatten().fieldErrors };
@@ -28,7 +28,7 @@ export async function createCatalogItemAction(input: unknown): Promise<ActionRes
  * leur snapshot de mesures.
  */
 export async function updateCatalogItemAction(input: unknown): Promise<ActionResult<{ id: string }>> {
-  const user = await requireCurrentUser();
+  const user = await requireCan("catalogue:gerer");
   const parsed = catalogItemUpdateSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, fieldErrors: parsed.error.flatten().fieldErrors };
@@ -47,7 +47,7 @@ export async function updateCatalogItemAction(input: unknown): Promise<ActionRes
 }
 
 export async function archiveCatalogItemAction(itemId: string): Promise<ActionResult<{ id: string }>> {
-  const user = await requireCurrentUser();
+  const user = await requireCan("catalogue:gerer");
 
   const existing = await getCatalogItemById(itemId);
   if (!existing || existing.workshopId !== user.workshopId) {

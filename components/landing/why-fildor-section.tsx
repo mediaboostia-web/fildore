@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CheckCircle2, XCircle, ArrowRight, Sparkle, Zap } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowRight, Zap } from "lucide-react";
 
 export function LandingWhyFildorSection() {
   const comparisons = [

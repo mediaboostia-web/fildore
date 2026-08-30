@@ -1,14 +1,18 @@
 import { notFound } from "next/navigation";
+import { Scissors } from "lucide-react";
 import { Breadcrumbs } from "@/components/shared/breadcrumbs";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { LinkButton } from "@/components/ui/link-button";
 import { getClientById } from "@/lib/mock-data/clients";
 import { getProfileById } from "@/lib/mock-data/measurement-profiles";
 import { clientDisplayName } from "@/features/clients/types";
 import { GARMENT_TYPE_LABELS } from "@/features/measurements/constants";
 import { formatDateFr } from "@/lib/utils/dates";
+import { getCurrentUser } from "@/lib/auth/session";
 import { DuplicateProfileDialog } from "./_components/duplicate-profile-dialog";
+import { MeasurementsCard } from "./_components/measurements-card";
 
 export default async function ProfilMesuresPage({
   params,
@@ -16,7 +20,11 @@ export default async function ProfilMesuresPage({
   params: Promise<{ clientId: string; profileId: string }>;
 }) {
   const { clientId, profileId } = await params;
-  const [client, profile] = await Promise.all([getClientById(clientId), getProfileById(profileId)]);
+  const [client, profile, currentUser] = await Promise.all([
+    getClientById(clientId),
+    getProfileById(profileId),
+    getCurrentUser(),
+  ]);
 
   // Un profil qui n'appartient pas à ce client ne doit jamais s'afficher ici,
   // même en devinant un ID valide (PROJECT_RULES.md §7 — isolation des données).
@@ -36,7 +44,23 @@ export default async function ProfilMesuresPage({
         title={profile.label}
         description={`${GARMENT_TYPE_LABELS[profile.garmentType]} · ${clientDisplayName(client)}`}
         action={
-          <DuplicateProfileDialog profileId={profileId} clientId={clientId} currentLabel={profile.label} />
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <DuplicateProfileDialog
+              profileId={profileId}
+              clientId={clientId}
+              currentLabel={profile.label}
+            />
+            {/* Le couturier vient de vérifier les mesures : la commande part
+                d'ici avec le client ET le profil déjà choisis. */}
+            <LinkButton
+              href={`/commandes/nouveau/client?client=${clientId}&profil=${profileId}`}
+              size="sm"
+              fullWidth="mobile"
+              icon={<Scissors className="size-4" aria-hidden="true" />}
+            >
+              Commander avec ces mesures
+            </LinkButton>
+          </div>
         }
       />
 
@@ -47,34 +71,7 @@ export default async function ProfilMesuresPage({
           </div>
         ) : null}
 
-        <Card>
-          <p className="mb-3 text-sm font-medium text-text">Mesures (cm)</p>
-          <dl className="grid gap-x-6 gap-y-2 sm:grid-cols-2">
-            {Object.entries(profile.standardMeasurements).map(([field, value]) => (
-              <div key={field} className="flex items-center justify-between border-b border-border py-1.5 text-sm">
-                <dt className="text-text-muted">{field}</dt>
-                <dd className="font-medium text-text">{value} cm</dd>
-              </div>
-            ))}
-          </dl>
-
-          {profile.customMeasurements.length > 0 ? (
-            <>
-              <p className="mb-3 mt-5 text-sm font-medium text-text">Mesures personnalisées</p>
-              <dl className="grid gap-x-6 gap-y-2 sm:grid-cols-2">
-                {profile.customMeasurements.map((measurement) => (
-                  <div
-                    key={measurement.label}
-                    className="flex items-center justify-between border-b border-border py-1.5 text-sm"
-                  >
-                    <dt className="text-text-muted">{measurement.label}</dt>
-                    <dd className="font-medium text-text">{measurement.valueCm} cm</dd>
-                  </div>
-                ))}
-              </dl>
-            </>
-          ) : null}
-        </Card>
+        <MeasurementsCard profile={profile} currentUserRole={currentUser?.role} />
 
         {profile.observations ? (
           <Card>

@@ -13,7 +13,7 @@ test.describe("Gestion des clients", () => {
     await expect(page.getByRole("heading", { name: "Clients" })).toBeVisible();
 
     // Recherche d'un client existant
-    const searchInput = page.getByPlaceholder("Nom ou numéro de téléphone");
+    const searchInput = page.getByPlaceholder("Nom, numéro, ville ou quartier");
     await searchInput.fill("Adjoavi");
 
     // Vérifie que le client recherché est présent dans la page

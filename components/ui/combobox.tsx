@@ -4,6 +4,7 @@ import { useId, useMemo, useState } from "react";
 import { Check, ChevronDown, Search } from "lucide-react";
 import * as Popover from "@radix-ui/react-popover";
 import { cn } from "@/lib/utils/cn";
+import { matchesQuery } from "@/lib/utils/search";
 
 export interface ComboboxOption {
   value: string;
@@ -53,11 +54,12 @@ export function Combobox({
 
   const selected = options.find((option) => option.value === value);
 
-  const filteredOptions = useMemo(() => {
-    const query = search.trim().toLowerCase();
-    if (!query) return options;
-    return options.filter((option) => option.label.toLowerCase().includes(query));
-  }, [options, search]);
+  const filteredOptions = useMemo(
+    // Même recherche que les listes : accents ignorés, numéros retrouvés tels
+    // qu'on les lit. « Houngbedji » doit trouver « Houngbédji ».
+    () => options.filter((option) => matchesQuery([option.label, option.description], search)),
+    [options, search]
+  );
 
   return (
     <div className={cn("flex flex-col gap-1.5", containerClassName)}>

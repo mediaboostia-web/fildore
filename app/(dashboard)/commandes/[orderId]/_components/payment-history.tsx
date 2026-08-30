@@ -21,9 +21,6 @@ import { formatAmount } from "@/lib/money/format";
 import { formatDateFr } from "@/lib/utils/dates";
 import type { Role } from "@/features/auth/types";
 
-/** Annuler un encaissement touche la trésorerie : même règle qu'en Server Action. */
-const PAYMENT_CANCEL_ROLES: Role[] = ["owner"];
-
 export interface PaymentHistoryProps {
   payments: Payment[];
   currentUserRole: Role | null | undefined;
@@ -119,7 +116,7 @@ export function PaymentHistory({ payments, currentUserRole }: PaymentHistoryProp
                 ) : null}
 
                 {!isCancelled ? (
-                  <RoleGate allow={PAYMENT_CANCEL_ROLES} role={currentUserRole}>
+                  <RoleGate require="paiement:annuler" role={currentUserRole}>
                     <button
                       type="button"
                       onClick={() => setTarget(payment)}

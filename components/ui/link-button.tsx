@@ -1,16 +1,27 @@
 import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
-import { VARIANT_CLASSES, SIZE_CLASSES } from "./button";
-import type { ButtonVariant, ButtonSize } from "./button";
+import {
+  BUTTON_BASE_CLASSES,
+  SIZE_CLASSES,
+  VARIANT_CLASSES,
+  widthClass,
+} from "./button-styles";
+import type { ButtonVariant, ButtonSize, ButtonWidth } from "./button-styles";
 import { cn } from "@/lib/utils/cn";
 
 export interface LinkButtonProps extends ComponentProps<typeof Link> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   icon?: ReactNode;
-  fullWidth?: boolean;
+  /** `"mobile"` : pleine largeur sous 640 px, largeur naturelle au-dessus. */
+  fullWidth?: ButtonWidth;
 }
 
+/**
+ * Lien présenté comme un bouton. Rendu côté serveur : les styles viennent de
+ * `button-styles.ts`, qui n'est pas un module client — importer `widthClass`
+ * depuis `button.tsx` ferait échouer le build au prérendu.
+ */
 export function LinkButton({
   variant = "primary",
   size = "md",
@@ -23,13 +34,10 @@ export function LinkButton({
   return (
     <Link
       className={cn(
-        "inline-flex items-center justify-center rounded-xl font-medium tracking-tight select-none",
-        "transition-all duration-150 ease-out cursor-pointer",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-700 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-        "[&_svg]:pointer-events-none [&_svg]:shrink-0",
+        BUTTON_BASE_CLASSES,
         VARIANT_CLASSES[variant],
         SIZE_CLASSES[size],
-        fullWidth && "w-full",
+        widthClass(fullWidth),
         className
       )}
       {...props}

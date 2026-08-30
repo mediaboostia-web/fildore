@@ -36,3 +36,26 @@ export function isWithinNextDays(isoDate: string, today: string, days: number): 
 export function isPast(isoDate: string, today: string): boolean {
   return daysBetween(today, isoDate) < 0;
 }
+
+/** Ajoute (ou retire) des jours à une date `YYYY-MM-DD`, en gardant le même format. */
+export function addDaysIso(isoDate: string, days: number): string {
+  const date = new Date(isoDate);
+  date.setDate(date.getDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+
+/**
+ * Date du jour au format `YYYY-MM-DD`.
+ *
+ * Réservée aux Server Actions et aux formulaires : les sélecteurs testables
+ * reçoivent toujours `today` en paramètre, ils ne l'appellent pas eux-mêmes.
+ */
+export function todayIso(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+/** Format court lisible pour une date `YYYY-MM-DD` : « 06/09/2026 ». */
+export function formatDateShortFr(isoDate: string): string {
+  const [year, month, day] = isoDate.split("-");
+  return `${day}/${month}/${year}`;
+}

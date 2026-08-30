@@ -2,29 +2,44 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Check, MapPin, Phone, Plus, Scissors, Search, UserPlus } from "lucide-react";
+import { ArrowRight, Check, MapPin, Phone, Plus, Scissors, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { SearchInput } from "@/components/ui/search-input";
 import { Badge } from "@/components/ui/badge";
 import { useOrderWizardStore } from "@/features/orders/store";
 import { createClientAction } from "@/features/clients/actions";
 import { formatPhoneDisplay } from "@/lib/utils/phone";
-import type { Client } from "@/features/clients/types";
-import { clientDisplayName } from "@/features/clients/types";
-import type { WizardCatalogItem } from "@/features/orders/wizard-actions";
+import { matchesQuery } from "@/lib/utils/search";
+import type { WizardCatalogItem, WizardClient } from "@/features/orders/wizard-actions";
 
 interface Props {
-  initialClients: Client[];
+  initialClients: WizardClient[];
   /** Modèle du catalogue à l'origine de la commande, si elle vient d'une fiche modèle. */
   catalogItem?: WizardCatalogItem | null;
+  /** Client déjà choisi, si la commande part d'une fiche client. */
+  preselectedClient?: WizardClient | null;
+  /** Profil de mesures déjà choisi (`?profil=`), transmis à l'étape 3. */
+  preselectedProfileId?: string | null;
 }
 
-export function OrderWizardClientStepClient({ initialClients, catalogItem }: Props) {
+function displayName(client: WizardClient): string {
+  return `${client.firstName} ${client.lastName}`.trim();
+}
+
+export function OrderWizardClientStepClient({
+  initialClients,
+  catalogItem,
+  preselectedClient,
+  preselectedProfileId,
+}: Props) {
   const router = useRouter();
   const { draft, setStepData } = useOrderWizardStore();
-  const [clients, setClients] = useState<Client[]>(initialClients);
+  const [clients, setClients] = useState<WizardClient[]>(initialClients);
   const [search, setSearch] = useState("");
-  const [selectedClientId, setSelectedClientId] = useState<string>(draft.clientId || "");
+  const [selectedClientId, setSelectedClientId] = useState<string>(
+    preselectedClient?.id || draft.clientId || ""
+  );
   const [isCreatingNew, setIsCreatingNew] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [errorMsg, setErrorMsg] = useState("");
@@ -50,15 +65,20 @@ export function OrderWizardClientStepClient({ initialClients, catalogItem }: Pro
     });
   }, [catalogItem, catalogItemId, draft.catalogItemId, setStepData]);
 
-  const filteredClients = clients.filter((c) => {
-    if (!search.trim()) return true;
-    const q = search.toLowerCase();
-    return (
-      c.firstName.toLowerCase().includes(q) ||
-      c.lastName.toLowerCase().includes(q) ||
-      c.phone.includes(q)
-    );
-  });
+  // Préremplissage depuis une fiche client : le brouillon porte le client (et son
+  // profil de mesures s'il a été choisi) dès l'arrivée sur l'étape.
+  const preselectedClientId = preselectedClient?.id;
+  useEffect(() => {
+    if (!preselectedClientId || draft.clientId === preselectedClientId) return;
+    setStepData({
+      clientId: preselectedClientId,
+      ...(preselectedProfileId ? { measurementProfileId: preselectedProfileId } : {}),
+    });
+  }, [preselectedClientId, preselectedProfileId, draft.clientId, setStepData]);
+
+  const filteredClients = clients.filter((client) =>
+    matchesQuery([client.firstName, client.lastName, client.phone, client.city, client.district], search)
+  );
 
   const handleSelectClient = (clientId: string) => {
     setSelectedClientId(clientId);
@@ -76,7 +96,7 @@ export function OrderWizardClientStepClient({ initialClients, catalogItem }: Pro
     setErrorMsg("");
 
     if (!newFirstName.trim() || !newLastName.trim() || !newPhone.trim() || !newCity.trim()) {
-      setErrorMsg("Veuillez renseigner le prénom, nom, téléphone et ville.");
+      setErrorMsg("Renseignez le prénom, le nom, le téléphone et la ville.");
       return;
     }
 
@@ -92,20 +112,32 @@ export function OrderWizardClientStepClient({ initialClients, catalogItem }: Pro
       if (res.success && res.data) {
         // Le client renvoyé par le serveur fait foi (téléphone normalisé,
         // identifiant d'atelier réel) — on n'en refabrique pas une copie ici.
-        setClients((prev) => [res.data!.client, ...prev]);
+        const created = res.data.client;
+        setClients((prev) => [
+          {
+            id: created.id,
+            firstName: created.firstName,
+            lastName: created.lastName,
+            phone: created.phone,
+            city: created.city,
+            district: created.district,
+          },
+          ...prev,
+        ]);
         setSelectedClientId(res.data.id);
         setStepData({ clientId: res.data.id });
         setIsCreatingNew(false);
-        // Reset
         setNewFirstName("");
         setNewLastName("");
         setNewPhone("");
         setNewDistrict("");
       } else {
-        setErrorMsg(res.error || "Impossible de créer le client.");
+        setErrorMsg(res.error || "Le client n'a pas pu être enregistré. Réessayez.");
       }
     });
   };
+
+  const selectedClient = clients.find((client) => client.id === selectedClientId);
 
   return (
     <div className="space-y-6">
@@ -126,38 +158,53 @@ export function OrderWizardClientStepClient({ initialClients, catalogItem }: Pro
         </div>
       ) : null}
 
+      {preselectedClient && selectedClientId === preselectedClient.id ? (
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-[var(--radius-md)] border border-primary-100 bg-primary-50/60 p-3.5">
+          <p className="text-sm text-text">
+            Commande pour <strong>{displayName(preselectedClient)}</strong>
+            {preselectedProfileId ? " — ses mesures sont déjà sélectionnées." : "."}
+          </p>
+          <Button
+            type="button"
+            variant="tertiary"
+            size="sm"
+            onClick={() => {
+              setSelectedClientId("");
+              setStepData({ clientId: "" });
+            }}
+          >
+            Choisir un autre client
+          </Button>
+        </div>
+      ) : null}
+
       {isCreatingNew ? (
         <form
           onSubmit={handleCreateInlineClient}
-          className="rounded-lg border border-primary-800 bg-primary-50/20 p-5 space-y-4 shadow-sm"
+          className="space-y-4 rounded-lg border border-primary-800 bg-primary-50/20 p-5 shadow-sm"
+          noValidate
         >
           <div className="flex items-center justify-between border-b border-primary-800/20 pb-3">
             <h3 className="font-semibold text-text">Création rapide du client</h3>
-            <Button
-              type="button"
-              variant="tertiary"
-              size="sm"
-              onClick={() => setIsCreatingNew(false)}
-            >
-              Annuler
-            </Button>
           </div>
 
           {errorMsg && (
-            <div className="rounded-md bg-danger-bg p-3 text-sm text-danger">{errorMsg}</div>
+            <div className="rounded-md bg-danger-bg p-3 text-sm text-danger" role="alert">
+              {errorMsg}
+            </div>
           )}
 
           <div className="grid gap-3 sm:grid-cols-2">
             <Input
               label="Prénom"
-              placeholder="Ex: Christiane"
+              placeholder="Ex. Christiane"
               required
               value={newFirstName}
               onChange={(e) => setNewFirstName(e.target.value)}
             />
             <Input
               label="Nom"
-              placeholder="Ex: Dossou"
+              placeholder="Ex. Dossou"
               required
               value={newLastName}
               onChange={(e) => setNewLastName(e.target.value)}
@@ -183,40 +230,44 @@ export function OrderWizardClientStepClient({ initialClients, catalogItem }: Pro
 
           <Input
             label="Quartier"
-            placeholder="Ex: Cadjèhoun"
+            placeholder="Ex. Cadjèhoun"
             value={newDistrict}
             onChange={(e) => setNewDistrict(e.target.value)}
           />
 
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="flex flex-col-reverse gap-2 border-t border-primary-800/20 pt-3 sm:flex-row sm:justify-end">
             <Button
               type="button"
               variant="secondary"
-              size="sm"
+              fullWidth="mobile"
               onClick={() => setIsCreatingNew(false)}
             >
-              Annuler
+              Revenir à la liste
             </Button>
-            <Button type="submit" size="sm" isLoading={isPending} icon={<Plus className="size-4" />}>
+            <Button
+              type="submit"
+              fullWidth="mobile"
+              isLoading={isPending}
+              icon={<Plus className="size-4" />}
+            >
               Enregistrer et sélectionner
             </Button>
           </div>
         </form>
       ) : (
         <div className="space-y-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <div className="relative flex-1">
-              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-text-subtle" />
-              <Input
-                placeholder="Rechercher par nom ou numéro..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-9"
-              />
-            </div>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <SearchInput
+              className="flex-1"
+              value={search}
+              onChange={setSearch}
+              label="Rechercher un client"
+              placeholder="Nom, numéro ou quartier"
+            />
             <Button
               type="button"
               variant="secondary"
+              fullWidth="mobile"
               onClick={() => setIsCreatingNew(true)}
               icon={<UserPlus className="size-4" />}
             >
@@ -257,7 +308,7 @@ export function OrderWizardClientStepClient({ initialClients, catalogItem }: Pro
                     }`}
                   >
                     <div className="flex flex-col gap-0.5">
-                      <span className="font-medium text-text">{clientDisplayName(client)}</span>
+                      <span className="font-medium text-text">{displayName(client)}</span>
                       <div className="flex items-center gap-3 text-xs text-text-muted">
                         <span className="flex items-center gap-1">
                           <Phone className="size-3" />
@@ -288,14 +339,15 @@ export function OrderWizardClientStepClient({ initialClients, catalogItem }: Pro
         </div>
       )}
 
-      <div className="flex justify-end pt-4 border-t border-border">
+      <div className="flex border-t border-border pt-4 sm:justify-end">
         <Button
           type="button"
+          fullWidth="mobile"
           onClick={handleNext}
           disabled={!selectedClientId}
           icon={<ArrowRight className="size-4" />}
         >
-          Continuer vers Détails
+          {selectedClient ? `Continuer avec ${selectedClient.firstName}` : "Continuer vers Détails"}
         </Button>
       </div>
     </div>

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Bell, AlertTriangle, Clock, Wallet, X } from "lucide-react";
+import { Bell, AlertTriangle, Clock, Inbox, Wallet, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { WorkshopNotification } from "@/features/dashboard/notifications";
 
@@ -24,11 +24,13 @@ const TONE_STYLES: Record<WorkshopNotification["tone"], string> = {
 
 function NotificationIcon({ notification }: { notification: WorkshopNotification }) {
   const Icon =
-    notification.kind === "paiement"
-      ? Wallet
-      : notification.tone === "danger"
-        ? AlertTriangle
-        : Clock;
+    notification.kind === "demande"
+      ? Inbox
+      : notification.kind === "paiement"
+        ? Wallet
+        : notification.tone === "danger"
+          ? AlertTriangle
+          : Clock;
 
   return (
     <div
@@ -109,7 +111,7 @@ export function NotificationPopover({ notifications, compact = false }: Notifica
               <div className="px-4 py-8 text-center">
                 <p className="text-sm font-medium text-text">Rien à signaler.</p>
                 <p className="mt-1 text-xs text-text-muted">
-                  Aucune livraison proche ni acompte en retard.
+                  Aucune livraison proche, acompte en retard ni demande en attente.
                 </p>
               </div>
             ) : (

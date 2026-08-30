@@ -43,7 +43,7 @@ export function DuplicateProfileDialog({ profileId, clientId, currentLabel }: Du
     setIsSubmitting(false);
 
     if (!result.success || !result.data) {
-      setError(result.error ?? "Impossible de dupliquer ce profil. Réessayez.");
+      setError(result.error ?? "Le profil n'a pas pu être dupliqué. Réessayez.");
       return;
     }
 

@@ -16,9 +16,14 @@ import { computeBalance } from "@/lib/money/balance";
 import { formatAmount } from "@/lib/money/format";
 import { formatDateFr } from "@/lib/utils/dates";
 import { getOrderComputedFlags } from "@/features/orders/selectors";
+import {
+  ORDER_LIST_FILTERS,
+  matchesOrderFilter,
+  normalizeOrderFilter,
+} from "@/features/orders/list-filters";
 import { sumConfirmedPayments } from "@/features/payments/types";
-import { OrderSearchBar } from "./_components/order-search-bar";
-import { OrderFilterTabs } from "./_components/order-filter-tabs";
+import { matchesQuery } from "@/lib/utils/search";
+import { ListToolbar } from "@/components/ui/list-toolbar";
 
 interface OrderRowView {
   order: Order;
@@ -110,8 +115,8 @@ export default async function CommandesPage({
   searchParams: Promise<{ q?: string; status?: string }>;
 }) {
   const { q, status } = await searchParams;
-  const query = q?.trim().toLowerCase() ?? "";
-  const filter = status?.trim() ?? "all";
+  const query = q?.trim() ?? "";
+  const filter = normalizeOrderFilter(status);
 
   let orders: Order[] = [];
   let loadFailed = false;
@@ -148,36 +153,31 @@ export default async function CommandesPage({
     loadFailed = true;
   }
 
-  // Filtrage
-  const filteredRows = rows.filter((row) => {
-    if (query) {
-      const matchRef = row.order.reference.toLowerCase().includes(query);
-      const matchTitle = row.order.title.toLowerCase().includes(query);
-      const matchClient = row.clientName.toLowerCase().includes(query);
-      const matchPhone = row.clientPhone.toLowerCase().includes(query);
-      if (!matchRef && !matchTitle && !matchClient && !matchPhone) {
-        return false;
-      }
-    }
+  // La recherche s'applique avant les puces : les compteurs affichés sur les
+  // puces décrivent ce qui reste après recherche, pas le catalogue entier.
+  const searchedRows = rows.filter((row) =>
+    matchesQuery(
+      [row.order.reference, row.order.title, row.clientName, row.clientPhone],
+      query
+    )
+  );
 
-    if (filter === "in_progress") {
-      return ["confirmee", "mesures_a_prendre", "tissu_fournitures", "coupe", "couture", "essayage", "retouche", "prete"].includes(row.order.status);
-    }
-    if (filter === "awaiting_deposit") {
-      return row.order.status === "acompte_attendu" || (row.balance > 0 && row.order.status === "brouillon");
-    }
-    if (filter === "due_soon") {
-      return row.flags.isDueSoon || row.flags.isDueToday;
-    }
-    if (filter === "overdue") {
-      return row.flags.isOverdue || row.flags.isPaymentOverdue;
-    }
-    if (filter === "completed") {
-      return ["livree", "terminee"].includes(row.order.status);
-    }
-
-    return true;
+  const toFilterSubject = (row: OrderRowView) => ({
+    status: row.order.status,
+    balance: row.balance,
+    flags: row.flags,
   });
+
+  const filteredRows = searchedRows.filter((row) =>
+    matchesOrderFilter(toFilterSubject(row), filter)
+  );
+
+  const filterChips = ORDER_LIST_FILTERS.map((definition) => ({
+    key: definition.key,
+    label: definition.label,
+    count: searchedRows.filter((row) => matchesOrderFilter(toFilterSubject(row), definition.key))
+      .length,
+  }));
 
   return (
     <>
@@ -191,16 +191,22 @@ export default async function CommandesPage({
         }
       />
 
-      <div className="mb-4 flex flex-col gap-3">
-        <div className="max-w-md">
-          <OrderSearchBar defaultValue={query} />
-        </div>
-        <OrderFilterTabs currentFilter={filter} />
-      </div>
+      <ListToolbar
+        searchParam="q"
+        searchValue={query}
+        searchLabel="Rechercher une commande"
+        searchPlaceholder="Référence, titre, client ou numéro"
+        filterParam="status"
+        filterValue={filter}
+        filters={filterChips}
+        resultCount={filteredRows.length}
+        totalCount={rows.length}
+        noun={["commande", "commandes"]}
+      />
 
       {loadFailed ? (
         <ErrorState
-          description="Impossible de charger les commandes. Vérifiez votre connexion puis réessayez."
+          description="La liste des commandes ne s'est pas chargée. Vérifiez votre connexion, puis réessayez."
           action={
             <LinkButton href="/commandes" variant="secondary">
               Réessayer

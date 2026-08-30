@@ -28,6 +28,32 @@ import { clientDisplayName } from "@/features/clients/types";
 import { GARMENT_TYPE_LABELS } from "@/features/measurements/constants";
 import { toast } from "@/components/ui/toast";
 
+/** Nom lisible de chaque champ, pour dire quoi corriger et où. */
+const FIELD_LABELS: Record<string, string> = {
+  clientId: "le client (étape 1)",
+  title: "le titre de la commande (étape 2)",
+  garmentType: "le type de vêtement (étape 2)",
+  items: "les lignes de prestation (étape 2)",
+  deliveryDate: "la date de livraison (étape 2)",
+  eventDate: "la date de l'événement (étape 2)",
+  measurementProfileId: "le profil de mesures (étape 3)",
+  totalAmount: "le montant total (étape 4)",
+  discountAmount: "la remise (étape 4)",
+  depositDueDate: "la date limite de l'acompte (étape 4)",
+};
+
+/** Transforme les erreurs de validation en une phrase compréhensible. */
+function describeFieldErrors(fieldErrors: Record<string, string[]> | undefined): string {
+  const champs = Object.keys(fieldErrors ?? {})
+    .map((key) => FIELD_LABELS[key])
+    .filter(Boolean);
+
+  if (champs.length === 0) {
+    return "La commande n'a pas pu être enregistrée. Réessayez.";
+  }
+  return `Vérifiez ${champs.join(", ")} avant de confirmer.`;
+}
+
 export default function OrderWizardVerificationStep() {
   const router = useRouter();
   const draft = useOrderWizardStore((state) => state.draft);
@@ -101,14 +127,17 @@ export default function OrderWizardVerificationStep() {
       });
 
       if (res.success && res.data) {
-        toast.success("Commande enregistrée avec succès !");
+        toast.success("Commande enregistrée");
         reset();
+        // `createOrderAction` a déjà revalidé /commandes et /factures : ajouter
+        // un `refresh()` déclencherait un second rendu, ressenti comme un délai.
         router.push(`/commandes/${res.data.id}`);
-        router.refresh();
-      } else {
-        const errorText = res.error || (res.fieldErrors ? JSON.stringify(res.fieldErrors) : "Une erreur est survenue lors de la création de la commande.");
-        setErrorMsg(errorText);
+        return;
       }
+
+      // Jamais de JSON brut à l'écran : on nomme les champs à corriger et on
+      // renvoie l'utilisateur vers l'étape concernée.
+      setErrorMsg(res.error ?? describeFieldErrors(res.fieldErrors));
     });
   };
 
@@ -234,12 +263,18 @@ export default function OrderWizardVerificationStep() {
         </div>
       </div>
 
-      <div className="flex items-center justify-between pt-4 border-t border-border">
-        <LinkButton href="/commandes/nouveau/prix" variant="secondary" icon={<ArrowLeft className="size-4" />}>
+      <div className="flex flex-col-reverse gap-2 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+        <LinkButton
+          href="/commandes/nouveau/prix"
+          variant="secondary"
+          fullWidth="mobile"
+          icon={<ArrowLeft className="size-4" />}
+        >
           Modifier le prix
         </LinkButton>
         <Button
           type="button"
+          fullWidth="mobile"
           onClick={handleConfirmOrder}
           isLoading={isPending}
           icon={<CheckCircle2 className="size-4" />}

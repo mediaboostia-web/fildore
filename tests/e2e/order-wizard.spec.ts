@@ -35,10 +35,13 @@ test.describe("Parcours de commande (Wizard 5 étapes)", () => {
     await expect(toPricingBtn).toBeEnabled({ timeout: 15000 });
     await toPricingBtn.click();
 
-    // 4. Étape Prix
+    // 4. Étape Prix — le montant doit être saisi. Aucun prix par défaut n'est
+    // inventé : facturer un montant que le couturier n'a jamais tapé serait pire
+    // qu'un blocage.
     await expect(page).toHaveURL(/\/commandes\/nouveau\/prix/);
     await expect(page.getByText("Étape 4 : Prix et acompte")).toBeVisible();
 
+    await page.getByLabel(/Montant total/i).fill("35000");
     await page.getByRole("button", { name: /Continuer vers Vérification/i }).click();
 
     // 5. Étape Vérification

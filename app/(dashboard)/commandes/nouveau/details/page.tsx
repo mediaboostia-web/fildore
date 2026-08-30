@@ -38,9 +38,20 @@ export default function OrderWizardDetailsStep() {
   const [items, setItems] = useState<
     { label: string; garmentType: GarmentType; quantity: number; unitPrice: number }[]
   >(
+    // Prix par défaut à 0, sauf s'il vient du prix indicatif d'un modèle du
+    // catalogue : ce tarif-là a été décidé par l'atelier. Une ligne préremplie à
+    // 25 000 FCFA « au hasard » finissait facturée telle quelle si le couturier
+    // enchaînait les étapes sans regarder (PROJECT_RULES.md §6).
     draft.items && draft.items.length > 0
       ? draft.items
-      : [{ label: "Confection sur mesure", garmentType: "robe", quantity: 1, unitPrice: 25000 }]
+      : [
+          {
+            label: draft.title || "Confection sur mesure",
+            garmentType: draft.garmentType || "robe",
+            quantity: 1,
+            unitPrice: draft.totalAmount ?? 0,
+          },
+        ]
   );
 
   const [errorMsg, setErrorMsg] = useState("");
@@ -48,7 +59,7 @@ export default function OrderWizardDetailsStep() {
   const handleAddItem = () => {
     setItems([
       ...items,
-      { label: "Finitions & accessoires", garmentType, quantity: 1, unitPrice: 5000 },
+      { label: "Finitions & accessoires", garmentType, quantity: 1, unitPrice: 0 },
     ]);
   };
 
@@ -106,7 +117,9 @@ export default function OrderWizardDetailsStep() {
   }));
 
   return (
-    <form onSubmit={handleNext} className="space-y-6">
+    /* `noValidate` : le navigateur afficherait sinon sa propre bulle, dans sa
+       langue et hors de notre design, avant même que nos messages ne s'affichent. */
+    <form onSubmit={handleNext} className="space-y-6" noValidate>
       <div>
         <h2 className="text-lg font-bold text-text">Étape 2 : Détails de la tenue</h2>
         <p className="text-sm text-text-muted">
@@ -237,11 +250,16 @@ export default function OrderWizardDetailsStep() {
         ))}
       </div>
 
-      <div className="flex items-center justify-between pt-4 border-t border-border">
-        <LinkButton href="/commandes/nouveau/client" variant="secondary" icon={<ArrowLeft className="size-4" />}>
+      <div className="flex flex-col-reverse gap-2 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+        <LinkButton
+          href="/commandes/nouveau/client"
+          variant="secondary"
+          fullWidth="mobile"
+          icon={<ArrowLeft className="size-4" />}
+        >
           Retour au client
         </LinkButton>
-        <Button type="submit" icon={<ArrowRight className="size-4" />}>
+        <Button type="submit" fullWidth="mobile" icon={<ArrowRight className="size-4" />}>
           Continuer vers Mesures
         </Button>
       </div>

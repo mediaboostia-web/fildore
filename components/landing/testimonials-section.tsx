@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Star, Quote, CheckCircle2 } from "lucide-react";
+import { Star, CheckCircle2 } from "lucide-react";
 
 export function LandingTestimonialsSection() {
   const testimonials = [
@@ -38,7 +38,6 @@ export function LandingTestimonialsSection() {
   return (
     <section id="temoignages" className="py-16 md:py-24 bg-gradient-to-b from-[#FAF7F2] via-[#FFFDFC] to-surface relative overflow-hidden border-b border-border/80">
       {/* Halo subtil terre cuite */}
-      <div className="absolute top-1/2 left-0 w-80 h-80 bg-accent-100/35 rounded-full blur-3xl pointer-events-none -z-10" />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-12 relative z-10">
         {/* En-tête de section */}
         <div className="mx-auto max-w-3xl text-center space-y-3">

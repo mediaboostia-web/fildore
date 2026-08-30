@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireCurrentUser, requireRole } from "@/lib/auth/session";
+import { requireCan } from "@/lib/auth/session";
 import {
   orderFormSchema,
   orderStatusUpdateSchema,
@@ -20,7 +20,7 @@ import { createDocument } from "@/lib/mock-data/documents";
 import type { ActionResult } from "@/features/clients/actions";
 
 export async function createOrderAction(input: unknown): Promise<ActionResult<{ id: string; reference: string }>> {
-  const user = await requireCurrentUser();
+  const user = await requireCan("commande:creer");
   const parsed = orderFormSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, fieldErrors: parsed.error.flatten().fieldErrors };
@@ -77,7 +77,7 @@ export async function createOrderAction(input: unknown): Promise<ActionResult<{ 
  * sans contrôle de session, de payload ni d'atelier.
  */
 export async function updateOrderAction(input: unknown): Promise<ActionResult<{ id: string }>> {
-  const user = await requireCurrentUser();
+  const user = await requireCan("commande:modifier");
   const parsed = orderUpdateSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, fieldErrors: parsed.error.flatten().fieldErrors };
@@ -114,7 +114,7 @@ export async function updateOrderAction(input: unknown): Promise<ActionResult<{ 
 }
 
 export async function updateOrderStatusAction(input: unknown): Promise<ActionResult<{ id: string }>> {
-  const user = await requireCurrentUser();
+  const user = await requireCan("commande:changer_statut");
   const parsed = orderStatusUpdateSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, fieldErrors: parsed.error.flatten().fieldErrors };
@@ -125,9 +125,9 @@ export async function updateOrderStatusAction(input: unknown): Promise<ActionRes
   return { success: true, data: { id: order.id } };
 }
 
-/** Annulation réservée aux propriétaires (voir la même règle côté UI dans OrderActionsBar). */
+/** Droit « commande:annuler » — même règle appliquée côté UI dans OrderActionsBar. */
 export async function cancelOrderAction(input: unknown): Promise<ActionResult<{ id: string }>> {
-  const user = await requireRole(["owner"]);
+  const user = await requireCan("commande:annuler");
   const parsed = orderCancelSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, fieldErrors: parsed.error.flatten().fieldErrors };

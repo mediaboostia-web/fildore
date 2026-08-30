@@ -25,6 +25,7 @@ test.describe("Paiement et documents depuis la fiche commande", () => {
     await toPricingBtn.click();
 
     await expect(page).toHaveURL(/\/commandes\/nouveau\/prix/);
+    await page.getByLabel(/Montant total/i).fill("30000");
     await page.getByRole("button", { name: /Continuer vers Vérification/i }).click();
 
     await expect(page).toHaveURL(/\/commandes\/nouveau\/verification/);
@@ -39,7 +40,7 @@ test.describe("Paiement et documents depuis la fiche commande", () => {
     await expect(page.getByText(/Solde restant/)).toBeVisible();
 
     // Encaisser le solde complet depuis la fiche commande.
-    await page.getByRole("button", { name: /Encaisser un acompte \/ solde/i }).click();
+    await page.getByRole("button", { name: /Encaisser un paiement/i }).click();
     await expect(page.getByText("Enregistrer un paiement")).toBeVisible();
     await page.getByRole("button", { name: /Valider le paiement/i }).click();
 

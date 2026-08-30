@@ -21,11 +21,20 @@ export function proxy(request: NextRequest) {
   return NextResponse.next();
 }
 
+/**
+ * Chemins du tableau de bord uniquement.
+ *
+ * `/atelier/:slug` (vitrine publique) et `/d/:token` (document partagé) sont
+ * délibérément absents : ce sont les deux seules pages destinées à quelqu'un
+ * qui n'a pas de compte. Elles refont elles-mêmes leurs propres contrôles
+ * (atelier ouvert, jeton valide et non révoqué) et n'exposent rien d'autre.
+ */
 export const config = {
   matcher: [
     "/tableau-de-bord/:path*",
     "/commandes/:path*",
     "/clients/:path*",
+    "/demandes/:path*",
     "/paiements/:path*",
     "/factures/:path*",
     "/modeles/:path*",

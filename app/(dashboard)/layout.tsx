@@ -6,6 +6,7 @@ import { ROLE_LABELS } from "@/features/auth/types";
 import { getOrders } from "@/lib/mock-data/orders";
 import { getClients } from "@/lib/mock-data/clients";
 import { getPayments } from "@/lib/mock-data/payments";
+import { getOrderRequests } from "@/lib/mock-data/order-requests";
 import { sumConfirmedPayments } from "@/features/payments/types";
 import { buildWorkshopNotifications } from "@/features/dashboard/notifications";
 
@@ -17,7 +18,12 @@ export default async function DashboardLayout({ children }: { children: ReactNod
     redirect("/connexion");
   }
 
-  const [orders, clients, payments] = await Promise.all([getOrders(), getClients(), getPayments()]);
+  const [orders, clients, payments, orderRequests] = await Promise.all([
+    getOrders(),
+    getClients(),
+    getPayments(),
+    getOrderRequests(user.workshopId),
+  ]);
 
   // Les alertes du panneau de notifications sont dérivées des mêmes sélecteurs
   // que le tableau de bord — jamais d'exemples codés en dur.
@@ -33,7 +39,8 @@ export default async function DashboardLayout({ children }: { children: ReactNod
     orders.filter((order) => order.workshopId === user.workshopId),
     clients,
     paymentsByOrder,
-    new Date().toISOString()
+    new Date().toISOString(),
+    orderRequests
   );
 
   return (
@@ -44,6 +51,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
         email: user.email,
       }}
       notifications={notifications}
+      pendingRequestCount={orderRequests.filter((r) => r.status === "nouvelle").length}
     >
       {children}
     </AppShell>

@@ -52,15 +52,15 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
 
         {/* Badge supérieur */}
         <div className="absolute top-6 right-6 z-10">
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-black/40 px-3.5 py-1 text-xs font-semibold text-white backdrop-blur-md">
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-primary-950 px-3.5 py-1 text-xs font-semibold text-white">
             <CheckCircle2 className="size-3.5 text-emerald-400" />
             <span>Pour couturiers & modélistes</span>
           </div>
         </div>
 
-        {/* Carte de Témoignage Glassmorphism */}
+        {/* Témoignage — surface opaque, pas de verre dépoli (PROJECT_RULES.md §5) */}
         <div className="absolute bottom-8 left-8 right-8 z-10">
-          <div className="rounded-2xl border border-white/20 bg-white/10 p-5 sm:p-6 text-white backdrop-blur-xl shadow-2xl space-y-3">
+          <div className="rounded-[var(--radius-lg)] border border-white/20 bg-primary-950 p-5 sm:p-6 text-white shadow-lg space-y-3">
             <p className="text-sm sm:text-base font-normal leading-relaxed text-white/95">
               « Fildor a totalement transformé l&apos;organisation de notre atelier. Nous n&apos;avons plus jamais perdu une seule mesure de client, et nos livraisons de robes et boubous se font toujours à temps. »
             </p>

@@ -38,7 +38,7 @@ export function WhatsAppMessagePreview({
       await navigator.clipboard.writeText(message);
       toast.success("Message copié dans le presse-papiers !");
     } catch {
-      toast.error("Impossible de copier le message.");
+      toast.error("Le message n'a pas pu être copié. Sélectionnez-le et copiez-le à la main.");
     }
   }
 

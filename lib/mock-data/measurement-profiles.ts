@@ -47,6 +47,45 @@ export async function createMeasurementProfile(
   return profile;
 }
 
+export interface UpdateMeasurementProfileInput {
+  label: string;
+  standardMeasurements: Record<string, number>;
+  customMeasurements?: CustomMeasurement[];
+  observations?: string;
+}
+
+/**
+ * Corrige un profil de mesures — une erreur de saisie sur un tour de poitrine
+ * doit pouvoir être rattrapée.
+ *
+ * Le type de vêtement n'est pas modifiable : il détermine les champs de mesures,
+ * en changer reviendrait à créer un autre profil (utiliser la duplication).
+ *
+ * Point capital : les commandes déjà passées ne bougent pas. Elles portent un
+ * snapshot figé (`toMeasurementSnapshot`), jamais une lecture en direct du
+ * profil — corriger les mesures d'un client ne réécrit donc aucun historique
+ * (PROJECT_RULES.md §6 « Clients et mesures »).
+ */
+export async function updateMeasurementProfile(
+  id: string,
+  patch: UpdateMeasurementProfileInput
+): Promise<MeasurementProfile> {
+  await wait();
+  const db = getDb();
+  const profile = db.measurementProfiles.find((p) => p.id === id);
+  if (!profile) throw new Error(`Profil de mesures introuvable : ${id}`);
+
+  const now = new Date().toISOString();
+  profile.label = patch.label;
+  profile.standardMeasurements = { ...patch.standardMeasurements };
+  profile.customMeasurements = (patch.customMeasurements ?? []).map((m) => ({ ...m }));
+  profile.observations = patch.observations;
+  // `takenAt` suit la correction : c'est la date des mesures réellement valides.
+  profile.takenAt = now;
+  profile.updatedAt = now;
+  return profile;
+}
+
 export async function duplicateMeasurementProfile(id: string, newLabel: string): Promise<MeasurementProfile> {
   await wait();
   const db = getDb();

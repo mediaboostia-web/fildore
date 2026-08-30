@@ -96,7 +96,13 @@ export function WorkshopSettingsForm({ initialWorkshop }: { initialWorkshop: Wor
       </div>
 
       <div className="flex justify-end pt-2">
-        <Button type="submit" size="sm" isLoading={isPending} icon={<Save className="size-4" />}>
+        <Button
+          type="submit"
+          size="sm"
+          fullWidth="mobile"
+          isLoading={isPending}
+          icon={<Save className="size-4" />}
+        >
           Enregistrer les modifications
         </Button>
       </div>

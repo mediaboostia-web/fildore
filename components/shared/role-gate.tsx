@@ -1,9 +1,8 @@
 import type { ReactNode } from "react";
+import { can, type Permission } from "@/features/auth/permissions";
 import type { Role } from "@/features/auth/types";
 
-export interface RoleGateProps {
-  /** Rôles autorisés à voir `children`. */
-  allow: Role[];
+interface RoleGateBaseProps {
   /** Rôle de l'utilisateur courant. */
   role: Role | null | undefined;
   children: ReactNode;
@@ -11,13 +10,29 @@ export interface RoleGateProps {
   fallback?: ReactNode;
 }
 
+export type RoleGateProps = RoleGateBaseProps &
+  (
+    | {
+        /** Droit métier requis — à préférer : la règle reste dans `ROLE_PERMISSIONS`. */
+        require: Permission;
+        allow?: never;
+      }
+    | {
+        /** Liste de rôles explicite, pour les cas qui ne correspondent à aucun droit métier. */
+        allow: Role[];
+        require?: never;
+      }
+  );
+
 /**
- * Affiche `children` uniquement si `role` fait partie de `allow`.
- * Rappel : ceci est un confort d'affichage côté client, jamais une garantie
- * de sécurité — les actions sensibles doivent être revalidées côté serveur
- * (PROJECT_RULES.md §7 "Sécurité et données").
+ * Affiche `children` uniquement si l'utilisateur a le droit demandé.
+ *
+ * Rappel : ceci est un confort d'affichage, jamais une garantie de sécurité —
+ * toute action sensible est revalidée côté serveur par `requireCan`
+ * (PROJECT_RULES.md §7 « Sécurité et données »).
  */
-export function RoleGate({ allow, role, children, fallback = null }: RoleGateProps) {
-  if (!role || !allow.includes(role)) return <>{fallback}</>;
+export function RoleGate({ require, allow, role, children, fallback = null }: RoleGateProps) {
+  const isAllowed = require ? can(role, require) : Boolean(role && allow?.includes(role));
+  if (!isAllowed) return <>{fallback}</>;
   return <>{children}</>;
 }

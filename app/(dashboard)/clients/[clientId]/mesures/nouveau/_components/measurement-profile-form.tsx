@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { CancelFormButton } from "@/components/shared/cancel-form-button";
 import { toast } from "@/components/ui/toast";
 import { createMeasurementProfileAction } from "@/features/measurements/actions";
 import { GARMENT_TYPE_LABELS, MEASUREMENT_FIELDS_BY_GARMENT_TYPE } from "@/features/measurements/constants";
@@ -41,6 +42,13 @@ export function MeasurementProfileForm({ clientId }: MeasurementProfileFormProps
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fields = MEASUREMENT_FIELDS_BY_GARMENT_TYPE[garmentType];
+
+  // Dérivé, pas synchronisé : ce que l'utilisateur perdrait en quittant la page.
+  const isDirty =
+    label.trim() !== "" ||
+    observations.trim() !== "" ||
+    isPrimary ||
+    Object.values(measurements).some((value) => value.trim() !== "");
 
   function handleGarmentTypeChange(value: string) {
     setGarmentType(value as GarmentType);
@@ -153,15 +161,13 @@ export function MeasurementProfileForm({ clientId }: MeasurementProfileFormProps
         ) : null}
 
         <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => router.push(`/clients/${clientId}`)}
+          <CancelFormButton
+            href={`/clients/${clientId}`}
+            isDirty={isDirty}
             disabled={isSubmitting}
-          >
-            Annuler
-          </Button>
-          <Button type="submit" isLoading={isSubmitting}>
+            description="Les mesures saisies ne seront pas enregistrées."
+          />
+          <Button type="submit" fullWidth="mobile" isLoading={isSubmitting}>
             Enregistrer le profil
           </Button>
         </div>

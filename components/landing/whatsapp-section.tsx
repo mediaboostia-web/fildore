@@ -11,7 +11,7 @@ export function LandingWhatsAppSection() {
       moment: "Commande prête",
       summary: "Message de retrait ou invitation essayage",
       sender: "Atelier Élégance",
-      message: `Bonjour Aïcha, ✨\n\nVotre commande FIL-CTN-000124 (Robe sirène cérémonie) est prête pour votre premier essayage à l'atelier !\n\n💰 Montant total : 35 000 FCFA\n✅ Acompte reçu : 15 000 FCFA\n📌 Solde restant : 20 000 FCFA\n\nVous pouvez passer à l'atelier du lundi au samedi de 9h à 19h.\nMerci pour votre confiance !`,
+      message: `Bonjour Aïcha,\n\nVotre commande FIL-CTN-000124 (Robe sirène cérémonie) est prête pour l'essayage.\n\nMontant total : 35 000 FCFA\nAcompte reçu : 15 000 FCFA\nSolde restant : 20 000 FCFA\n\nVous pouvez passer à l'atelier du lundi au samedi, de 9h à 19h.\nMerci de votre confiance.`,
       time: "10:32",
     },
     {

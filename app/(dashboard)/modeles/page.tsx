@@ -1,88 +1,54 @@
-import Link from "next/link";
-import Image from "next/image";
-import { Plus, Scissors, Shirt, Clock, ArrowRight } from "lucide-react";
+import { Plus, Shirt, ArrowRight } from "lucide-react";
 import { PageHeader } from "@/components/shared/page-header";
 import { EmptyState } from "@/components/ui/empty-state";
 import { LinkButton } from "@/components/ui/link-button";
+import { ListToolbar } from "@/components/ui/list-toolbar";
+import { ModelPhoto } from "@/components/ui/model-photo";
 import { getCatalogItems } from "@/lib/mock-data/catalog";
 import { formatAmount } from "@/lib/money/format";
-import { CATALOG_CATEGORY_LABELS, type CatalogCategory } from "@/features/catalog/types";
-
-const CATEGORY_DEFAULT_PHOTOS: Record<string, string> = {
-  robe: "/images/modele_couture.jpg",
-  boubou_femme: "/images/modele_couture_afrique.jpg",
-  boubou_homme: "/images/tailor-hero.jpg",
-  costume: "/images/tailor-workshop.jpg",
-  chemise: "/images/tailor-craft.jpg",
-  ensemble: "/images/modele_couture_afrique.jpg",
-  mariage: "/images/modele_couture.jpg",
-};
-
-function ModelCardImage({ category, name, imageUrl }: { category: CatalogCategory; name: string; imageUrl?: string }) {
-  const photoSrc = imageUrl || CATEGORY_DEFAULT_PHOTOS[category];
-
-  if (photoSrc) {
-    return (
-      <div className="relative aspect-4/3 w-full overflow-hidden rounded-t-2xl bg-primary-950">
-        <Image
-          src={photoSrc}
-          alt={name}
-          fill
-          className="object-cover object-top transition-transform duration-500 group-hover:scale-108"
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
-        <div className="absolute top-3 left-3 rounded-full bg-black/40 px-3 py-1 text-[11px] font-bold text-white backdrop-blur-md border border-white/20">
-          {CATALOG_CATEGORY_LABELS[category] || category}
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div
-      role="img"
-      aria-label={name}
-      className="relative flex aspect-4/3 w-full items-center justify-center rounded-t-2xl bg-primary-50 border-b border-border transition-transform group-hover:scale-102"
-    >
-      <div className="flex flex-col items-center gap-2 p-4 text-center">
-        <div className="flex size-12 items-center justify-center rounded-full bg-white text-primary-900 shadow-xs">
-          <Scissors className="size-6" />
-        </div>
-        <span className="text-xs font-bold uppercase tracking-wider text-primary-900">
-          {CATALOG_CATEGORY_LABELS[category] || category}
-        </span>
-      </div>
-    </div>
-  );
-}
+import { matchesQuery } from "@/lib/utils/search";
+import { CATALOG_CATEGORY_LABELS } from "@/features/catalog/types";
 
 export default async function ModelesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ cat?: string }>;
+  searchParams: Promise<{ q?: string; cat?: string }>;
 }) {
-  const { cat } = await searchParams;
-  const activeCategory = cat || "all";
+  const { q, cat } = await searchParams;
+  const query = q?.trim() ?? "";
+  const activeCategory = cat?.trim() || "all";
 
   const allItems = await getCatalogItems();
 
-  const filteredItems = activeCategory === "all"
-    ? allItems
-    : allItems.filter((item) => item.category === activeCategory);
+  const searchedItems = allItems.filter((item) =>
+    matchesQuery([item.name, item.description, ...item.tags], query)
+  );
 
-  const categories = [
-    { key: "all", label: "Tous les modèles", count: allItems.length },
-    { key: "robe", label: "Robes", count: allItems.filter((i) => i.category === "robe").length },
-    { key: "boubou_femme", label: "Boubous femme", count: allItems.filter((i) => i.category === "boubou_femme").length },
-    { key: "boubou_homme", label: "Boubous homme", count: allItems.filter((i) => i.category === "boubou_homme").length },
-    { key: "costume", label: "Costumes", count: allItems.filter((i) => i.category === "costume").length },
-    { key: "chemise", label: "Chemises", count: allItems.filter((i) => i.category === "chemise").length },
-    { key: "ensemble", label: "Ensembles", count: allItems.filter((i) => i.category === "ensemble").length },
+  // Les puces listent les catégories réellement présentes dans le catalogue —
+  // une puce « Costumes (0) » n'apprend rien et occupe une largeur précieuse.
+  const categoryCounts = new Map<string, number>();
+  for (const item of searchedItems) {
+    categoryCounts.set(item.category, (categoryCounts.get(item.category) ?? 0) + 1);
+  }
+
+  const filterChips = [
+    { key: "all", label: "Tous les modèles", count: searchedItems.length },
+    ...[...categoryCounts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .map(([category, count]) => ({
+        key: category,
+        label: CATALOG_CATEGORY_LABELS[category as keyof typeof CATALOG_CATEGORY_LABELS] ?? category,
+        count,
+      })),
   ];
 
+  const filteredItems =
+    activeCategory === "all"
+      ? searchedItems
+      : searchedItems.filter((item) => item.category === activeCategory);
+
   return (
-    <div className="space-y-6">
+    <div>
       <PageHeader
         title="Modèles"
         description="Catalogue des créations, coupes et inspirations de votre atelier."
@@ -93,40 +59,32 @@ export default async function ModelesPage({
         }
       />
 
-      {/* Sélecteur de filtres avec défilement horizontal et compteurs */}
-      <div className="overflow-x-auto no-scrollbar pb-1 -mx-4 px-4 sm:mx-0 sm:px-0">
-        <div className="flex items-center gap-2 min-w-max">
-          {categories.map((c) => {
-            const isActive = activeCategory === c.key;
-            return (
-              <Link
-                key={c.key}
-                href={c.key === "all" ? "/modeles" : `/modeles?cat=${c.key}`}
-                className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all duration-200 cursor-pointer select-none active:scale-95 ${
-                  isActive
-                    ? "bg-primary-900 text-white shadow-sm ring-2 ring-primary-900/20"
-                    : "bg-surface text-text-muted hover:bg-surface-muted hover:text-text border border-border"
-                }`}
-              >
-                <span>{c.label}</span>
-                <span
-                  className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full ${
-                    isActive ? "bg-white/20 text-white" : "bg-surface-muted text-text-subtle"
-                  }`}
-                >
-                  {c.count}
-                </span>
-              </Link>
-            );
-          })}
-        </div>
-      </div>
+      <ListToolbar
+        searchParam="q"
+        searchValue={query}
+        searchLabel="Rechercher un modèle"
+        searchPlaceholder="Nom, description ou mot-clé"
+        filterParam="cat"
+        filterValue={activeCategory}
+        filters={filterChips}
+        resultCount={filteredItems.length}
+        totalCount={allItems.length}
+        noun={["modèle", "modèles"]}
+      />
 
       {filteredItems.length === 0 ? (
         <EmptyState
           icon={<Shirt className="size-6" />}
-          title="Aucun modèle dans cette catégorie."
-          description="Ajoutez une création pour enrichir votre catalogue et faciliter vos prises de commande."
+          title={
+            query || activeCategory !== "all"
+              ? "Aucun modèle ne correspond à cette recherche."
+              : "Aucun modèle dans votre catalogue."
+          }
+          description={
+            query || activeCategory !== "all"
+              ? "Essayez un autre mot-clé, ou choisissez « Tous les modèles »."
+              : "Ajoutez une création pour enrichir votre catalogue et gagner du temps à la prise de commande."
+          }
           action={
             <LinkButton href="/modeles/nouveau" icon={<Plus className="size-4" />}>
               Ajouter un modèle
@@ -138,20 +96,23 @@ export default async function ModelesPage({
           {filteredItems.map((item) => (
             <div
               key={item.id}
-              className="group flex flex-col justify-between rounded-2xl border border-border bg-surface shadow-xs transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-primary-800/50 overflow-hidden cursor-pointer"
+              className="group flex flex-col justify-between overflow-hidden rounded-[var(--radius-xl)] border border-border bg-surface shadow-xs transition-all duration-200 hover:border-primary-800/50 hover:shadow-md"
             >
               <div>
-                <ModelCardImage category={item.category} name={item.name} imageUrl={item.imageUrl} />
+                <ModelPhoto
+                  src={item.imageUrl}
+                  alt={item.name}
+                  category={CATALOG_CATEGORY_LABELS[item.category] || item.category}
+                  className="aspect-4/3 w-full rounded-t-[var(--radius-xl)]"
+                />
 
-                <div className="p-4 sm:p-5 space-y-2.5">
-                  <div className="flex items-start justify-between gap-2">
-                    <h3 className="font-bold text-text text-base leading-tight group-hover:text-primary-900 transition-colors">
-                      {item.name}
-                    </h3>
-                  </div>
+                <div className="space-y-2.5 p-4 sm:p-5">
+                  <h3 className="text-base font-bold leading-tight text-text transition-colors group-hover:text-primary-900">
+                    {item.name}
+                  </h3>
 
                   {item.description && (
-                    <p className="text-xs text-text-muted line-clamp-2 leading-relaxed">
+                    <p className="line-clamp-2 text-xs leading-relaxed text-text-muted">
                       {item.description}
                     </p>
                   )}
@@ -161,7 +122,7 @@ export default async function ModelesPage({
                       {item.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="inline-flex items-center rounded-md bg-surface-muted px-2 py-0.5 text-[11px] font-semibold text-text-muted border border-border/80"
+                          className="inline-flex items-center rounded-md border border-border/80 bg-surface-muted px-2 py-0.5 text-[11px] font-semibold text-text-muted"
                         >
                           #{tag}
                         </span>
@@ -171,24 +132,20 @@ export default async function ModelesPage({
                 </div>
               </div>
 
-              <div className="border-t border-border bg-canvas/30 p-4 flex items-center justify-between gap-2">
+              <div className="flex items-center justify-between gap-2 border-t border-border bg-canvas/30 p-4">
                 <div>
-                  <span className="text-[10px] text-text-subtle uppercase tracking-wider block font-bold">
+                  <span className="block text-[10px] font-bold uppercase tracking-wider text-text-subtle">
                     Prix indicatif
                   </span>
-                  <span className="font-extrabold text-primary-950 text-sm">
+                  <span className="text-sm font-bold text-primary-950">
                     {item.indicativePrice ? formatAmount(item.indicativePrice) : "Sur devis"}
                   </span>
                 </div>
 
-                <LinkButton
-                  href={`/modeles/${item.id}`}
-                  size="sm"
-                  variant="secondary"
-                  className="font-bold border border-border bg-surface hover:bg-surface-muted shadow-2xs group-hover:border-primary-800/60"
-                >
-                  <span>Détails</span>
-                  <ArrowRight className="size-3.5" />
+                {/* La flèche suit le mot : `icon` le placerait avant. */}
+                <LinkButton href={`/modeles/${item.id}`} size="sm" variant="secondary">
+                  Détails
+                  <ArrowRight className="size-3.5" aria-hidden="true" />
                 </LinkButton>
               </div>
             </div>

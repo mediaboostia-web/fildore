@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireCurrentUser, requireRole } from "@/lib/auth/session";
+import { requireCan } from "@/lib/auth/session";
 import { paymentFormSchema, paymentCancelSchema } from "./schemas";
 import {
   recordPayment,
@@ -14,11 +14,8 @@ import { computeBalance } from "@/lib/money/balance";
 import { sumConfirmedPayments } from "./types";
 import type { ActionResult } from "@/features/clients/actions";
 
-/** Annuler un encaissement touche la trésorerie : réservé au propriétaire. */
-const PAYMENT_CANCEL_ROLES = ["owner"] as const;
-
 export async function recordPaymentAction(input: unknown): Promise<ActionResult<{ id: string; receiptNumber: string }>> {
-  const user = await requireCurrentUser();
+  const user = await requireCan("paiement:encaisser");
   const parsed = paymentFormSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, fieldErrors: parsed.error.flatten().fieldErrors };
@@ -68,7 +65,7 @@ export async function recordPaymentAction(input: unknown): Promise<ActionResult<
  * se recalcule automatiquement (PROJECT_RULES.md §6 « Paiements »).
  */
 export async function cancelPaymentAction(input: unknown): Promise<ActionResult<{ id: string }>> {
-  const user = await requireRole([...PAYMENT_CANCEL_ROLES]);
+  const user = await requireCan("paiement:annuler");
   const parsed = paymentCancelSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, fieldErrors: parsed.error.flatten().fieldErrors };

@@ -110,7 +110,7 @@ export function DatePicker({
           <Popover.Content
             align="start"
             sideOffset={8}
-            className="z-50 rounded-2xl border border-border/80 bg-surface p-3 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-150"
+            className="z-50 rounded-[var(--radius-lg)] border border-border bg-surface p-3 shadow-lg animate-in fade-in zoom-in-95 duration-150"
           >
             <DayPicker
               mode="single"

@@ -33,5 +33,9 @@ export default defineConfig({
     url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    // Le délai artificiel de 300 ms du dépôt mocké existe pour rendre les états
+    // de chargement observables à la main. En E2E il ne teste rien : il s'ajoute
+    // à chaque lecture de chaque page et rend les specs longues et instables.
+    env: { NEXT_PUBLIC_MOCK_DELAY: "0" },
   },
 });

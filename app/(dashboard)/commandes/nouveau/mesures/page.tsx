@@ -45,7 +45,11 @@ export default function OrderWizardMeasurementsStep() {
       if (isMounted) {
         setProfiles(data);
         if (data.length > 0) {
-          const match = data.find((p) => p.garmentType === garmentType) || data[0];
+          // Un profil déjà choisi (fiche mesures → `?profil=`, ou retour arrière
+          // dans le wizard) fait foi. Sans cette priorité, la sélection du
+          // couturier était silencieusement remplacée par le profil « par défaut ».
+          const fromDraft = data.find((p) => p.id === draft.measurementProfileId);
+          const match = fromDraft ?? data.find((p) => p.garmentType === garmentType) ?? data[0];
           setSelectedProfileId(match.id);
         }
         setLoading(false);
@@ -55,7 +59,7 @@ export default function OrderWizardMeasurementsStep() {
     return () => {
       isMounted = false;
     };
-  }, [draft.clientId, garmentType]);
+  }, [draft.clientId, draft.measurementProfileId, garmentType]);
 
   const handleCreateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,7 +83,7 @@ export default function OrderWizardMeasurementsStep() {
         setStepData({ measurementProfileId: res.data.id });
         router.push("/commandes/nouveau/prix");
       } else {
-        setErrorMsg(res.error || "Erreur lors de la création du profil de mesures.");
+        setErrorMsg(res.error || "Les mesures n'ont pas pu être enregistrées. Réessayez.");
       }
     });
   };
@@ -205,12 +209,18 @@ export default function OrderWizardMeasurementsStep() {
             )}
           </div>
 
-          <div className="flex items-center justify-between pt-4 border-t border-border">
-            <LinkButton href="/commandes/nouveau/details" variant="secondary" icon={<ArrowLeft className="size-4" />}>
+          <div className="flex flex-col-reverse gap-2 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+            <LinkButton
+              href="/commandes/nouveau/details"
+              variant="secondary"
+              fullWidth="mobile"
+              icon={<ArrowLeft className="size-4" />}
+            >
               Retour aux détails
             </LinkButton>
             <Button
               type="button"
+              fullWidth="mobile"
               onClick={handleNext}
               disabled={!selectedProfileId}
               icon={<ArrowRight className="size-4" />}
@@ -260,15 +270,21 @@ export default function OrderWizardMeasurementsStep() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between pt-4 border-t border-border">
+          <div className="flex flex-col-reverse gap-2 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
             <Button
               type="button"
-              variant="tertiary"
+              variant="secondary"
+              fullWidth="mobile"
               onClick={() => setIsCreatingNew(false)}
             >
-              Annuler et choisir un profil existant
+              Choisir un profil existant
             </Button>
-            <Button type="submit" isLoading={isPending} icon={<ArrowRight className="size-4" />}>
+            <Button
+              type="submit"
+              fullWidth="mobile"
+              isLoading={isPending}
+              icon={<ArrowRight className="size-4" />}
+            >
               Enregistrer et continuer
             </Button>
           </div>

@@ -1,12 +1,16 @@
 import { notFound } from "next/navigation";
-import { ArrowLeft, Scissors, Tag, Plus, ShoppingBag } from "lucide-react";
+import { ArrowLeft, Tag, Pencil, ShoppingBag } from "lucide-react";
 import { PageHeader } from "@/components/shared/page-header";
 import { LinkButton } from "@/components/ui/link-button";
+import { ModelPhoto } from "@/components/ui/model-photo";
 import { Badge } from "@/components/ui/badge";
+import { RoleGate } from "@/components/shared/role-gate";
 import { getCatalogItemById } from "@/lib/mock-data/catalog";
+import { getCurrentUser } from "@/lib/auth/session";
 import { formatAmount } from "@/lib/money/format";
 import { CATALOG_CATEGORY_LABELS } from "@/features/catalog/types";
 import { GARMENT_TYPE_LABELS } from "@/features/measurements/constants";
+import { ArchiveModelButton } from "./_components/archive-model-button";
 
 export default async function ModeleDetailPage({
   params,
@@ -14,7 +18,7 @@ export default async function ModeleDetailPage({
   params: Promise<{ modeleId: string }>;
 }) {
   const { modeleId } = await params;
-  const item = await getCatalogItemById(modeleId);
+  const [item, currentUser] = await Promise.all([getCatalogItemById(modeleId), getCurrentUser()]);
   if (!item) notFound();
 
   return (
@@ -25,7 +29,6 @@ export default async function ModeleDetailPage({
           variant="secondary"
           size="sm"
           icon={<ArrowLeft className="size-4" />}
-          className="border border-border font-bold bg-surface shadow-xs hover:bg-surface-muted"
         >
           Retour aux modèles
         </LinkButton>
@@ -35,25 +38,46 @@ export default async function ModeleDetailPage({
         title={item.name}
         description={`Catégorie : ${CATALOG_CATEGORY_LABELS[item.category] || item.category}`}
         action={
-          <LinkButton
-            href={`/commandes/nouveau/client?modele=${item.id}`}
-            icon={<ShoppingBag className="size-4" />}
-          >
-            Créer une commande avec ce modèle
-          </LinkButton>
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+            <RoleGate require="catalogue:gerer" role={currentUser?.role}>
+              <LinkButton
+                href={`/modeles/${item.id}/modifier`}
+                variant="secondary"
+                size="sm"
+                icon={<Pencil className="size-4" />}
+              >
+                Modifier
+              </LinkButton>
+            </RoleGate>
+            <ArchiveModelButton
+              itemId={item.id}
+              itemName={item.name}
+              currentUserRole={currentUser?.role}
+            />
+            <LinkButton
+              href={`/commandes/nouveau/client?modele=${item.id}`}
+              size="sm"
+              className="col-span-2"
+              icon={<ShoppingBag className="size-4" />}
+            >
+              Commander ce modèle
+            </LinkButton>
+          </div>
         }
       />
 
       <div className="grid gap-6 md:grid-cols-2">
-        {/* Placeholder visuel grand format */}
-        <div className="flex aspect-4/3 items-center justify-center rounded-lg border border-border bg-canvas/70 p-8 shadow-sm">
-          <div className="flex flex-col items-center gap-3 text-center">
-            <div className="flex size-20 items-center justify-center rounded-full bg-surface text-primary-800 shadow-sm">
-              <Scissors className="size-10" />
-            </div>
-            <span className="font-bold text-text text-lg">{item.name}</span>
-            <Badge tone="info">{GARMENT_TYPE_LABELS[item.garmentType]}</Badge>
-          </div>
+        {/* La photo téléversée était ignorée ici : la grille en montrait une, la
+            fiche affichait un pictogramme. */}
+        <div className="space-y-3">
+          <ModelPhoto
+            src={item.imageUrl}
+            alt={item.name}
+            className="aspect-4/3 w-full rounded-[var(--radius-lg)] border border-border shadow-sm"
+            sizes="(max-width: 768px) 100vw, 45vw"
+            priority
+          />
+          <Badge tone="info">{GARMENT_TYPE_LABELS[item.garmentType]}</Badge>
         </div>
 
         {/* Détails et spécifications */}
@@ -102,11 +126,6 @@ export default async function ModeleDetailPage({
             </div>
           )}
 
-          <div className="pt-4 border-t border-border">
-            <LinkButton href="/commandes/nouveau/client" fullWidth icon={<Plus className="size-4" />}>
-              Lancer une commande client
-            </LinkButton>
-          </div>
         </div>
       </div>
     </div>

@@ -1,9 +1,12 @@
 import { computeBalance } from "@/lib/money/balance";
+import { formatAmount } from "@/lib/money/format";
 import { getOrderComputedFlags } from "@/features/orders/selectors";
 import { clientDisplayName } from "@/features/clients/types";
 import { daysBetween } from "@/lib/utils/dates";
 import type { Order } from "@/features/orders/types";
 import type { Client } from "@/features/clients/types";
+import type { OrderRequest } from "@/features/public-orders/types";
+import { requestDisplayName } from "@/features/public-orders/types";
 
 export type WorkshopNotificationTone = "danger" | "warning" | "info";
 
@@ -11,7 +14,7 @@ export interface WorkshopNotification {
   id: string;
   tone: WorkshopNotificationTone;
   /** Nature de l'alerte, utilisée pour choisir l'icône. */
-  kind: "livraison" | "paiement";
+  kind: "livraison" | "paiement" | "demande";
   title: string;
   description: string;
   timing: string;
@@ -30,6 +33,14 @@ function timingLabel(deliveryDate: string, today: string): string {
   return `Dans ${delta} jours`;
 }
 
+/** Une demande ne peut pas être « en retard » : elle a été reçue, on dit quand. */
+function receivedLabel(submittedDate: string, today: string): string {
+  const delta = daysBetween(submittedDate, today);
+  if (delta <= 0) return "Reçue aujourd'hui";
+  if (delta === 1) return "Reçue hier";
+  return `Reçue il y a ${delta} jours`;
+}
+
 /**
  * Construit les alertes réelles de l'atelier à partir des commandes.
  *
@@ -42,10 +53,29 @@ export function buildWorkshopNotifications(
   orders: Order[],
   clients: Client[],
   paidAmountByOrderId: Map<string, number>,
-  today: string
+  today: string,
+  /** Demandes reçues en ligne. Optionnel : les tests d'origine n'en passent pas. */
+  orderRequests: OrderRequest[] = []
 ): WorkshopNotification[] {
   const clientById = new Map(clients.map((client) => [client.id, client]));
   const notifications: WorkshopNotification[] = [];
+
+  // Une demande en ligne attend une réponse : c'est un client qui a écrit et
+  // qui patiente, elle passe donc devant les livraisons proches.
+  for (const request of orderRequests) {
+    if (request.status !== "nouvelle") continue;
+    notifications.push({
+      id: `demande-${request.id}`,
+      tone: "warning",
+      kind: "demande",
+      title: "Nouvelle demande en ligne",
+      description: `${requestDisplayName(request)} — ${
+        request.catalogItemName ?? "tenue décrite dans le message"
+      }`,
+      timing: receivedLabel(request.submittedAt.slice(0, 10), today),
+      href: `/demandes/${request.id}`,
+    });
+  }
 
   for (const order of orders) {
     const paidAmount = paidAmountByOrderId.get(order.id) ?? 0;
@@ -77,7 +107,10 @@ export function buildWorkshopNotifications(
         tone: "danger",
         kind: "paiement",
         title: "Acompte en retard",
-        description: `${clientName} — solde de ${balance.toLocaleString("fr-FR")} FCFA sur ${order.reference}`,
+        // `formatAmount` et pas `toLocaleString` : le formateur du projet remplace
+        // l'espace insécable d'Intl par une espace normale, sans quoi le montant
+        // se copie mal vers WhatsApp (voir lib/money/format.ts).
+        description: `${clientName} — solde de ${formatAmount(balance)} sur ${order.reference}`,
         timing: order.depositDueDate ? timingLabel(order.depositDueDate, today) : "Échu",
         href,
       });
@@ -85,8 +118,15 @@ export function buildWorkshopNotifications(
   }
 
   // Le plus urgent d'abord : retards de paiement et de livraison, puis le reste.
+  // À gravité égale, une demande en ligne passe devant : quelqu'un attend une
+  // réponse, alors qu'une livraison proche est déjà planifiée.
   const toneRank: Record<WorkshopNotificationTone, number> = { danger: 0, warning: 1, info: 2 };
+  const kindRank: Record<WorkshopNotification["kind"], number> = {
+    demande: 0,
+    paiement: 1,
+    livraison: 2,
+  };
   return notifications
-    .sort((a, b) => toneRank[a.tone] - toneRank[b.tone])
+    .sort((a, b) => toneRank[a.tone] - toneRank[b.tone] || kindRank[a.kind] - kindRank[b.kind])
     .slice(0, MAX_NOTIFICATIONS);
 }

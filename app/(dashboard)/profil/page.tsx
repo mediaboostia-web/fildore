@@ -7,44 +7,9 @@ import { Button } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getUsers } from "@/lib/mock-data/users";
 import { getWorkshop } from "@/lib/mock-data/workshop";
-import { ROLE_LABELS, type Role } from "@/features/auth/types";
+import { ROLE_LABELS } from "@/features/auth/types";
+import { ROLE_PERMISSIONS, PERMISSION_LABELS } from "@/features/auth/permissions";
 import { loginAction, logoutAction } from "@/features/auth/actions";
-
-const ROLE_PERMISSIONS: Record<Role, string[]> = {
-  owner: [
-    "Gestion intégrale de l'atelier et des paramètres",
-    "Création, modification et suppression de commandes",
-    "Gestion des clients et des profils de mesures",
-    "Encaissement et consultation de la trésorerie",
-    "Émission et impression des factures et reçus",
-    "Envoi de messages WhatsApp avec templates",
-    "Gestion de l'équipe et des accès",
-  ],
-  manager: [
-    "Création, modification et suivi des commandes",
-    "Attribution des commandes aux couturiers",
-    "Gestion des clients et des profils de mesures",
-    "Encaissement et validation des paiements",
-    "Émission des factures et bons de commande",
-    "Communication client par WhatsApp",
-  ],
-  couturiere: [
-    "Consultation des fiches techniques de confection",
-    "Accès aux profils de mesures anatomiques",
-    "Mise à jour des statuts de production (Coupe, Couture, Prête)",
-  ],
-  reception: [
-    "Accueil des clients et enregistrement des fiches",
-    "Prise de mesures et saisie des commandes",
-    "Encaissement des acomptes initiaux",
-    "Envoi des notifications WhatsApp de commande prête",
-  ],
-  comptable: [
-    "Suivi des encaissements et des soldes impayés",
-    "Émission et export des factures et reçus de paiement",
-    "Consultation du journal financier",
-  ],
-};
 
 export default async function ProfilePage() {
   const [currentUser, allUsers, workshop] = await Promise.all([
@@ -57,7 +22,11 @@ export default async function ProfilePage() {
     redirect("/connexion");
   }
 
-  const permissions = ROLE_PERMISSIONS[currentUser.role] || [];
+  // Liste dérivée de la table de droits utilisée par le serveur : ce que cette
+  // page affiche est exactement ce que l'utilisateur peut faire, toujours.
+  const permissions = (ROLE_PERMISSIONS[currentUser.role] ?? []).map(
+    (permission) => PERMISSION_LABELS[permission]
+  );
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">

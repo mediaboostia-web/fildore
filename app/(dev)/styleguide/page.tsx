@@ -664,6 +664,7 @@ export default function StyleguidePage() {
           <AppShell
             user={{ name: "Amina Chabi", role: "Owner", email: "amina@atelier-elegance.bj" }}
             notifications={[]}
+            pendingRequestCount={0}
           >
             <div className="flex flex-col gap-4">
               <PageHeader title="Tableau de bord" description="Aperçu de l'atelier aujourd'hui" />

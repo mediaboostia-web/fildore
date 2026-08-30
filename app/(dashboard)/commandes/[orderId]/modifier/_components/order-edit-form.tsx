@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { LinkButton } from "@/components/ui/link-button";
+import { CancelFormButton } from "@/components/shared/cancel-form-button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
@@ -41,6 +41,18 @@ export function OrderEditForm({ order }: { order: Order }) {
     label,
   }));
 
+  // Comparaison avec la commande d'origine : sur un formulaire d'édition, seul
+  // ce qui a réellement changé mérite une confirmation avant de sortir.
+  const isDirty =
+    title !== order.title ||
+    garmentType !== order.garmentType ||
+    description !== (order.description || "") ||
+    priority !== order.priority ||
+    deliveryDate !== order.deliveryDate ||
+    eventDate !== (order.eventDate || "") ||
+    totalAmount !== order.totalAmount ||
+    discountAmount !== (order.discountAmount || 0);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg("");
@@ -62,8 +74,8 @@ export function OrderEditForm({ order }: { order: Order }) {
 
       if (res.success) {
         toast.success("Commande mise à jour");
+        // `updateOrderAction` a déjà revalidé la fiche : pas de second rendu.
         router.push(`/commandes/${order.id}`);
-        router.refresh();
         return;
       }
 
@@ -150,11 +162,19 @@ export function OrderEditForm({ order }: { order: Order }) {
         />
       </div>
 
-      <div className="flex items-center justify-between border-t border-border pt-4">
-        <LinkButton href={`/commandes/${order.id}`} variant="secondary">
-          Annuler
-        </LinkButton>
-        <Button type="submit" isLoading={isPending} icon={<Check className="size-4" />}>
+      <div className="flex flex-col-reverse gap-2 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+        <CancelFormButton
+          href={`/commandes/${order.id}`}
+          isDirty={isDirty}
+          disabled={isPending}
+          description="Les modifications apportées à cette commande ne seront pas enregistrées."
+        />
+        <Button
+          type="submit"
+          fullWidth="mobile"
+          isLoading={isPending}
+          icon={<Check className="size-4" />}
+        >
           Enregistrer les modifications
         </Button>
       </div>

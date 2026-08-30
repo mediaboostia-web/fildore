@@ -11,6 +11,8 @@ import type { Payment, PaymentMethod } from "@/features/payments/types";
 import type { WorkshopDocument } from "@/features/invoices/types";
 import { generateDocumentNumber } from "@/features/invoices/types";
 import type { MessageLogEntry, MessageTemplateKey } from "@/features/messaging/types";
+import type { OrderRequest } from "@/features/public-orders/types";
+import { DEFAULT_ONLINE_ORDERING } from "@/features/public-orders/types";
 
 /**
  * Toutes les dates ci-dessous sont ancrées autour du 30 août 2026 (jour de
@@ -33,10 +35,14 @@ export function seedMockDatabase(): MockDatabase {
   const workshop: Workshop = {
     id: WORKSHOP_ID,
     name: "Atelier Élégance",
+    slug: "atelier-elegance",
     city: "Cotonou",
     country: "Bénin",
     currencyCode: "XOF",
     whatsappPhone: "+229197000001",
+    // Fermé au départ : un atelier doit ouvrir sa page publique volontairement,
+    // après avoir choisi ses règles. Jamais par défaut.
+    onlineOrdering: { ...DEFAULT_ONLINE_ORDERING },
   };
 
   const users: User[] = [
@@ -292,6 +298,9 @@ export function seedMockDatabase(): MockDatabase {
     payments,
     documents,
     messageLog,
+    // Aucune demande en ligne d'exemple : la page publique est fermée au
+    // départ, une demande fictive laisserait croire qu'un client a écrit.
+    orderRequests: [] as OrderRequest[],
     sequences: {
       orderReference: orderSeq,
       documentByType: {

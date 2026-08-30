@@ -7,9 +7,12 @@ test("un visiteur non connecté est redirigé vers la connexion", async ({ page 
 
 test("se connecter comme Amina donne accès au tableau de bord", async ({ page }) => {
   await page.goto("/connexion");
-  await expect(page.getByText("Amina Chabi")).toBeVisible();
+  // « Amina Chabi » figure aussi dans le témoignage de la colonne de droite :
+  // on vise le bouton d'accès rapide, pas le texte brut.
+  const accesRapideAmina = page.getByRole("button", { name: /Amina Chabi/ });
+  await expect(accesRapideAmina).toBeVisible();
 
-  await page.getByRole("button", { name: /Amina Chabi/ }).click();
+  await accesRapideAmina.click();
 
   await expect(page).toHaveURL(/\/tableau-de-bord/);
   await expect(page.getByText("Bienvenue, Amina.")).toBeVisible();

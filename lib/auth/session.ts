@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { getUserById } from "@/lib/mock-data/users";
+import { can, type Permission } from "@/features/auth/permissions";
 import type { Role, User } from "@/features/auth/types";
 
 export const SESSION_COOKIE_NAME = "fildor_session";
@@ -35,6 +36,20 @@ export async function requireCurrentUser(): Promise<User> {
 export async function requireRole(allowedRoles: Role[]): Promise<User> {
   const user = await requireCurrentUser();
   if (!allowedRoles.includes(user.role)) {
+    throw new Error("Cette action n'est pas autorisée pour votre rôle.");
+  }
+  return user;
+}
+
+/**
+ * Garde à privilégier sur `requireRole` : elle exprime le droit métier
+ * (« encaisser un paiement ») plutôt que la liste des rôles, si bien qu'ajouter
+ * un rôle plus tard ne demande de toucher qu'à `ROLE_PERMISSIONS`.
+ * Renvoie l'utilisateur, à utiliser comme auteur de l'action.
+ */
+export async function requireCan(permission: Permission): Promise<User> {
+  const user = await requireCurrentUser();
+  if (!can(user.role, permission)) {
     throw new Error("Cette action n'est pas autorisée pour votre rôle.");
   }
   return user;

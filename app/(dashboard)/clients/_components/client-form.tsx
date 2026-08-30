@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { CancelFormButton } from "@/components/shared/cancel-form-button";
 import { clientFormSchema } from "@/features/clients/schemas";
 import type { ClientFormInput } from "@/features/clients/schemas";
 import { createClientAction, updateClientAction } from "@/features/clients/actions";
@@ -61,7 +62,7 @@ export function ClientForm({ mode, client, onSuccess, onCancel }: ClientFormProp
     handleSubmit,
     setValue,
     setError,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
   } = useForm<ClientFormInput>({
     resolver: zodResolver(clientFormSchema),
     defaultValues: {
@@ -75,14 +76,17 @@ export function ClientForm({ mode, client, onSuccess, onCancel }: ClientFormProp
     },
   });
 
+  // `shouldDirty` : le téléphone n'est pas un champ `register`é, sans quoi une
+  // saisie qui ne serait QUE le numéro laisserait le formulaire « vierge » et
+  // « Annuler » la jetterait sans prévenir.
   function handleNumberChange(digits: string) {
     setPhoneNumber(digits);
-    setValue("phone", `${countryCode}${digits}`, { shouldValidate: true });
+    setValue("phone", `${countryCode}${digits}`, { shouldValidate: true, shouldDirty: true });
   }
 
   function handleCountryCodeChange(value: string) {
     setCountryCode(value);
-    setValue("phone", `${value}${phoneNumber}`, { shouldValidate: true });
+    setValue("phone", `${value}${phoneNumber}`, { shouldValidate: true, shouldDirty: true });
   }
 
   useEffect(() => {
@@ -166,11 +170,14 @@ export function ClientForm({ mode, client, onSuccess, onCancel }: ClientFormProp
       />
       <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
         {onCancel ? (
-          <Button type="button" variant="secondary" onClick={onCancel} disabled={isSubmitting}>
-            Annuler
-          </Button>
+          <CancelFormButton
+            onCancel={onCancel}
+            isDirty={isDirty}
+            disabled={isSubmitting}
+            description="Les informations saisies sur ce client ne seront pas enregistrées."
+          />
         ) : null}
-        <Button type="submit" isLoading={isSubmitting}>
+        <Button type="submit" fullWidth="mobile" isLoading={isSubmitting}>
           {mode === "create" ? "Créer le client" : "Enregistrer les modifications"}
         </Button>
       </div>

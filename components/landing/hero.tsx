@@ -6,22 +6,16 @@ import {
   Ruler,
   Receipt,
   Star,
-  Scissors,
-  CheckCircle2,
 } from "lucide-react";
 
 export function LandingHero() {
   return (
     <section className="relative overflow-hidden pt-14 pb-20 md:pt-24 md:pb-28 bg-gradient-to-b from-[#E8F4EE] via-[#F6FAF8] to-canvas border-b border-border/70">
-      {/* Halos de lumière naturelle et douce d'atelier */}
-      <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[950px] h-[480px] bg-gradient-to-tr from-primary-200/60 via-primary-100/40 to-accent-100/40 rounded-full blur-3xl pointer-events-none -z-10" />
-      <div className="absolute top-1/4 -right-16 w-88 h-88 bg-accent-100/45 rounded-full blur-3xl pointer-events-none -z-10" />
-      <div className="absolute top-1/3 -left-16 w-88 h-88 bg-primary-200/35 rounded-full blur-3xl pointer-events-none -z-10" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center space-y-6">
           {/* Badge social proof supérieur animé */}
-          <div className="inline-flex items-center gap-2.5 rounded-full border border-primary-200/90 bg-surface/95 px-4 py-1.5 shadow-xs backdrop-blur-md animate-in fade-in slide-in-from-top-3 duration-500">
+          <div className="inline-flex items-center gap-2.5 rounded-full border border-primary-200 bg-surface px-4 py-1.5 shadow-xs animate-in fade-in slide-in-from-top-3 duration-500">
             <div className="flex -space-x-1.5 overflow-hidden">
               <div className="relative size-6 rounded-full ring-2 ring-surface overflow-hidden">
                 <Image src="/images/tailor-craft.jpg" alt="Atelier Cotonou" fill className="object-cover" />

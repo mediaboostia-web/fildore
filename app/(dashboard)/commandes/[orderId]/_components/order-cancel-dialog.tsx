@@ -46,7 +46,7 @@ export function OrderCancelDialog({
         onClose();
         router.refresh();
       } else {
-        setErrorMsg(res.error || "Erreur lors de l'annulation de la commande.");
+        setErrorMsg(res.error || "La commande n'a pas pu être annulée. Réessayez.");
       }
     });
   };

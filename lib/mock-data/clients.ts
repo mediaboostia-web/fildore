@@ -1,6 +1,7 @@
 import { getDb, wait } from "./store";
 import { generateId } from "./ids";
 import { normalizePhoneBenin, isSamePhone } from "@/lib/utils/phone";
+import { matchesQuery } from "@/lib/utils/search";
 import type { Client } from "@/features/clients/types";
 
 export async function getClients(): Promise<Client[]> {
@@ -13,15 +14,21 @@ export async function getClientById(id: string): Promise<Client | undefined> {
   return getDb().clients.find((c) => c.id === id);
 }
 
+/**
+ * Recherche client. Passe par `matchesQuery` : les accents ne bloquent pas
+ * (« Houngbedji » trouve « Houngbédji ») et le numéro se retrouve tel qu'on le
+ * lit à voix haute (« 97 00 » trouve `+22997000001`).
+ */
 export async function searchClients(query: string): Promise<Client[]> {
   await wait();
-  const normalizedQuery = query.trim().toLowerCase();
-  if (!normalizedQuery) return getDb().clients.filter((c) => c.status === "active");
-  return getDb().clients.filter((c) => {
-    if (c.status !== "active") return false;
-    const fullName = `${c.firstName} ${c.lastName}`.toLowerCase();
-    return fullName.includes(normalizedQuery) || c.phone.includes(normalizedQuery);
-  });
+  return getDb()
+    .clients.filter((c) => c.status === "active")
+    .filter((c) =>
+      matchesQuery(
+        [c.firstName, c.lastName, c.phone, c.city, c.district, ...c.tags],
+        query
+      )
+    );
 }
 
 /** Détecte un doublon sur le numéro dans la même organisation (mock : un seul atelier). */

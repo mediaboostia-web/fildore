@@ -41,7 +41,7 @@ export function LandingNavbar({ isLoggedIn = false }: { isLoggedIn?: boolean }) 
   return (
     <header
       className={cn(
-        "fixed top-0 inset-x-0 z-50 w-full border-b border-border/80 bg-surface/95 backdrop-blur-md transition-transform duration-300 ease-in-out shadow-xs",
+        "fixed top-0 inset-x-0 z-50 w-full border-b border-border bg-surface transition-transform duration-300 ease-in-out shadow-xs",
         isVisible ? "translate-y-0" : "-translate-y-full"
       )}
     >

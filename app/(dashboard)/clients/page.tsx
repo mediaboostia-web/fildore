@@ -6,11 +6,12 @@ import { Table } from "@/components/ui/table";
 import type { DataTableColumn } from "@/components/ui/table";
 import { MobileCardList } from "@/components/ui/mobile-card-list";
 import { Badge } from "@/components/ui/badge";
-import { searchClients } from "@/lib/mock-data/clients";
+import { getClients } from "@/lib/mock-data/clients";
 import { clientDisplayName } from "@/features/clients/types";
 import type { Client } from "@/features/clients/types";
 import { formatPhoneDisplay } from "@/lib/utils/phone";
-import { ClientSearchBar } from "./_components/client-search-bar";
+import { matchesQuery } from "@/lib/utils/search";
+import { ListToolbar } from "@/components/ui/list-toolbar";
 import { LinkButton } from "@/components/ui/link-button";
 
 /**
@@ -55,18 +56,45 @@ const CLIENT_COLUMNS: DataTableColumn<Client>[] = [
 export default async function ClientsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; ville?: string }>;
 }) {
-  const { q } = await searchParams;
+  const { q, ville } = await searchParams;
   const query = q?.trim() ?? "";
+  const cityFilter = ville?.trim() ?? "all";
 
-  let clients: Client[] = [];
+  let allClients: Client[] = [];
   let loadFailed = false;
   try {
-    clients = await searchClients(query);
+    allClients = await getClients();
   } catch {
     loadFailed = true;
   }
+
+  const searchedClients = allClients.filter((client) =>
+    matchesQuery(
+      [client.firstName, client.lastName, client.phone, client.city, client.district, ...client.tags],
+      query
+    )
+  );
+
+  // Les villes proposées viennent des clients réellement enregistrés : pas de
+  // liste figée qui proposerait des filtres sans résultat.
+  const cityCounts = new Map<string, number>();
+  for (const client of searchedClients) {
+    cityCounts.set(client.city, (cityCounts.get(client.city) ?? 0) + 1);
+  }
+
+  const filterChips = [
+    { key: "all", label: "Toutes les villes", count: searchedClients.length },
+    ...[...cityCounts.entries()]
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "fr"))
+      .map(([city, count]) => ({ key: city, label: city, count })),
+  ];
+
+  const clients =
+    cityFilter === "all"
+      ? searchedClients
+      : searchedClients.filter((client) => client.city === cityFilter);
 
   return (
     <>
@@ -80,13 +108,22 @@ export default async function ClientsPage({
         }
       />
 
-      <div className="mb-4 max-w-md">
-        <ClientSearchBar defaultValue={query} />
-      </div>
+      <ListToolbar
+        searchParam="q"
+        searchValue={query}
+        searchLabel="Rechercher un client"
+        searchPlaceholder="Nom, numéro, ville ou quartier"
+        filterParam="ville"
+        filterValue={cityFilter}
+        filters={filterChips}
+        resultCount={clients.length}
+        totalCount={allClients.length}
+        noun={["client", "clients"]}
+      />
 
       {loadFailed ? (
         <ErrorState
-          description="Impossible de charger les clients. Vérifiez votre connexion puis réessayez."
+          description="La liste des clients ne s'est pas chargée. Vérifiez votre connexion, puis réessayez."
           action={
             <LinkButton href="/clients" variant="secondary">
               Réessayer
@@ -96,10 +133,14 @@ export default async function ClientsPage({
       ) : clients.length === 0 ? (
         <EmptyState
           icon={<Users className="size-6" aria-hidden="true" />}
-          title={query ? "Aucun client ne correspond à cette recherche." : "Aucun client pour l'instant."}
+          title={
+            query || cityFilter !== "all"
+              ? "Aucun client ne correspond à cette recherche."
+              : "Aucun client pour l'instant."
+          }
           description={
-            query
-              ? "Essayez un autre nom ou numéro de téléphone."
+            query || cityFilter !== "all"
+              ? "Essayez un autre nom, un autre numéro, ou choisissez « Toutes les villes »."
               : "Ajoutez votre premier client pour commencer à suivre ses commandes et ses mesures."
           }
           action={

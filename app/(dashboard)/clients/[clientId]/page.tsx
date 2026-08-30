@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { MessageCircle, Phone, Plus } from "lucide-react";
+import { MessageCircle, Phone, Plus, Scissors } from "lucide-react";
 import { Breadcrumbs } from "@/components/shared/breadcrumbs";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
@@ -24,7 +24,9 @@ import { formatDateFr } from "@/lib/utils/dates";
 import { formatPhoneDisplay } from "@/lib/utils/phone";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ClientInfoTab } from "./_components/client-info-tab";
+import { ArchiveClientButton } from "./_components/archive-client-button";
 import { LinkButton } from "@/components/ui/link-button";
+import { getCurrentUser } from "@/lib/auth/session";
 
 const ORDER_COLUMNS: DataTableColumn<Order>[] = [
   { key: "reference", label: "Référence", emphasis: true, render: (order) => order.reference },
@@ -64,10 +66,11 @@ export default async function ClientDetailPage({
   const client = await getClientById(clientId);
   if (!client) notFound();
 
-  const [orders, payments, profiles] = await Promise.all([
+  const [orders, payments, profiles, currentUser] = await Promise.all([
     getOrdersByClient(clientId),
     getPaymentsByClient(clientId),
     getProfilesByClient(clientId),
+    getCurrentUser(),
   ]);
 
   const whatsappDigits = client.whatsappPhone.replace(/\D/g, "");
@@ -82,7 +85,11 @@ export default async function ClientDetailPage({
         title={clientDisplayName(client)}
         description={client.district ? `${client.city} · ${client.district}` : client.city}
         action={
-          <LinkButton href="/commandes/nouveau/client" icon={<Plus className="size-4" />}>
+          // `?client=` évite de redemander le client qu'on vient d'ouvrir.
+          <LinkButton
+            href={`/commandes/nouveau/client?client=${client.id}`}
+            icon={<Plus className="size-4" />}
+          >
             Nouvelle commande
           </LinkButton>
         }
@@ -117,6 +124,11 @@ export default async function ClientDetailPage({
             >
               WhatsApp
             </LinkButton>
+            <ArchiveClientButton
+              clientId={client.id}
+              clientName={clientDisplayName(client)}
+              currentUserRole={currentUser?.role}
+            />
           </div>
         </div>
       </Card>
@@ -180,10 +192,24 @@ export default async function ClientDetailPage({
         </TabsContent>
 
         <TabsContent value="mesures">
-          <div className="mb-3 flex justify-end">
+          <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:justify-end">
+            {profiles.length > 0 ? (
+              <LinkButton
+                href={`/commandes/nouveau/client?client=${clientId}&profil=${
+                  (profiles.find((p) => p.isPrimary) ?? profiles[0]).id
+                }`}
+                size="sm"
+                variant="secondary"
+                fullWidth="mobile"
+                icon={<Scissors className="size-4" aria-hidden="true" />}
+              >
+                Commander avec ces mesures
+              </LinkButton>
+            ) : null}
             <LinkButton
               href={`/clients/${clientId}/mesures/nouveau`}
               size="sm"
+              fullWidth="mobile"
               icon={<Plus className="size-4" aria-hidden="true" />}
             >
               Nouveau profil

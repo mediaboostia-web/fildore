@@ -48,7 +48,10 @@ export default function OrderWizardPricingStep() {
   };
 
   return (
-    <form onSubmit={handleNext} className="space-y-6">
+    /* `noValidate` : sans lui, le navigateur bloque avec sa propre bulle (dans sa
+       langue, hors de notre design) et notre message français ne s'affiche jamais.
+       La validation reste faite ici, puis revérifiée côté serveur. */
+    <form onSubmit={handleNext} className="space-y-6" noValidate>
       <div>
         <h2 className="text-lg font-bold text-text">Étape 4 : Prix et acompte</h2>
         <p className="text-sm text-text-muted">
@@ -62,44 +65,39 @@ export default function OrderWizardPricingStep() {
         </div>
       )}
 
+      {/* Label rattaché au champ (prop `label`) plutôt qu'un <label> détaché :
+          le lecteur d'écran l'annonce, et le champ devient adressable par son nom. */}
       <div className="space-y-4">
-        <div>
-          <label className="mb-1 block text-xs font-medium text-text">Montant total *</label>
-          <CurrencyInput
-            value={totalAmount}
-            onChange={(val) => {
-              setTotalAmount(val);
-              setErrorMsg("");
-            }}
-            placeholder="0"
-            required
-          />
-        </div>
+        <CurrencyInput
+          label="Montant total"
+          required
+          value={totalAmount}
+          onChange={(val) => {
+            setTotalAmount(val);
+            setErrorMsg("");
+          }}
+          placeholder="0"
+          hint="Le prix convenu avec le client pour cette tenue."
+        />
 
-        <div>
-          <label className="mb-1 block text-xs font-medium text-text">
-            Remise accordée (facultatif)
-          </label>
-          <CurrencyInput
-            value={discountAmount}
-            onChange={(val) => {
-              setDiscountAmount(val);
-              setErrorMsg("");
-            }}
-            placeholder="0"
-          />
-        </div>
+        <CurrencyInput
+          label="Remise accordée"
+          value={discountAmount}
+          onChange={(val) => {
+            setDiscountAmount(val);
+            setErrorMsg("");
+          }}
+          placeholder="0"
+          hint="Facultatif."
+        />
 
-        <div>
-          <label className="mb-1 block text-xs font-medium text-text">
-            Date limite de versement de l&apos;acompte (facultatif)
-          </label>
-          <Input
-            type="date"
-            value={depositDueDate}
-            onChange={(e) => setDepositDueDate(e.target.value)}
-          />
-        </div>
+        <Input
+          label="Date limite de l'acompte"
+          type="date"
+          value={depositDueDate}
+          onChange={(e) => setDepositDueDate(e.target.value)}
+          hint="Facultatif. Sert à vous alerter si l'acompte tarde."
+        />
       </div>
 
       {/* Récapitulatif financier interactif */}
@@ -124,11 +122,16 @@ export default function OrderWizardPricingStep() {
         </p>
       </div>
 
-      <div className="flex items-center justify-between pt-4 border-t border-border">
-        <LinkButton href="/commandes/nouveau/mesures" variant="secondary" icon={<ArrowLeft className="size-4" />}>
+      <div className="flex flex-col-reverse gap-2 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+        <LinkButton
+          href="/commandes/nouveau/mesures"
+          variant="secondary"
+          fullWidth="mobile"
+          icon={<ArrowLeft className="size-4" />}
+        >
           Retour aux mesures
         </LinkButton>
-        <Button type="submit" icon={<ArrowRight className="size-4" />}>
+        <Button type="submit" fullWidth="mobile" icon={<ArrowRight className="size-4" />}>
           Continuer vers Vérification
         </Button>
       </div>

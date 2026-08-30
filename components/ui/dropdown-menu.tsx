@@ -12,8 +12,10 @@ export const DropdownMenuSub = DropdownMenuPrimitive.Sub;
 export const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup;
 
 /**
- * Dropdown fluide inspiré de Smooth Dropdown :
- * Animations douces, angles arrondis 2xl, verre dépoli et retour visuel soigné.
+ * Menu déroulant : surface opaque, bordure neutre, ombre discrète.
+ * Pas de `backdrop-blur` ni de panneau translucide — la matrice d'exclusion de
+ * PROJECT_RULES.md §5 interdit le glassmorphism, et un menu flou par-dessus une
+ * liste de commandes se lit mal sur un écran de téléphone en plein soleil.
  */
 export function DropdownMenuContent({
   className,
@@ -25,7 +27,7 @@ export function DropdownMenuContent({
       <DropdownMenuPrimitive.Content
         sideOffset={sideOffset}
         className={cn(
-          "z-50 min-w-52 rounded-2xl border border-border/80 bg-surface/98 p-1.5 shadow-2xl backdrop-blur-lg",
+          "z-50 min-w-52 rounded-[var(--radius-lg)] border border-border bg-surface p-1.5 shadow-lg",
           "animate-in fade-in zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 duration-150 ease-out",
           className
         )}
@@ -141,7 +143,7 @@ export function DropdownMenuSubContent({
     <DropdownMenuPrimitive.Portal>
       <DropdownMenuPrimitive.SubContent
         className={cn(
-          "z-50 min-w-48 rounded-2xl border border-border/80 bg-surface/98 p-1.5 shadow-2xl backdrop-blur-lg",
+          "z-50 min-w-48 rounded-[var(--radius-lg)] border border-border bg-surface p-1.5 shadow-lg",
           "animate-in fade-in zoom-in-95 duration-150 ease-out",
           className
         )}

@@ -32,6 +32,7 @@ import { sumConfirmedPayments } from "@/features/payments/types";
 import { getOrderComputedFlags } from "@/features/orders/selectors";
 import { ORDER_STATUS_LABELS } from "@/features/orders/types";
 import { GARMENT_TYPE_LABELS } from "@/features/measurements/constants";
+import { RoleGate } from "@/components/shared/role-gate";
 import { OrderActionsBar } from "./_components/order-actions-bar";
 import { PaymentHistory } from "./_components/payment-history";
 import { Printer } from "lucide-react";
@@ -84,14 +85,16 @@ export default async function OrderDetailPage({
         title={`${order.reference} — ${order.title}`}
         description={`Commandé le ${formatDateFr(order.createdAt)} par ${clientDisplayName(client)}`}
         action={
-          <LinkButton
-            href={`/commandes/${order.id}/modifier`}
-            variant="secondary"
-            size="sm"
-            icon={<Edit className="size-4" />}
-          >
-            Modifier détails
-          </LinkButton>
+          <RoleGate require="commande:modifier" role={currentUser?.role}>
+            <LinkButton
+              href={`/commandes/${order.id}/modifier`}
+              variant="secondary"
+              size="sm"
+              icon={<Edit className="size-4" />}
+            >
+              Modifier la commande
+            </LinkButton>
+          </RoleGate>
         }
       />
 
@@ -110,6 +113,7 @@ export default async function OrderDetailPage({
         balance={balance}
         paidAmount={paidAmount}
         currentUserRole={currentUser?.role}
+        documents={documents}
       />
 
       <div className="grid gap-6 lg:grid-cols-3">

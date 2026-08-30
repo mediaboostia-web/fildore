@@ -98,9 +98,12 @@ body {
 
 /* --- Styles d'impression professionnelle (Factures A4 et Tickets 80mm) --- */
 @media print {
+  /* Format explicite : « Enregistrer en PDF » produit alors une vraie page A4,
+     et non le format papier par défaut du système, qui varie d'un appareil à
+     l'autre (Letter sur beaucoup de téléphones). */
   @page {
-    margin: 1cm;
-    size: auto;
+    size: A4 portrait;
+    margin: 12mm;
   }
 
   body {

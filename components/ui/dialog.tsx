@@ -81,10 +81,19 @@ export function DialogDescription({
   );
 }
 
+/**
+ * Pied de modale. Sous 640 px les boutons occupent toute la largeur et
+ * l'action de confirmation est en haut de la pile (`flex-col-reverse`) : c'est
+ * celle que le pouce atteint le plus facilement.
+ */
 export function DialogFooter({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
-      className={cn("mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end", className)}
+      className={cn(
+        "mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
+        "[&>*]:w-full sm:[&>*]:w-auto",
+        className
+      )}
       {...props}
     />
   );

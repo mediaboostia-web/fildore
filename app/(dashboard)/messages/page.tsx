@@ -4,14 +4,20 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Table, type DataTableColumn } from "@/components/ui/table";
 import { MobileCardList } from "@/components/ui/mobile-card-list";
 import { Badge } from "@/components/ui/badge";
+import { ListToolbar } from "@/components/ui/list-toolbar";
 import { getMessageLog } from "@/lib/mock-data/message-log";
 import { getClients } from "@/lib/mock-data/clients";
 import { getOrders } from "@/lib/mock-data/orders";
+import { getPayments } from "@/lib/mock-data/payments";
+import { getDocuments } from "@/lib/mock-data/documents";
+import { getWorkshop } from "@/lib/mock-data/workshop";
 import { formatDateFr } from "@/lib/utils/dates";
 import { clientDisplayName } from "@/features/clients/types";
 import { formatPhoneDisplay } from "@/lib/utils/phone";
+import { matchesQuery } from "@/lib/utils/search";
 import { MESSAGE_TEMPLATES } from "@/features/messaging/templates";
-import type { MessageLogEntry } from "@/features/messaging/types";
+import { toMessagingClient, toMessagingOrder } from "@/features/messaging/hub-data";
+import type { MessageLogEntry, MessageTemplateKey } from "@/features/messaging/types";
 import { MessagesHubClient } from "./_components/messages-hub-client";
 
 interface MessageLogRow {
@@ -24,12 +30,10 @@ interface MessageLogRow {
 const MESSAGE_LOG_COLUMNS: DataTableColumn<MessageLogRow>[] = [
   {
     key: "date",
-    label: "Date & Heure",
+    label: "Date & heure",
     emphasis: true,
     render: (row) => (
-      <span className="text-xs font-semibold text-text">
-        {formatDateFr(row.log.sentAt)}
-      </span>
+      <span className="text-xs font-semibold text-text">{formatDateFr(row.log.sentAt)}</span>
     ),
   },
   {
@@ -62,17 +66,34 @@ const MESSAGE_LOG_COLUMNS: DataTableColumn<MessageLogRow>[] = [
   },
 ];
 
-export default async function MessagesPage() {
-  const [logs, clients, orders] = await Promise.all([
+const TEMPLATE_KEYS = new Set(MESSAGE_TEMPLATES.map((t) => t.key));
+
+export default async function MessagesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; client?: string; commande?: string; modele?: string }>;
+}) {
+  const { q, client: clientParam, commande, modele } = await searchParams;
+  const query = q?.trim() ?? "";
+
+  const [logs, clients, orders, payments, documents, workshop] = await Promise.all([
     getMessageLog(),
     getClients(),
     getOrders(),
+    getPayments(),
+    getDocuments(),
+    getWorkshop(),
   ]);
 
   const clientMap = new Map(clients.map((c) => [c.id, c]));
   const templateMap = new Map(MESSAGE_TEMPLATES.map((t) => [t.key, t.label]));
 
-  const logRows: MessageLogRow[] = logs
+  // Montants calculés ici, jamais dans le navigateur, et champs réduits à ce que
+  // l'écran affiche (PROJECT_RULES.md §6 et §7).
+  const messagingClients = clients.map(toMessagingClient);
+  const messagingOrders = orders.map((order) => toMessagingOrder(order, payments, documents));
+
+  const allRows: MessageLogRow[] = logs
     .map((log) => {
       const client = clientMap.get(log.clientId);
       return {
@@ -84,37 +105,60 @@ export default async function MessagesPage() {
     })
     .sort((a, b) => new Date(b.log.sentAt).getTime() - new Date(a.log.sentAt).getTime());
 
+  const logRows = allRows.filter((row) =>
+    matchesQuery([row.clientName, row.clientPhone, row.templateLabel, row.log.resolvedBody], query)
+  );
+
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Messagerie WhatsApp"
-        description="Préparez et envoyez des messages professionnels personnalisés à vos clients via WhatsApp."
+        title="Relances WhatsApp"
+        description="Préparez un message à partir des données réelles de la commande, puis envoyez-le sur WhatsApp."
       />
 
-      {/* Hub interactif de composition de messages */}
-      <MessagesHubClient clients={clients} orders={orders} />
+      <MessagesHubClient
+        clients={messagingClients}
+        orders={messagingOrders}
+        workshop={{ name: workshop.name, whatsappPhone: workshop.whatsappPhone }}
+        initialClientId={clientParam}
+        initialOrderId={commande}
+        initialTemplateKey={
+          modele && TEMPLATE_KEYS.has(modele as MessageTemplateKey)
+            ? (modele as MessageTemplateKey)
+            : undefined
+        }
+      />
 
-      {/* Historique des envois */}
-      <div className="space-y-4 pt-4 border-t border-border">
+      <div className="space-y-4 border-t border-border pt-4">
         <div className="flex items-center gap-2">
           <Clock className="size-4 text-primary-800" />
-          <h2 className="font-bold text-base text-text">Journal des messages envoyés</h2>
+          <h2 className="text-base font-bold text-text">Messages envoyés</h2>
         </div>
+
+        <ListToolbar
+          searchParam="q"
+          searchValue={query}
+          searchLabel="Rechercher un message envoyé"
+          searchPlaceholder="Client, numéro ou contenu"
+          resultCount={logRows.length}
+          totalCount={allRows.length}
+          noun={["message", "messages"]}
+        />
 
         {logRows.length === 0 ? (
           <EmptyState
             icon={<MessageSquare className="size-6" />}
-            title="Aucun message enregistré pour le moment."
-            description="Les messages envoyés depuis l'application apparaîtront ici pour assurer le suivi."
+            title={query ? "Aucun message ne correspond." : "Aucun message envoyé pour l'instant."}
+            description={
+              query
+                ? "Essayez un autre nom ou un autre mot du message."
+                : "Les messages envoyés depuis Fildor apparaîtront ici, avec leur contenu exact."
+            }
           />
         ) : (
           <>
             <div className="hidden md:block">
-              <Table
-                columns={MESSAGE_LOG_COLUMNS}
-                data={logRows}
-                getRowKey={(r) => r.log.id}
-              />
+              <Table columns={MESSAGE_LOG_COLUMNS} data={logRows} getRowKey={(r) => r.log.id} />
             </div>
             <div className="md:hidden">
               <MobileCardList

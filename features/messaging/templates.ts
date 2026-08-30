@@ -72,15 +72,42 @@ export function getMessageTemplate(key: MessageTemplate["key"]): MessageTemplate
   return template;
 }
 
-/** Résout les variables uniquement avec les données du client et de la commande ciblés. */
+/**
+ * Résout les variables uniquement avec les données du client et de la commande
+ * ciblés.
+ *
+ * Deux cas d'absence, traités différemment à dessein :
+ * - **variable absente** (`undefined`) : c'est un bug de l'appelant. L'espace
+ *   réservé reste visible — voyant, donc réparable — plutôt que d'écrire
+ *   « undefined » dans un message envoyé à un client.
+ * - **variable vide** (`""`) : l'information n'existe pas pour cette commande
+ *   (pas encore de lien de document, pas d'acompte demandé). La **phrase
+ *   entière** est retirée : mieux vaut un message plus court qu'une phrase
+ *   bancale du type « Récapitulatif : . ».
+ */
 export function resolveMessageTemplate(
   template: MessageTemplate,
   variables: MessageTemplateVariables
 ): string {
-  return template.body.replace(/\{(\w+)\}/g, (match, key: string) => {
-    const value = variables[key as keyof MessageTemplateVariables];
-    return value !== undefined ? value : match;
-  });
+  const sentences = template.body.match(/[^.!?]+[.!?]*\s*/g) ?? [template.body];
+
+  return sentences
+    .map((sentence) => {
+      let hasEmptyVariable = false;
+      const resolved = sentence.replace(/\{(\w+)\}/g, (match, key: string) => {
+        const value = variables[key as keyof MessageTemplateVariables];
+        if (value === undefined) return match;
+        if (value === "") {
+          hasEmptyVariable = true;
+          return "";
+        }
+        return value;
+      });
+      return hasEmptyVariable ? "" : resolved;
+    })
+    .join("")
+    .replace(/[ \t]+/g, " ")
+    .trim();
 }
 
 export function buildWhatsAppLink(phoneE164: string, message: string): string {

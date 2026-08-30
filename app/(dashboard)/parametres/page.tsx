@@ -6,21 +6,28 @@ import { Avatar } from "@/components/ui/avatar";
 import { RoleGate } from "@/components/shared/role-gate";
 import { getWorkshop } from "@/lib/mock-data/workshop";
 import { getUsers } from "@/lib/mock-data/users";
-import { ROLE_LABELS, type Role } from "@/features/auth/types";
+import { getCatalogItems } from "@/lib/mock-data/catalog";
+import { ROLE_LABELS } from "@/features/auth/types";
 import { getCurrentUser } from "@/lib/auth/session";
 import { logoutAction } from "@/features/auth/actions";
+import type { CatalogCategory } from "@/features/catalog/types";
 import { WorkshopSettingsForm } from "./_components/workshop-settings-form";
 import { InviteMemberDialog } from "./_components/invite-member-dialog";
-
-/** Modification des paramètres et gestion d'équipe réservées au propriétaire. */
-const WORKSHOP_ADMIN_ROLES: Role[] = ["owner"];
+import { OnlineOrderingForm } from "./_components/online-ordering-form";
 
 export default async function ParametresPage() {
-  const [workshop, users, currentUser] = await Promise.all([
+  const [workshop, users, currentUser, catalogItems] = await Promise.all([
     getWorkshop(),
     getUsers(),
     getCurrentUser(),
+    getCatalogItems(),
   ]);
+
+  // Ne proposer que les catégories réellement présentes : cocher « Uniformes »
+  // quand l'atelier n'en a aucun ne changerait rien à sa page publique.
+  const availableCategories = [
+    ...new Set(catalogItems.filter((item) => !item.isArchived).map((item) => item.category)),
+  ] as CatalogCategory[];
 
   return (
     <div className="space-y-8 max-w-4xl">
@@ -31,7 +38,7 @@ export default async function ParametresPage() {
 
       {/* Informations Atelier */}
       <RoleGate
-        allow={WORKSHOP_ADMIN_ROLES}
+        require="atelier:parametres"
         role={currentUser?.role}
         fallback={
           <p className="rounded-lg border border-border bg-surface-muted p-4 text-sm text-text-muted">
@@ -42,6 +49,23 @@ export default async function ParametresPage() {
         <WorkshopSettingsForm initialWorkshop={workshop} />
       </RoleGate>
 
+      {/* Commandes en ligne — c'est l'atelier qui fixe ce qu'il accepte. */}
+      <RoleGate
+        require="atelier:parametres"
+        role={currentUser?.role}
+        fallback={
+          <p className="rounded-lg border border-border bg-surface-muted p-4 text-sm text-text-muted">
+            Seul le propriétaire de l&apos;atelier règle les commandes en ligne.
+          </p>
+        }
+      >
+        <OnlineOrderingForm
+          workshopSlug={workshop.slug}
+          initialSettings={workshop.onlineOrdering}
+          availableCategories={availableCategories}
+        />
+      </RoleGate>
+
       {/* Équipe & Rôles */}
       <div className="rounded-lg border border-border bg-surface p-6 shadow-sm space-y-4">
         <div className="flex items-center justify-between border-b border-border pb-3">
@@ -49,7 +73,7 @@ export default async function ParametresPage() {
             <Users className="size-5 text-primary-800" />
             <h2 className="font-bold text-base text-text">Membres de l&apos;équipe ({users.length})</h2>
           </div>
-          <RoleGate allow={WORKSHOP_ADMIN_ROLES} role={currentUser?.role}>
+          <RoleGate require="equipe:gerer" role={currentUser?.role}>
             <InviteMemberDialog />
           </RoleGate>
         </div>

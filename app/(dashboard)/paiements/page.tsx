@@ -5,18 +5,47 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Table, type DataTableColumn } from "@/components/ui/table";
 import { MobileCardList } from "@/components/ui/mobile-card-list";
 import { Badge } from "@/components/ui/badge";
+import { ListToolbar } from "@/components/ui/list-toolbar";
 import { getPayments } from "@/lib/mock-data/payments";
 import { getOrders } from "@/lib/mock-data/orders";
 import { getClients } from "@/lib/mock-data/clients";
 import { formatAmount } from "@/lib/money/format";
 import { formatDateFr } from "@/lib/utils/dates";
+import { matchesQuery } from "@/lib/utils/search";
 import { clientDisplayName } from "@/features/clients/types";
-import { PAYMENT_METHOD_LABELS, type Payment } from "@/features/payments/types";
+import { PAYMENT_METHOD_LABELS, type Payment, type PaymentMethod } from "@/features/payments/types";
 
 interface PaymentRow {
   payment: Payment;
   clientName: string;
   orderReference: string;
+}
+
+/** Moyens de paiement regroupés comme l'atelier les compte : caisse d'un côté, mobile de l'autre. */
+const MOBILE_MONEY_METHODS: readonly PaymentMethod[] = [
+  "mtn_momo",
+  "moov_money",
+  "orange_money",
+  "wave",
+];
+
+const PAYMENT_FILTERS: { key: string; label: string; methods: readonly PaymentMethod[] }[] = [
+  { key: "all", label: "Tous", methods: [] },
+  { key: "especes", label: "Espèces", methods: ["especes"] },
+  { key: "mobile_money", label: "Mobile Money", methods: MOBILE_MONEY_METHODS },
+  { key: "virement", label: "Virement", methods: ["virement"] },
+  { key: "carte", label: "Carte", methods: ["carte"] },
+  {
+    key: "autre",
+    label: "Autres",
+    methods: ["paiement_livraison", "autre"],
+  },
+];
+
+function matchesPaymentFilter(payment: Payment, filterKey: string): boolean {
+  const definition = PAYMENT_FILTERS.find((f) => f.key === filterKey);
+  if (!definition || definition.methods.length === 0) return true;
+  return definition.methods.includes(payment.method);
 }
 
 const PAYMENT_COLUMNS: DataTableColumn<PaymentRow>[] = [
@@ -71,9 +100,10 @@ const PAYMENT_COLUMNS: DataTableColumn<PaymentRow>[] = [
 export default async function PaiementsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ method?: string }>;
+  searchParams: Promise<{ q?: string; method?: string }>;
 }) {
-  const { method } = await searchParams;
+  const { q, method } = await searchParams;
+  const query = q?.trim() ?? "";
   const methodFilter = method?.trim() || "all";
 
   const [payments, orders, clients] = await Promise.all([
@@ -98,14 +128,33 @@ export default async function PaiementsPage({
     })
     .sort((a, b) => new Date(b.payment.createdAt).getTime() - new Date(a.payment.createdAt).getTime());
 
-  const filteredRows = methodFilter === "all"
-    ? rows
-    : rows.filter((r) => r.payment.method === methodFilter);
+  const searchedRows = rows.filter((row) =>
+    matchesQuery(
+      [
+        row.payment.receiptNumber,
+        row.clientName,
+        row.orderReference,
+        row.payment.reference,
+        PAYMENT_METHOD_LABELS[row.payment.method],
+      ],
+      query
+    )
+  );
+
+  const filterChips = PAYMENT_FILTERS.map((definition) => ({
+    key: definition.key,
+    label: definition.label,
+    count: searchedRows.filter((row) => matchesPaymentFilter(row.payment, definition.key)).length,
+  })).filter((chip) => chip.key === "all" || chip.count > 0);
+
+  const filteredRows = searchedRows.filter((row) =>
+    matchesPaymentFilter(row.payment, methodFilter)
+  );
 
   // Statistiques
   const totalEncaissé = rows.reduce((sum, r) => sum + r.payment.amount, 0);
   const totalMomo = rows
-    .filter((r) => ["mtn_momo", "moov_money", "wave", "orange_money"].includes(r.payment.method))
+    .filter((r) => MOBILE_MONEY_METHODS.includes(r.payment.method))
     .reduce((sum, r) => sum + r.payment.amount, 0);
   const totalEspeces = rows
     .filter((r) => r.payment.method === "especes")
@@ -145,11 +194,32 @@ export default async function PaiementsPage({
         </div>
       </div>
 
+      <ListToolbar
+        searchParam="q"
+        searchValue={query}
+        searchLabel="Rechercher un paiement"
+        searchPlaceholder="N° de reçu, client ou commande"
+        filterParam="method"
+        filterValue={methodFilter}
+        filters={filterChips}
+        resultCount={filteredRows.length}
+        totalCount={rows.length}
+        noun={["paiement", "paiements"]}
+      />
+
       {filteredRows.length === 0 ? (
         <EmptyState
           icon={<CreditCard className="size-6" />}
-          title="Aucun paiement trouvé."
-          description="Les règlements enregistrés depuis les fiches de commandes apparaîtront ici."
+          title={
+            query || methodFilter !== "all"
+              ? "Aucun paiement ne correspond à cette recherche."
+              : "Aucun paiement enregistré."
+          }
+          description={
+            query || methodFilter !== "all"
+              ? "Essayez un autre numéro de reçu ou un autre nom, ou choisissez « Tous »."
+              : "Les règlements encaissés depuis une fiche de commande apparaîtront ici."
+          }
         />
       ) : (
         <>

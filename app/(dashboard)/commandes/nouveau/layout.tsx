@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { ArrowLeft, X } from "lucide-react";
 import { Stepper } from "@/components/ui/stepper";
 import { Button } from "@/components/ui/button";
 import { LinkButton } from "@/components/ui/link-button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useOrderWizardStore } from "@/features/orders/store";
 
 const STEPS = [
@@ -19,6 +21,7 @@ export default function OrderWizardLayout({ children }: { children: React.ReactN
   const pathname = usePathname();
   const router = useRouter();
   const resetStore = useOrderWizardStore((state) => state.reset);
+  const [isCancelOpen, setIsCancelOpen] = useState(false);
 
   const getCurrentStepIndex = () => {
     if (pathname.includes("/client")) return 0;
@@ -29,11 +32,11 @@ export default function OrderWizardLayout({ children }: { children: React.ReactN
     return 0;
   };
 
+  // `window.confirm` bloquait la page avec une boîte du navigateur, dans sa
+  // propre langue et son propre style. On garde la confirmation, pas l'alerte.
   const handleCancel = () => {
-    if (window.confirm("Abandonner la création de commande ? Le brouillon sera effacé.")) {
-      resetStore();
-      router.push("/commandes");
-    }
+    resetStore();
+    router.push("/commandes");
   };
 
   const currentStep = getCurrentStepIndex();
@@ -55,10 +58,9 @@ export default function OrderWizardLayout({ children }: { children: React.ReactN
         <Button
           variant="secondary"
           size="sm"
-          onClick={handleCancel}
-          className="border border-danger/30 text-danger bg-danger-bg/60 hover:bg-danger-bg font-bold shadow-xs active:scale-98"
+          onClick={() => setIsCancelOpen(true)}
+          icon={<X className="size-4" />}
         >
-          <X className="size-4 mr-1.5" />
           Annuler
         </Button>
       </div>
@@ -70,6 +72,17 @@ export default function OrderWizardLayout({ children }: { children: React.ReactN
       <div className="rounded-2xl border border-border bg-surface p-4 shadow-xs md:p-6">
         {children}
       </div>
+
+      <ConfirmDialog
+        open={isCancelOpen}
+        onOpenChange={setIsCancelOpen}
+        tone="danger"
+        title="Abandonner cette commande ?"
+        description="Le brouillon sera effacé : le client choisi, les mesures et le prix saisis seront perdus."
+        confirmLabel="Abandonner"
+        cancelLabel="Continuer la commande"
+        onConfirm={handleCancel}
+      />
     </div>
   );
 }

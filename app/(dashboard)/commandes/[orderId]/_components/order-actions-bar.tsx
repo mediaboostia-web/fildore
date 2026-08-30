@@ -18,12 +18,11 @@ import { toast } from "@/components/ui/toast";
 import type { Order, OrderStatus } from "@/features/orders/types";
 import type { Client } from "@/features/clients/types";
 import type { Role } from "@/features/auth/types";
+import type { WorkshopDocument } from "@/features/invoices/types";
 import { RecordPaymentDialog } from "./record-payment-dialog";
 import { OrderWhatsAppDialog } from "./order-whatsapp-dialog";
 import { OrderCancelDialog } from "./order-cancel-dialog";
-
-/** Annulation réservée aux propriétaires (voir la même règle server-side dans cancelOrderAction). */
-const CANCEL_ORDER_ROLES: Role[] = ["owner"];
+import { OrderDocumentMenu } from "./order-document-menu";
 
 interface OrderActionsBarProps {
   order: Order;
@@ -31,9 +30,18 @@ interface OrderActionsBarProps {
   balance: number;
   paidAmount: number;
   currentUserRole: Role | null | undefined;
+  /** Documents déjà émis pour cette commande — le menu grise la facture si elle existe. */
+  documents: WorkshopDocument[];
 }
 
-export function OrderActionsBar({ order, client, balance, paidAmount, currentUserRole }: OrderActionsBarProps) {
+export function OrderActionsBar({
+  order,
+  client,
+  balance,
+  paidAmount,
+  currentUserRole,
+  documents,
+}: OrderActionsBarProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [currentStatus, setCurrentStatus] = useState<OrderStatus>(order.status);
@@ -55,7 +63,7 @@ export function OrderActionsBar({ order, client, balance, paidAmount, currentUse
         toast.success(`Statut mis à jour : ${ORDER_STATUS_CONFIG[newStatus]?.label || newStatus}`);
         router.refresh();
       } else {
-        toast.error("Erreur lors de la mise à jour du statut.");
+        toast.error("Le statut n'a pas pu être changé. Réessayez.");
       }
     });
   };
@@ -78,23 +86,33 @@ export function OrderActionsBar({ order, client, balance, paidAmount, currentUse
 
         <div className="flex flex-wrap items-center gap-2">
           {balance > 0 && !isCancelled && (
-            <Button
-              size="sm"
-              onClick={() => setIsPaymentOpen(true)}
-              icon={<CreditCard className="size-4" />}
-            >
-              Encaisser un acompte / solde
-            </Button>
+            <RoleGate require="paiement:encaisser" role={currentUserRole}>
+              <Button
+                size="sm"
+                onClick={() => setIsPaymentOpen(true)}
+                icon={<CreditCard className="size-4" />}
+              >
+                Encaisser un paiement
+              </Button>
+            </RoleGate>
           )}
 
-          <Button
-            size="sm"
-            variant="whatsapp"
-            onClick={() => setIsWhatsAppOpen(true)}
-            icon={<MessageCircle className="size-4" />}
-          >
-            WhatsApp
-          </Button>
+          <RoleGate require="message:envoyer" role={currentUserRole}>
+            <Button
+              size="sm"
+              variant="whatsapp"
+              onClick={() => setIsWhatsAppOpen(true)}
+              icon={<MessageCircle className="size-4" />}
+            >
+              Écrire au client
+            </Button>
+          </RoleGate>
+
+          {!isCancelled && (
+            <RoleGate require="document:generer" role={currentUserRole}>
+              <OrderDocumentMenu orderId={order.id} existingDocuments={documents} />
+            </RoleGate>
+          )}
 
           <LinkButton
             href={`/factures?orderId=${order.id}`}
@@ -102,11 +120,11 @@ export function OrderActionsBar({ order, client, balance, paidAmount, currentUse
             size="sm"
             icon={<FileText className="size-4" />}
           >
-            Documents
+            Voir les documents
           </LinkButton>
 
           {!isCancelled && (
-            <RoleGate allow={CANCEL_ORDER_ROLES} role={currentUserRole}>
+            <RoleGate require="commande:annuler" role={currentUserRole}>
               <Button
                 size="sm"
                 variant="tertiary"

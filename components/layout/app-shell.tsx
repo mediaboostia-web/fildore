@@ -15,14 +15,21 @@ export interface AppShellProps {
   user: UserMenuUser;
   /** Alertes calculées par le layout serveur — voir `buildWorkshopNotifications`. */
   notifications: WorkshopNotification[];
+  /** Demandes en ligne restant à traiter, affichées en pastille dans le menu. */
+  pendingRequestCount: number;
 }
 
-function AppShellContent({ children, user, notifications }: AppShellProps) {
+function AppShellContent({
+  children,
+  user,
+  notifications,
+  pendingRequestCount,
+}: AppShellProps) {
   const { isCollapsed } = useSidebar();
 
   return (
     <div className="min-h-screen w-full bg-canvas">
-      <SidebarDesktop />
+      <SidebarDesktop pendingRequestCount={pendingRequestCount} />
       <div
         className={cn(
           "flex min-h-screen min-w-0 flex-1 flex-col overflow-x-hidden transition-all duration-200",
@@ -34,7 +41,7 @@ function AppShellContent({ children, user, notifications }: AppShellProps) {
           {children}
         </main>
       </div>
-      <BottomTabBar />
+      <BottomTabBar pendingRequestCount={pendingRequestCount} />
       <Toaster />
     </div>
   );

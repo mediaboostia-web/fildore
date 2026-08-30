@@ -8,8 +8,10 @@ import {
   ClipboardList,
   Users,
   Shirt,
+  Inbox,
   MessageCircle,
   Receipt,
+  CreditCard,
   Settings,
   LogOut,
   ChevronLeft,
@@ -23,10 +25,12 @@ import { useSidebar } from "./sidebar-context";
 const NAV_ITEMS = [
   { href: "/tableau-de-bord", label: "Tableau de bord", icon: LayoutGrid },
   { href: "/commandes", label: "Commandes", icon: ClipboardList },
+  { href: "/demandes", label: "Demandes en ligne", icon: Inbox },
   { href: "/clients", label: "Clients", icon: Users },
   { href: "/modeles", label: "Modèles", icon: Shirt },
   { href: "/messages", label: "Relances", icon: MessageCircle },
-  { href: "/factures", label: "Factures & Documents", icon: Receipt },
+  { href: "/factures", label: "Factures", icon: Receipt },
+  { href: "/paiements", label: "Paiements", icon: CreditCard },
   { href: "/parametres", label: "Paramètres", icon: Settings },
 ] as const;
 
@@ -35,7 +39,7 @@ function isActive(pathname: string, href: string): boolean {
 }
 
 /** Navigation principale desktop rétractable avec action commande & déconnexion en bas. */
-export function SidebarDesktop() {
+export function SidebarDesktop({ pendingRequestCount = 0 }: { pendingRequestCount?: number }) {
   const pathname = usePathname();
   const { isCollapsed, toggleCollapsed } = useSidebar();
 
@@ -90,11 +94,17 @@ export function SidebarDesktop() {
           {NAV_ITEMS.map((item) => {
             const active = isActive(pathname, item.href);
             const Icon = item.icon;
+            // Le compteur ne s'affiche que s'il y a réellement quelque chose à
+            // traiter : une pastille « 0 » attire l'œil pour rien.
+            const badge = item.href === "/demandes" && pendingRequestCount > 0
+              ? pendingRequestCount
+              : null;
+
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                title={item.label}
+                title={badge ? `${item.label} — ${badge} à traiter` : item.label}
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "flex items-center gap-3 rounded-xl px-2.5 py-2.5 text-sm font-medium transition-colors",
@@ -104,8 +114,22 @@ export function SidebarDesktop() {
                     : "text-text-muted hover:bg-surface-muted hover:text-text"
                 )}
               >
-                <Icon className="size-5 shrink-0" aria-hidden="true" />
-                {!isCollapsed && <span className="truncate">{item.label}</span>}
+                <span className="relative flex shrink-0">
+                  <Icon className="size-5 shrink-0" aria-hidden="true" />
+                  {badge && isCollapsed ? (
+                    <span className="absolute -right-1.5 -top-1.5 flex size-2.5 rounded-full bg-accent-600 ring-2 ring-surface" />
+                  ) : null}
+                </span>
+                {!isCollapsed && (
+                  <>
+                    <span className="truncate">{item.label}</span>
+                    {badge ? (
+                      <span className="ml-auto rounded-full bg-accent-600 px-1.5 text-[10px] font-bold leading-4 text-white">
+                        {badge}
+                      </span>
+                    ) : null}
+                  </>
+                )}
               </Link>
             );
           })}

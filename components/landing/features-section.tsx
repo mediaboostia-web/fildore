@@ -1,4 +1,3 @@
-import Link from "next/link";
 import Image from "next/image";
 import {
   ClipboardList,
@@ -7,9 +6,6 @@ import {
   MessageCircle,
   Shirt,
   CalendarClock,
-  ArrowRight,
-  CheckCircle2,
-  Clock,
   ChevronRight,
 } from "lucide-react";
 
@@ -17,7 +13,6 @@ export function LandingFeaturesSection() {
   return (
     <section id="fonctionnalites" className="py-16 md:py-24 bg-gradient-to-b from-[#F0F6F3] via-[#F8FAF9] to-surface border-y border-border/80 relative overflow-hidden">
       {/* Halo subtil */}
-      <div className="absolute top-10 right-0 w-96 h-96 bg-primary-100/40 rounded-full blur-3xl pointer-events-none -z-10" />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-12 relative z-10">
         {/* En-tête de section axé clarté & bénéfices */}
         <div className="mx-auto max-w-3xl text-center space-y-3">

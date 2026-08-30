@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import {
-  MessageCircle,
+  Inbox,
+  Shirt,
   Receipt,
   CreditCard,
   CalendarClock,
@@ -11,25 +12,37 @@ import {
   LogOut,
   X,
 } from "lucide-react";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerTitle, DrawerClose } from "@/components/ui/drawer";
 import { logoutAction } from "@/features/auth/actions";
 
+/**
+ * « Planning des livraisons » pointait vers `/planning`, une route qui n'existe
+ * pas : le menu renvoyait sur un 404. La liste des commandes filtrée sur les
+ * livraisons proches rend le même service et existe vraiment.
+ */
 const MORE_ITEMS = [
-  { href: "/messages", label: "Relances", icon: MessageCircle, badge: "WhatsApp" },
-  { href: "/factures", label: "Factures & Devis", icon: Receipt },
-  { href: "/paiements", label: "Paiements & Acomptes", icon: CreditCard },
-  { href: "/planning", label: "Planning des livraisons", icon: CalendarClock },
+  { href: "/demandes", label: "Demandes en ligne", icon: Inbox },
+  { href: "/modeles", label: "Modèles & catalogue", icon: Shirt },
+  { href: "/factures", label: "Factures", icon: Receipt },
+  { href: "/paiements", label: "Paiements & acomptes", icon: CreditCard },
+  { href: "/commandes?status=due_soon", label: "Livraisons à venir", icon: CalendarClock },
   { href: "/parametres", label: "Paramètres de l'atelier", icon: Settings },
-  { href: "/profil", label: "Mon profil utilisateur", icon: User },
+  { href: "/profil", label: "Mon profil", icon: User },
 ] as const;
 
 export interface MoreMenuSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** Demandes en ligne restant à traiter, affichées en pastille. */
+  pendingRequestCount?: number;
 }
 
 /** Menu mobile "Plus" — accès aux sections secondaires, messages et profil avec croix de fermeture */
-export function MoreMenuSheet({ open, onOpenChange }: MoreMenuSheetProps) {
+export function MoreMenuSheet({
+  open,
+  onOpenChange,
+  pendingRequestCount = 0,
+}: MoreMenuSheetProps) {
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent size="auto" className="p-4 sm:p-6">
@@ -51,17 +64,15 @@ export function MoreMenuSheet({ open, onOpenChange }: MoreMenuSheetProps) {
                 <Link
                   href={item.href}
                   onClick={() => onOpenChange(false)}
-                  className="flex items-center justify-between rounded-xl px-3.5 py-3 text-sm font-semibold text-text hover:bg-surface-muted active:bg-primary-50 transition-colors"
+                  className="flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-semibold text-text transition-colors hover:bg-surface-muted active:bg-primary-50"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="flex size-8 items-center justify-center rounded-lg bg-primary-50 text-primary-900">
-                      <Icon className="size-4.5" aria-hidden="true" />
-                    </div>
-                    <span>{item.label}</span>
+                  <div className="flex size-8 items-center justify-center rounded-lg bg-primary-50 text-primary-900">
+                    <Icon className="size-4.5" aria-hidden="true" />
                   </div>
-                  {"badge" in item && item.badge ? (
-                    <span className="rounded-full bg-[#E7F7EE] px-2 py-0.5 text-[10px] font-bold text-[#128C7E]">
-                      {item.badge}
+                  <span>{item.label}</span>
+                  {item.href === "/demandes" && pendingRequestCount > 0 ? (
+                    <span className="ml-auto rounded-full bg-accent-600 px-2 py-0.5 text-[10px] font-bold text-white">
+                      {pendingRequestCount} à traiter
                     </span>
                   ) : null}
                 </Link>

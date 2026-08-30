@@ -9,13 +9,11 @@ export function LandingFinalCTA() {
         {/* Grand Cadre Communauté WhatsApp avec fond dégradé premium captivant */}
         <div className="relative rounded-3xl border border-primary-800/40 bg-gradient-to-br from-[#102B28] via-[#173B36] to-[#1E4D45] p-6 sm:p-10 lg:p-14 shadow-2xl overflow-hidden text-white">
           {/* Halos lumineux subtils d'ambiance */}
-          <div className="absolute -right-20 -top-20 size-80 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
-          <div className="absolute -left-20 -bottom-20 size-80 rounded-full bg-accent-500/10 blur-3xl pointer-events-none" />
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
             {/* Colonne Gauche : Titre + Bullets + CTAs */}
             <div className="lg:col-span-7 space-y-6">
-              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1 text-xs font-bold text-emerald-300 border border-white/15 backdrop-blur-xs">
+              <div className="inline-flex items-center gap-2 rounded-full bg-primary-900 px-3.5 py-1 text-xs font-bold text-emerald-300 border border-white/15">
                 <MessageCircle className="size-4 text-[#25D366]" />
                 <span>Espace d&apos;échange & entraide couturiers</span>
               </div>

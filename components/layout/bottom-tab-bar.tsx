@@ -7,30 +7,30 @@ import {
   LayoutDashboard,
   ClipboardList,
   Users,
-  Shirt,
+  MessageCircle,
   MoreHorizontal,
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { MoreMenuSheet } from "./more-menu-sheet";
 
+/**
+ * Onglets mobiles : `Accueil | Commandes | Clients | Messages | Plus`
+ * (PROJECT_RULES.md §3). Relancer un client est une action quotidienne, elle
+ * mérite un onglet ; consulter le catalogue ne l'est pas, Modèles est passé
+ * dans « Plus ». Aucun libellé en anglais : « Dashboard » est devenu « Accueil ».
+ */
 const TAB_ITEMS = [
-  { href: "/tableau-de-bord", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/tableau-de-bord", label: "Accueil", icon: LayoutDashboard },
   { href: "/commandes", label: "Commandes", icon: ClipboardList },
   { href: "/clients", label: "Clients", icon: Users },
-  { href: "/modeles", label: "Modèles", icon: Shirt },
+  { href: "/messages", label: "Messages", icon: MessageCircle },
 ] as const;
 
 function isActive(pathname: string, href: string): boolean {
   return href === "/" ? pathname === "/" : pathname.startsWith(href);
 }
-
-/**
- * Navigation mobile 5 onglets épurée et interactive :
- * 1. Dashboard  2. Commandes  3. Clients  4. Modèles  5. Plus (avec bascule icône X)
- * Effet de transition colorée dynamique sur les onglets actifs et support plein écran opaque.
- */
-export function BottomTabBar() {
+export function BottomTabBar({ pendingRequestCount = 0 }: { pendingRequestCount?: number }) {
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = useState(false);
 
@@ -80,7 +80,13 @@ export function BottomTabBar() {
           {/* Bouton Plus avec bascule en croix X quand le menu est ouvert */}
           <button
             type="button"
-            aria-label={moreOpen ? "Fermer le menu Plus" : "Ouvrir le menu Plus"}
+            aria-label={
+              moreOpen
+                ? "Fermer le menu Plus"
+                : pendingRequestCount > 0
+                  ? `Ouvrir le menu Plus — ${pendingRequestCount} demande(s) à traiter`
+                  : "Ouvrir le menu Plus"
+            }
             onClick={() => setMoreOpen(!moreOpen)}
             className={cn(
               "group relative flex flex-1 flex-col items-center justify-center py-1 text-[10px] sm:text-[11px] font-semibold transition-all duration-200 cursor-pointer select-none",
@@ -102,6 +108,11 @@ export function BottomTabBar() {
               ) : (
                 <MoreHorizontal className="size-4.5 shrink-0" aria-hidden="true" />
               )}
+              {/* Une demande en attente est dans « Plus » : sans cette pastille,
+                  elle resterait invisible depuis l'écran d'accueil mobile. */}
+              {!moreOpen && pendingRequestCount > 0 ? (
+                <span className="absolute right-0 top-0 flex size-2.5 rounded-full bg-accent-600 ring-2 ring-surface" />
+              ) : null}
             </div>
             <span className={cn(
               "mt-0.5 truncate tracking-tight transition-colors duration-150",
@@ -113,7 +124,11 @@ export function BottomTabBar() {
         </div>
       </nav>
 
-      <MoreMenuSheet open={moreOpen} onOpenChange={setMoreOpen} />
+      <MoreMenuSheet
+        open={moreOpen}
+        onOpenChange={setMoreOpen}
+        pendingRequestCount={pendingRequestCount}
+      />
     </>
   );
 }
