@@ -30,21 +30,21 @@ export const WHATSAPP_GREEN = "#25D366";
  */
 export const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   primary:
-    "bg-primary-900 text-white hover:bg-primary-800 active:bg-primary-950 disabled:bg-primary-100 disabled:text-text-subtle",
+    "bg-primary-900 text-white shadow-xs hover:bg-primary-800 active:bg-primary-950 disabled:bg-primary-100 disabled:text-text-subtle",
   secondary:
-    "bg-surface text-primary-900 border border-border-strong hover:bg-surface-muted active:bg-primary-50 disabled:text-text-subtle disabled:border-border",
+    "bg-surface text-text border border-border shadow-xs hover:bg-surface-muted hover:border-border-strong active:bg-primary-50 disabled:text-text-subtle disabled:border-border",
   tertiary:
     "bg-transparent text-primary-900 hover:bg-surface-muted active:bg-primary-50 disabled:text-text-subtle",
   danger:
-    "bg-danger text-white hover:brightness-90 active:brightness-80 disabled:bg-danger-bg disabled:text-text-subtle",
+    "bg-danger text-white shadow-xs hover:brightness-90 active:brightness-80 disabled:bg-danger-bg disabled:text-text-subtle",
   whatsapp:
-    "bg-[#25D366] text-white hover:brightness-95 active:brightness-90 disabled:bg-primary-100 disabled:text-text-subtle",
+    "bg-[#25D366] text-white shadow-xs hover:brightness-95 active:brightness-90 disabled:bg-primary-100 disabled:text-text-subtle",
 };
 
 export const SIZE_CLASSES: Record<ButtonSize, string> = {
-  sm: "h-9 px-3 text-sm gap-1.5",
-  md: "h-11 px-4 text-sm gap-2",
-  lg: "h-12 px-5 text-base gap-2",
+  sm: "h-9 px-3.5 text-xs font-semibold gap-1.5",
+  md: "h-10 px-4 text-sm font-medium gap-2",
+  lg: "h-12 px-6 text-base font-semibold gap-2.5",
 };
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
