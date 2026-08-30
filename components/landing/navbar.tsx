@@ -11,7 +11,7 @@ export function LandingNavbar({ isLoggedIn = false }: { isLoggedIn?: boolean }) 
   const navLinks = [
     { href: "#fonctionnalites", label: "Fonctionnalités" },
     { href: "#comment-ca-marche", label: "Comment ça marche" },
-    { href: "#whatsapp", label: "WhatsApp" },
+    { href: "#whatsapp", label: "Communication WhatsApp" },
     { href: "#tarifs", label: "Tarifs" },
     { href: "#faq", label: "FAQ" },
   ];
@@ -45,7 +45,7 @@ export function LandingNavbar({ isLoggedIn = false }: { isLoggedIn?: boolean }) 
           {isLoggedIn ? (
             <Link
               href="/tableau-de-bord"
-              className="inline-flex items-center justify-center rounded-[var(--radius-md)] bg-primary-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-800 transition-colors"
+              className="inline-flex items-center justify-center rounded-full bg-primary-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary-800 transition-colors"
             >
               Mon Atelier &rarr;
             </Link>
@@ -53,13 +53,13 @@ export function LandingNavbar({ isLoggedIn = false }: { isLoggedIn?: boolean }) 
             <>
               <Link
                 href="/connexion"
-                className="px-3.5 py-2 text-sm font-medium text-text-muted hover:text-text transition-colors"
+                className="px-4 py-2 text-sm font-medium text-text-muted hover:text-text transition-colors"
               >
                 Connexion
               </Link>
               <Link
                 href="/inscription"
-                className="inline-flex items-center gap-1.5 rounded-[var(--radius-md)] bg-primary-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-800 active:bg-primary-950 transition-all"
+                className="inline-flex items-center gap-2 rounded-full bg-primary-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary-800 active:bg-primary-950 transition-all"
               >
                 <span>Essayer gratuitement</span>
                 <ArrowRight className="size-4" />
@@ -82,16 +82,11 @@ export function LandingNavbar({ isLoggedIn = false }: { isLoggedIn?: boolean }) 
             type="button"
             aria-label="Ouvrir le menu mobile"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="flex size-10 items-center justify-center rounded-lg border border-border bg-surface text-text hover:bg-surface-muted transition-colors cursor-pointer"
+            className="flex size-10 items-center justify-center rounded-xl border border-border bg-surface text-text hover:bg-surface-muted transition-colors cursor-pointer"
           >
             {mobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
         </div>
-      </div>
-
-      {/* Microcopy sous la navigation */}
-      <div className="hidden sm:block border-t border-border/40 bg-surface-muted/50 py-1 px-4 text-center text-xs text-text-muted">
-        <span>Créez votre atelier en quelques minutes. Aucune carte bancaire requise.</span>
       </div>
 
       {/* Tiroir Mobile */}

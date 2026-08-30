@@ -11,11 +11,12 @@ import {
   Receipt,
   Settings,
   LogOut,
-  User,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { logoutAction } from "@/features/auth/actions";
-import { NotificationPopover } from "./notification-popover";
+import { useSidebar } from "./sidebar-context";
 
 const NAV_ITEMS = [
   { href: "/tableau-de-bord", label: "Tableau de bord", icon: LayoutGrid },
@@ -31,26 +32,51 @@ function isActive(pathname: string, href: string): boolean {
   return href === "/" ? pathname === "/" : pathname.startsWith(href);
 }
 
-/** Navigation principale desktop fixe avec déconnexion et notifications. */
+/** Navigation principale desktop rétractable avec déconnexion uniquement en bas. */
 export function SidebarDesktop() {
   const pathname = usePathname();
+  const { isCollapsed, toggleCollapsed } = useSidebar();
 
   return (
     <nav
       aria-label="Navigation principale"
-      className="hidden md:flex fixed inset-y-0 left-0 z-40 w-60 flex-col justify-between border-r border-border bg-surface px-3 py-4 overflow-y-auto"
+      className={cn(
+        "hidden md:flex fixed inset-y-0 left-0 z-40 flex-col justify-between border-r border-border bg-surface px-3 py-4 transition-all duration-200 overflow-y-auto overflow-x-hidden",
+        isCollapsed ? "w-18" : "w-60"
+      )}
     >
-      <div className="space-y-1">
-        {/* Logo atelier */}
-        <Link
-          href="/tableau-de-bord"
-          className="mb-4 px-2 text-lg font-bold text-primary-900 tracking-tight flex items-center gap-2"
-        >
-          <span className="flex size-7 items-center justify-center rounded-lg bg-primary-900 text-white text-xs font-black">
-            F
-          </span>
-          <span>Fildor</span>
-        </Link>
+      <div className="space-y-2">
+        {/* En-tête : Logo & Bouton de réduction */}
+        <div className="flex items-center justify-between px-1 mb-3">
+          <Link
+            href="/tableau-de-bord"
+            className="flex items-center gap-2.5 group overflow-hidden"
+            title="Fildor"
+          >
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-primary-900 text-white font-black text-xs shadow-xs transition-transform group-hover:scale-105">
+              F
+            </span>
+            {!isCollapsed && (
+              <span className="text-lg font-bold text-primary-900 tracking-tight truncate">
+                Fildor
+              </span>
+            )}
+          </Link>
+
+          {/* Bouton de réduction / déploiement de la sidebar */}
+          <button
+            type="button"
+            onClick={toggleCollapsed}
+            title={isCollapsed ? "Déplier le menu" : "Réduire le menu"}
+            className="flex size-7 items-center justify-center rounded-lg border border-border bg-surface-muted text-text-muted hover:bg-border/60 hover:text-text transition-colors cursor-pointer"
+          >
+            {isCollapsed ? (
+              <ChevronRight className="size-4 shrink-0" />
+            ) : (
+              <ChevronLeft className="size-4 shrink-0" />
+            )}
+          </button>
+        </div>
 
         {/* Liens principaux */}
         <div className="space-y-1 pt-1">
@@ -61,49 +87,37 @@ export function SidebarDesktop() {
               <Link
                 key={item.href}
                 href={item.href}
+                title={item.label}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex items-center gap-2.5 rounded-[var(--radius-md)] px-2.5 py-2 text-sm font-medium transition-colors",
+                  "flex items-center gap-3 rounded-xl px-2.5 py-2.5 text-sm font-medium transition-colors",
+                  isCollapsed ? "justify-center px-0" : "",
                   active
-                    ? "bg-primary-100 text-primary-900"
+                    ? "bg-primary-100 text-primary-900 font-semibold"
                     : "text-text-muted hover:bg-surface-muted hover:text-text"
                 )}
               >
                 <Icon className="size-5 shrink-0" aria-hidden="true" />
-                {item.label}
+                {!isCollapsed && <span className="truncate">{item.label}</span>}
               </Link>
             );
           })}
         </div>
       </div>
 
-      {/* Section Bas : Notifications, Profil & Déconnexion */}
-      <div className="border-t border-border pt-3 space-y-1">
-        {/* Bouton de notifications */}
-        <NotificationPopover />
-
-        {/* Lien Mon profil */}
-        <Link
-          href="/profil"
-          className={cn(
-            "flex items-center gap-2.5 rounded-[var(--radius-md)] px-2.5 py-2 text-sm font-medium transition-colors",
-            pathname === "/profil"
-              ? "bg-primary-100 text-primary-900"
-              : "text-text-muted hover:bg-surface-muted hover:text-text"
-          )}
-        >
-          <User className="size-5 shrink-0 text-text-muted" aria-hidden="true" />
-          <span>Mon profil</span>
-        </Link>
-
-        {/* Bouton de déconnexion direct */}
+      {/* Seul bouton en bas : Déconnexion */}
+      <div className="border-t border-border pt-3">
         <form action={logoutAction} className="w-full">
           <button
             type="submit"
-            className="flex w-full items-center gap-2.5 rounded-[var(--radius-md)] px-2.5 py-2 text-sm font-medium text-danger hover:bg-danger-bg transition-colors cursor-pointer"
+            title="Se déconnecter"
+            className={cn(
+              "flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-sm font-medium text-danger hover:bg-danger-bg transition-colors cursor-pointer",
+              isCollapsed ? "justify-center px-0" : ""
+            )}
           >
             <LogOut className="size-5 shrink-0" aria-hidden="true" />
-            <span>Se déconnecter</span>
+            {!isCollapsed && <span className="truncate">Se déconnecter</span>}
           </button>
         </form>
       </div>

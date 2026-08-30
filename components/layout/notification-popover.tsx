@@ -82,7 +82,7 @@ export function NotificationPopover({ compact = false }: { compact?: boolean }) 
             onClick={() => setIsOpen(false)}
           />
 
-          <div className="absolute left-0 bottom-full mb-2 w-80 sm:w-96 rounded-xl border border-border bg-surface shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+          <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 rounded-2xl border border-border bg-surface shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-border bg-surface-muted/60 px-4 py-3">
               <div className="flex items-center gap-2">

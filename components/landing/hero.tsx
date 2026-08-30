@@ -10,11 +10,6 @@ export function LandingHero() {
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center space-y-6">
-          {/* Badge sobre et direct */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary-800/20 bg-primary-50 px-3.5 py-1 text-xs font-semibold text-primary-900 shadow-xs">
-            <Scissors className="size-3.5 text-primary-800" />
-            <span>L'application des couturiers et stylistes</span>
-          </div>
 
           {/* Titre principal - Compris en 3 secondes */}
           <h1 className="text-3xl font-extrabold tracking-tight text-primary-950 sm:text-5xl lg:text-6xl sm:leading-[1.12]">

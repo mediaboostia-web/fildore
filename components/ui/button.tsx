@@ -85,9 +85,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={disabled || isLoading}
         aria-busy={isLoading || undefined}
         className={cn(
-          "inline-flex items-center justify-center rounded-[var(--radius-md)] font-medium transition-colors",
+          "inline-flex items-center justify-center rounded-xl font-medium transition-all shadow-xs active:scale-[0.98]",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-700 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-          "disabled:cursor-not-allowed",
+          "disabled:cursor-not-allowed disabled:active:scale-100",
           VARIANT_CLASSES[variant],
           SIZE_CLASSES[size],
           fullWidth && "w-full",

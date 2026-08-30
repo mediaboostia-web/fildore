@@ -28,7 +28,7 @@ export function LinkButton({
   return (
     <Link
       className={cn(
-        "inline-flex items-center justify-center rounded-[var(--radius-md)] font-medium transition-colors",
+        "inline-flex items-center justify-center rounded-xl font-medium transition-all shadow-xs active:scale-[0.98]",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-700 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         VARIANT_CLASSES[variant],
         SIZE_CLASSES[size],

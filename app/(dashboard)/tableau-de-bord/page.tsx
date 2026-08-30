@@ -78,11 +78,22 @@ export default async function TableauDeBordPage() {
         title="Tableau de bord"
         description={`Bienvenue, ${user.fullName.split(" ")[0]}. Voici l'activité de l'atelier aujourd'hui.`}
         action={
-          <div className="flex items-center gap-2">
-            <LinkButton href="/clients/nouveau" variant="secondary" size="sm" icon={<UserPlus className="size-4" />}>
+          <div className="flex items-center gap-2.5">
+            <LinkButton
+              href="/clients/nouveau"
+              variant="secondary"
+              size="sm"
+              icon={<UserPlus className="size-4 text-primary-900" />}
+              className="border-2 border-primary-900/30 hover:border-primary-900 hover:bg-primary-50 font-semibold"
+            >
               Nouveau client
             </LinkButton>
-            <LinkButton href="/commandes/nouveau/client" size="sm" icon={<Plus className="size-4" />}>
+            <LinkButton
+              href="/commandes/nouveau/client"
+              size="sm"
+              icon={<Plus className="size-4 text-white" />}
+              className="bg-primary-900 text-white font-bold shadow-md hover:bg-primary-800"
+            >
               Nouvelle commande
             </LinkButton>
           </div>
