@@ -21,7 +21,9 @@ test("se déconnecter ramène à la page de connexion", async ({ page }) => {
   await expect(page).toHaveURL(/\/tableau-de-bord/);
 
   await page.getByRole("button", { name: /Amina Chabi/ }).click();
-  await page.getByText("Se déconnecter").click();
+  // « Se déconnecter » existe aussi en bas de la barre latérale : on cible
+  // explicitement l'entrée du menu utilisateur qu'on vient d'ouvrir.
+  await page.getByRole("menuitem", { name: "Se déconnecter" }).click();
 
   await expect(page).toHaveURL(/\/connexion/);
 });

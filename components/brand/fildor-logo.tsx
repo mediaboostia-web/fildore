@@ -40,7 +40,7 @@ export function FildorLogo({
   return (
     <Image
       src={SRC[variant][tone]}
-      alt={variant === "mark" ? "Fildor" : "Fildor"}
+      alt="Fildor"
       width={width}
       height={height}
       className={cn("object-contain", className)}

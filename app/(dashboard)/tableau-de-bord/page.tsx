@@ -2,10 +2,13 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   AlertTriangle,
+  ArrowRight,
+  ChevronRight,
   Clock,
   CreditCard,
   MessageSquare,
   Plus,
+  Receipt,
   Scissors,
   UserPlus,
   Wallet,
@@ -263,54 +266,70 @@ export default async function TableauDeBordPage() {
 
         {/* Colonne 3 : Actions rapides & Accès métier */}
         <div className="space-y-4">
-          <div className="rounded-lg border border-border bg-surface p-5 shadow-sm space-y-3">
-            <h2 className="font-bold text-base text-text border-b border-border pb-2">
-              Actions rapides
-            </h2>
+          <div className="rounded-2xl border border-border bg-surface p-5 shadow-xs space-y-4">
+            <div className="flex items-center justify-between border-b border-border/80 pb-3">
+              <h2 className="font-bold text-xs uppercase tracking-wider text-text">
+                Actions rapides
+              </h2>
+              <span className="text-[11px] font-semibold text-text-subtle">Atelier</span>
+            </div>
 
             <div className="space-y-2.5">
-              <LinkButton
+              {/* Action 1 : Nouvelle commande */}
+              <Link
                 href="/commandes/nouveau/client"
-                fullWidth
-                size="md"
-                icon={<Plus className="size-4 text-white" />}
-                className="bg-primary-900 text-white font-semibold shadow-xs hover:bg-primary-800"
+                className="group flex items-center justify-between rounded-xl bg-primary-900 px-3.5 py-3 text-white shadow-xs hover:bg-primary-800 active:scale-[0.98] transition-all"
               >
-                Nouvelle commande
-              </LinkButton>
+                <div className="flex items-center gap-3">
+                  <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-white/15 text-white">
+                    <Plus className="size-4.5" />
+                  </div>
+                  <span className="text-sm font-semibold">Nouvelle commande</span>
+                </div>
+                <ArrowRight className="size-4 text-white/70 transition-transform group-hover:translate-x-1" />
+              </Link>
 
-              <LinkButton
+              {/* Action 2 : Nouveau client */}
+              <Link
                 href="/clients/nouveau"
-                variant="secondary"
-                fullWidth
-                size="md"
-                icon={<UserPlus className="size-4 text-primary-900" />}
-                className="hover:border-primary-800"
+                className="group flex items-center justify-between rounded-xl border border-border bg-surface-muted/50 px-3.5 py-2.5 text-text hover:bg-surface hover:border-primary-800/60 hover:shadow-xs active:scale-[0.98] transition-all"
               >
-                Nouveau client
-              </LinkButton>
+                <div className="flex items-center gap-3">
+                  <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary-50 text-primary-900 border border-primary-100">
+                    <UserPlus className="size-4" />
+                  </div>
+                  <span className="text-sm font-medium text-text group-hover:text-primary-950">Nouveau client</span>
+                </div>
+                <ChevronRight className="size-4 text-text-subtle transition-transform group-hover:translate-x-0.5 group-hover:text-primary-900" />
+              </Link>
 
-              <LinkButton
+              {/* Action 3 : Envoyer un WhatsApp */}
+              <Link
                 href="/messages"
-                variant="secondary"
-                fullWidth
-                size="md"
-                icon={<MessageSquare className="size-4 text-primary-900" />}
-                className="hover:border-primary-800"
+                className="group flex items-center justify-between rounded-xl border border-border bg-surface-muted/50 px-3.5 py-2.5 text-text hover:bg-surface hover:border-[#25D366]/60 hover:shadow-xs active:scale-[0.98] transition-all"
               >
-                Envoyer un WhatsApp
-              </LinkButton>
+                <div className="flex items-center gap-3">
+                  <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[#E7F7EE] text-[#128C7E] border border-[#25D366]/20">
+                    <MessageSquare className="size-4" />
+                  </div>
+                  <span className="text-sm font-medium text-text group-hover:text-primary-950">Envoyer un WhatsApp</span>
+                </div>
+                <ChevronRight className="size-4 text-text-subtle transition-transform group-hover:translate-x-0.5 group-hover:text-primary-900" />
+              </Link>
 
-              <LinkButton
+              {/* Action 4 : Factures & Documents */}
+              <Link
                 href="/factures"
-                variant="secondary"
-                fullWidth
-                size="md"
-                icon={<CreditCard className="size-4 text-primary-900" />}
-                className="hover:border-primary-800"
+                className="group flex items-center justify-between rounded-xl border border-border bg-surface-muted/50 px-3.5 py-2.5 text-text hover:bg-surface hover:border-primary-800/60 hover:shadow-xs active:scale-[0.98] transition-all"
               >
-                Factures & Documents
-              </LinkButton>
+                <div className="flex items-center gap-3">
+                  <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary-50 text-primary-900 border border-primary-100">
+                    <Receipt className="size-4" />
+                  </div>
+                  <span className="text-sm font-medium text-text group-hover:text-primary-950">Factures & Documents</span>
+                </div>
+                <ChevronRight className="size-4 text-text-subtle transition-transform group-hover:translate-x-0.5 group-hover:text-primary-900" />
+              </Link>
             </div>
           </div>
 

@@ -19,6 +19,12 @@ const geistMono = Geist_Mono({
  * `node scripts/brand/build-brand-assets.js`. Next.js les référence tout seul.
  */
 export const metadata: Metadata = {
+  // Base d'URL utilisée pour rendre absolues les images Open Graph / Twitter.
+  // Vercel expose l'URL de déploiement ; en local on retombe sur le port de dev.
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ??
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000")
+  ),
   title: {
     default: "Fildor — la gestion d'atelier de couture",
     template: "%s · Fildor",
