@@ -11,11 +11,6 @@ export interface LinkButtonProps extends ComponentProps<typeof Link> {
   fullWidth?: boolean;
 }
 
-/**
- * Équivalent de `Button` pour une navigation (rend un <a> via `next/link`) —
- * `Button` rend un vrai <button>, invalide à imbriquer dans un lien.
- * Réutilise les classes de style exportées par components/ui/button.tsx.
- */
 export function LinkButton({
   variant = "primary",
   size = "md",
@@ -28,8 +23,10 @@ export function LinkButton({
   return (
     <Link
       className={cn(
-        "inline-flex items-center justify-center rounded-xl font-medium transition-all shadow-xs active:scale-[0.98]",
+        "inline-flex items-center justify-center rounded-xl font-medium tracking-tight select-none",
+        "transition-all duration-150 ease-out cursor-pointer",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-700 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        "[&_svg]:pointer-events-none [&_svg]:shrink-0",
         VARIANT_CLASSES[variant],
         SIZE_CLASSES[size],
         fullWidth && "w-full",
