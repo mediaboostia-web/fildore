@@ -67,14 +67,14 @@ export function seedMockDatabase(): MockDatabase {
   ];
 
   const catalogItems: CatalogItem[] = [
-    catalogItem("Robe wax élégante", "robe", "robe", 25000, 7, ["wax", "soirée"]),
-    catalogItem("Boubou brodé homme", "boubou_homme", "boubou", 30000, 10, ["cérémonie"]),
-    catalogItem("Costume trois pièces", "costume", "costume", 60000, 14, ["mariage", "homme"]),
-    catalogItem("Ensemble pagne wax", "ensemble", "robe", 28000, 7, ["pagne"]),
-    catalogItem("Chemise col mao", "chemise", "chemise", 15000, 5, ["homme"]),
-    catalogItem("Robe de mariée sur mesure", "mariage", "robe", undefined, 30, ["mariage"]),
-    catalogItem("Tenue enfant fête", "enfant", "enfant", 12000, 5, ["enfant"]),
-    catalogItem("Uniforme scolaire", "uniforme", "uniforme", 8000, 5, ["école"]),
+    catalogItem("Robe wax élégante", "robe", "robe", 25000, 7, ["wax", "soirée"], "/images/modele_couture.jpg"),
+    catalogItem("Boubou brodé homme", "boubou_homme", "boubou", 30000, 10, ["cérémonie"], "/images/modele_couture_afrique.jpg"),
+    catalogItem("Costume trois pièces", "costume", "costume", 60000, 14, ["mariage", "homme"], "/images/tailor-workshop.jpg"),
+    catalogItem("Ensemble pagne wax", "ensemble", "robe", 28000, 7, ["pagne"], "/images/modele_couture_afrique.jpg"),
+    catalogItem("Chemise col mao", "chemise", "chemise", 15000, 5, ["homme"], "/images/tailor-craft.jpg"),
+    catalogItem("Robe de mariée sur mesure", "mariage", "robe", undefined, 30, ["mariage"], "/images/modele_couture.jpg"),
+    catalogItem("Tenue enfant fête", "enfant", "enfant", 12000, 5, ["enfant"], "/images/tailor-boutique.jpg"),
+    catalogItem("Uniforme scolaire", "uniforme", "uniforme", 8000, 5, ["école"], "/images/tailor-fabrics.jpg"),
   ];
 
   const measurementProfiles: MeasurementProfile[] = [
@@ -335,7 +335,8 @@ export function seedMockDatabase(): MockDatabase {
     garmentType: GarmentType,
     indicativePrice: number | undefined,
     estimatedDelayDays: number,
-    tags: string[]
+    tags: string[],
+    imageUrl?: string
   ): CatalogItem {
     return {
       id: `catalog_${++catalogSeq}`,
@@ -347,6 +348,7 @@ export function seedMockDatabase(): MockDatabase {
       estimatedDelayDays,
       tags,
       imageIds: [],
+      imageUrl,
       isArchived: false,
       createdAt: "2026-06-01",
     };

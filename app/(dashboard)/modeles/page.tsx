@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Plus, Scissors, Shirt, Sparkles, Clock, ArrowRight } from "lucide-react";
+import { Plus, Scissors, Shirt, Clock, ArrowRight } from "lucide-react";
 import { PageHeader } from "@/components/shared/page-header";
 import { EmptyState } from "@/components/ui/empty-state";
 import { LinkButton } from "@/components/ui/link-button";
@@ -9,13 +9,13 @@ import { formatAmount } from "@/lib/money/format";
 import { CATALOG_CATEGORY_LABELS, type CatalogCategory } from "@/features/catalog/types";
 
 const CATEGORY_DEFAULT_PHOTOS: Record<string, string> = {
-  robe: "/images/tailor-couturiere.jpg",
-  boubou_femme: "/images/tailor-modeliste.jpg",
+  robe: "/images/modele_couture.jpg",
+  boubou_femme: "/images/modele_couture_afrique.jpg",
   boubou_homme: "/images/tailor-hero.jpg",
   costume: "/images/tailor-workshop.jpg",
   chemise: "/images/tailor-craft.jpg",
-  ensemble: "/images/tailor-fabrics.jpg",
-  mariage: "/images/tailor-designer.jpg",
+  ensemble: "/images/modele_couture_afrique.jpg",
+  mariage: "/images/modele_couture.jpg",
 };
 
 function ModelCardImage({ category, name, imageUrl }: { category: CatalogCategory; name: string; imageUrl?: string }) {

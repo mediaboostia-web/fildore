@@ -4,22 +4,21 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Home,
+  LayoutDashboard,
   ClipboardList,
   Users,
   Shirt,
-  MessageCircle,
   MoreHorizontal,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { MoreMenuSheet } from "./more-menu-sheet";
 
 const TAB_ITEMS = [
-  { href: "/tableau-de-bord", label: "Accueil", icon: Home },
+  { href: "/tableau-de-bord", label: "Dashboard", icon: LayoutDashboard },
   { href: "/commandes", label: "Commandes", icon: ClipboardList },
   { href: "/clients", label: "Clients", icon: Users },
   { href: "/modeles", label: "Modèles", icon: Shirt },
-  { href: "/messages", label: "Messages", icon: MessageCircle },
 ] as const;
 
 function isActive(pathname: string, href: string): boolean {
@@ -27,10 +26,9 @@ function isActive(pathname: string, href: string): boolean {
 }
 
 /**
- * Navigation mobile 100% pleine largeur fixe et opaque :
- * Occupe toute la largeur du bas de l'écran (left-0 right-0 w-full),
- * fond totalement blanc et opaque pour masquer les contenus qui défilent derrière,
- * bordure supérieure nette et gestion de la zone de sécurité (safe-area).
+ * Navigation mobile 5 onglets épurée et interactive :
+ * 1. Dashboard  2. Commandes  3. Clients  4. Modèles  5. Plus (avec bascule icône X)
+ * Effet de transition colorée dynamique sur les onglets actifs et support plein écran opaque.
  */
 export function BottomTabBar() {
   const pathname = usePathname();
@@ -40,9 +38,9 @@ export function BottomTabBar() {
     <>
       <nav
         aria-label="Navigation mobile principale"
-        className="fixed inset-x-0 bottom-0 left-0 right-0 z-50 w-full border-t border-border bg-surface pb-[max(env(safe-area-inset-bottom),0.35rem)] md:hidden shadow-[0_-4px_16px_rgba(0,0,0,0.06)]"
+        className="fixed inset-x-0 bottom-0 left-0 right-0 z-50 w-full border-t border-border bg-surface pb-[max(env(safe-area-inset-bottom),0.35rem)] md:hidden shadow-[0_-4px_20px_rgba(0,0,0,0.06)]"
       >
-        <div className="flex h-15 w-full items-center justify-around px-2">
+        <div className="flex h-16 w-full items-center justify-around px-2">
           {TAB_ITEMS.map((item) => {
             const active = isActive(pathname, item.href);
             const Icon = item.icon;
@@ -52,44 +50,65 @@ export function BottomTabBar() {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "relative flex flex-1 flex-col items-center justify-center py-1 text-[11px] font-semibold transition-all duration-150",
+                  "group relative flex flex-1 flex-col items-center justify-center py-1 text-[10px] sm:text-[11px] font-semibold transition-all duration-200 cursor-pointer select-none",
                   active
-                    ? "text-primary-900 font-bold"
-                    : "text-text-muted hover:text-text"
+                    ? "text-primary-950 font-bold"
+                    : "text-text-muted hover:text-primary-900"
                 )}
               >
+                {/* Indicateur de pilule d'icône avec effet de transition couleur */}
                 <div
                   className={cn(
-                    "flex size-8.5 items-center justify-center rounded-xl transition-all",
-                    active ? "bg-primary-900 text-white shadow-xs scale-105" : "bg-transparent"
+                    "flex size-9 items-center justify-center rounded-xl transition-all duration-200 ease-out",
+                    active
+                      ? "bg-primary-900 text-white shadow-xs scale-105"
+                      : "bg-transparent text-text-muted group-hover:bg-primary-50 group-hover:text-primary-900 active:scale-95"
                   )}
                 >
                   <Icon className="size-4.5 shrink-0" aria-hidden="true" />
                 </div>
-                <span className="mt-0.5 truncate text-[10px] sm:text-[11px]">{item.label}</span>
+                <span className={cn(
+                  "mt-0.5 truncate tracking-tight transition-colors duration-150",
+                  active ? "text-primary-950 font-extrabold" : "text-text-muted"
+                )}>
+                  {item.label}
+                </span>
               </Link>
             );
           })}
 
-          {/* Bouton Plus */}
+          {/* Bouton Plus avec bascule en croix X quand le menu est ouvert */}
           <button
             type="button"
-            aria-label="Ouvrir le menu Plus"
-            onClick={() => setMoreOpen(true)}
+            aria-label={moreOpen ? "Fermer le menu Plus" : "Ouvrir le menu Plus"}
+            onClick={() => setMoreOpen(!moreOpen)}
             className={cn(
-              "relative flex flex-1 flex-col items-center justify-center py-1 text-[11px] font-semibold transition-all duration-150 cursor-pointer",
-              moreOpen ? "text-primary-900 font-bold" : "text-text-muted hover:text-text"
+              "group relative flex flex-1 flex-col items-center justify-center py-1 text-[10px] sm:text-[11px] font-semibold transition-all duration-200 cursor-pointer select-none",
+              moreOpen
+                ? "text-danger font-bold"
+                : "text-text-muted hover:text-primary-900"
             )}
           >
             <div
               className={cn(
-                "flex size-8.5 items-center justify-center rounded-xl transition-all",
-                moreOpen ? "bg-primary-900 text-white shadow-xs scale-105" : "bg-transparent"
+                "flex size-9 items-center justify-center rounded-xl transition-all duration-200 ease-out",
+                moreOpen
+                  ? "bg-danger text-white shadow-xs scale-105 rotate-90"
+                  : "bg-transparent text-text-muted group-hover:bg-primary-50 group-hover:text-primary-900 active:scale-95"
               )}
             >
-              <MoreHorizontal className="size-4.5 shrink-0" aria-hidden="true" />
+              {moreOpen ? (
+                <X className="size-4.5 shrink-0" aria-hidden="true" />
+              ) : (
+                <MoreHorizontal className="size-4.5 shrink-0" aria-hidden="true" />
+              )}
             </div>
-            <span className="mt-0.5 truncate text-[10px] sm:text-[11px]">Plus</span>
+            <span className={cn(
+              "mt-0.5 truncate tracking-tight transition-colors duration-150",
+              moreOpen ? "text-danger font-extrabold" : "text-text-muted"
+            )}>
+              {moreOpen ? "Fermer" : "Plus"}
+            </span>
           </button>
         </div>
       </nav>

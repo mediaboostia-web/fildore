@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { getCurrentUser } from "@/lib/auth/session";
 import { LandingNavbar } from "@/components/landing/navbar";
 import { LandingHero } from "@/components/landing/hero";
-import { LandingTrustBanner } from "@/components/landing/trust-banner";
+import { LandingHowItWorks } from "@/components/landing/how-it-works";
 import { LandingFeaturesSection } from "@/components/landing/features-section";
 import { LandingTestimonialsSection } from "@/components/landing/testimonials-section";
+import { LandingPricingSection } from "@/components/landing/pricing-section";
 import { LandingFAQSection } from "@/components/landing/faq-section";
 import { LandingFinalCTA } from "@/components/landing/final-cta";
 import { LandingFooter } from "@/components/landing/footer";
@@ -21,26 +22,29 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-canvas text-text flex flex-col selection:bg-primary-900 selection:text-white">
-      {/* Section 1 : Barre de navigation */}
+      {/* 1. Barre de navigation */}
       <LandingNavbar isLoggedIn={isLoggedIn} />
 
       <main className="flex-1">
-        {/* Section 2 : Hero avec animation orbitale, badges flottants et aperçu d'application */}
+        {/* 2. Hero Section sobre, percutante et sans dégradés fluo */}
         <LandingHero />
 
-        {/* Section 3 : Bandeau de réassurance & chiffres d'impact */}
-        <LandingTrustBanner />
+        {/* 3. Comment ça marche avec numéros en filigrane (01, 02, 03) */}
+        <LandingHowItWorks />
 
-        {/* Section 4 : Fonctionnalités clés (Grille de cartes épurées avec bordures d'accent) */}
+        {/* 4. Fonctionnalités clés (Cartes épurées avec bordures d'accent) */}
         <LandingFeaturesSection />
 
-        {/* Section 5 : Témoignages réels de couturiers et modélistes vérifiés */}
+        {/* 5. Témoignages réels de couturiers et modélistes vérifiés */}
         <LandingTestimonialsSection />
 
-        {/* Section 6 : Questions fréquemment posées (FAQ avec montage photo) */}
+        {/* 6. Tarifs transparents en Franc CFA */}
+        <LandingPricingSection />
+
+        {/* 7. Questions fréquentes (FAQ) */}
         <LandingFAQSection />
 
-        {/* Section 7 : Appel à l'action final & Communauté */}
+        {/* 8. Chiffres d'impact, Communauté WhatsApp & Appel à l'action final */}
         <LandingFinalCTA />
       </main>
 

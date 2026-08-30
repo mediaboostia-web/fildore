@@ -9,10 +9,11 @@ export function LandingNavbar({ isLoggedIn = false }: { isLoggedIn?: boolean }) 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
+    { href: "#comment-ca-marche", label: "Comment ça marche" },
     { href: "#fonctionnalites", label: "Fonctionnalités" },
     { href: "#temoignages", label: "Témoignages" },
-    { href: "#faq", label: "FAQ" },
     { href: "#tarifs", label: "Tarifs" },
+    { href: "#faq", label: "FAQ" },
   ];
 
   return (

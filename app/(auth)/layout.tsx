@@ -38,11 +38,11 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
       {/* Colonne Droite : Immersion Atelier & Témoignage */}
       <div className="hidden lg:block lg:col-span-6 xl:col-span-7 relative bg-primary-950 lg:h-screen overflow-hidden">
         <Image
-          src="/images/tailor-hero.jpg"
-          alt="Couturière dans son atelier de confection"
+          src="/images/tailor-workshop.jpg"
+          alt="Atelier de couture Fildor"
           fill
-          className="object-cover object-top filter brightness-90"
           priority
+          className="object-cover object-center brightness-95 contrast-105"
           sizes="(min-width: 1024px) 60vw, 0vw"
         />
 

@@ -18,7 +18,7 @@ export function LandingTestimonialsSection() {
       role: "Styliste & Modéliste",
       atelier: "Maison Prestige Homme",
       city: "Abidjan, Côte d'Ivoire",
-      image: "/images/tailor-hero.jpg",
+      image: "/images/tailor-workshop.jpg",
       quote:
         "Le bouton d'envoi WhatsApp avec le montant de l'acompte et le solde restant a tout changé. Mes clients reçoivent leur reçu propre et il n'y a plus aucune contestation de prix le jour de la livraison.",
       highlight: "Acomptes sécurisés & traçabilité",
@@ -80,7 +80,7 @@ export function LandingTestimonialsSection() {
                 {/* Badge point fort */}
                 <div className="pt-1">
                   <span className="inline-block text-[11px] font-semibold text-primary-900 bg-primary-50 px-2.5 py-1 rounded-md border border-primary-200">
-                    ✨ {t.highlight}
+                    ✔ {t.highlight}
                   </span>
                 </div>
               </div>
