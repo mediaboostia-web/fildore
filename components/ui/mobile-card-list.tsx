@@ -33,7 +33,10 @@ export function MobileCardList<T>({
         const content = (
           <Card padding="sm" elevated={Boolean(href)} className={href ? "transition-colors hover:bg-surface-muted" : undefined}>
             {titleColumn ? (
-              <p className="text-sm font-semibold text-text">{titleColumn.render(row)}</p>
+              // `render` peut renvoyer un bloc (deux lignes empilées) : un <p> ne
+              // peut pas en contenir, le navigateur réécrit l'arbre et l'hydratation
+              // échoue — la carte perd alors ses gestionnaires au premier rendu.
+              <div className="text-sm font-semibold text-text">{titleColumn.render(row)}</div>
             ) : null}
             <dl className="mt-2 flex flex-col gap-1.5">
               {detailColumns.map((column: DataTableColumn<T>) => (

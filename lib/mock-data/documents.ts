@@ -12,9 +12,9 @@ import { computeBalance } from "@/lib/money/balance";
  */
 const SHARE_TOKEN_LENGTH = 32;
 
-export async function getDocuments(): Promise<WorkshopDocument[]> {
+export async function getDocuments(workshopId: string): Promise<WorkshopDocument[]> {
   await wait();
-  return getDb().documents;
+  return getDb().documents.filter((d) => d.workshopId === workshopId);
 }
 
 export async function getDocumentsByOrder(orderId: string): Promise<WorkshopDocument[]> {

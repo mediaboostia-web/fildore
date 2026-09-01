@@ -8,9 +8,9 @@ import type { Order, OrderItem, OrderStatus } from "@/features/orders/types";
 /** Code atelier utilisé dans la référence de commande (FIL-CTN-000124). Un seul atelier en mock. */
 const WORKSHOP_CODE = "CTN";
 
-export async function getOrders(): Promise<Order[]> {
+export async function getOrders(workshopId: string): Promise<Order[]> {
   await wait();
-  return getDb().orders;
+  return getDb().orders.filter((o) => o.workshopId === workshopId);
 }
 
 export async function getOrderById(id: string): Promise<Order | undefined> {

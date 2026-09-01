@@ -346,6 +346,9 @@ export function OrderWizardClientStepClient({
           onClick={handleNext}
           disabled={!selectedClientId}
           icon={<ArrowRight className="size-4" />}
+          // Le libellé nomme le client choisi : il change avec les données.
+          // Un identifiant stable évite que les tests dépendent d'un prénom.
+          data-testid="wizard-continuer"
         >
           {selectedClient ? `Continuer avec ${selectedClient.firstName}` : "Continuer vers Détails"}
         </Button>

@@ -139,6 +139,21 @@ export function OnlineOrderingForm({
         <h2 className="text-base font-bold text-text">Commandes en ligne</h2>
       </div>
 
+      {/* État réellement enregistré, pas l'état du formulaire : savoir si sa page
+          est ouverte au public ne doit pas dépendre d'un toast déjà disparu. */}
+      <p
+        className={
+          initialSettings.enabled
+            ? "rounded-[var(--radius-md)] bg-success-bg px-3 py-2 text-sm font-medium text-success"
+            : "rounded-[var(--radius-md)] bg-surface-muted px-3 py-2 text-sm font-medium text-text-muted"
+        }
+        role="status"
+      >
+        {initialSettings.enabled
+          ? "Vos commandes en ligne sont ouvertes"
+          : "Vos commandes en ligne sont fermées"}
+      </p>
+
       <p className="text-sm text-text-muted">
         Partagez une page publique à vos clients. Ils choisissent un modèle et vous envoient une
         demande, que vous acceptez ou refusez. <strong className="text-text">Vous fixez les

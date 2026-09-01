@@ -67,7 +67,7 @@ export default async function PublicWorkshopPage({
     );
   }
 
-  const allItems = await getCatalogItems();
+  const allItems = await getCatalogItems(workshop.id);
   const offeredItems = allItems.filter(
     (item) =>
       item.workshopId === workshop.id &&

@@ -19,6 +19,7 @@ import { MESSAGE_TEMPLATES } from "@/features/messaging/templates";
 import { toMessagingClient, toMessagingOrder } from "@/features/messaging/hub-data";
 import type { MessageLogEntry, MessageTemplateKey } from "@/features/messaging/types";
 import { MessagesHubClient } from "./_components/messages-hub-client";
+import { requireCurrentUser } from "@/lib/auth/session";
 
 interface MessageLogRow {
   log: MessageLogEntry;
@@ -76,12 +77,15 @@ export default async function MessagesPage({
   const { q, client: clientParam, commande, modele } = await searchParams;
   const query = q?.trim() ?? "";
 
+  // Toute lecture métier est portée par l'atelier du demandeur : la sécurité ne
+  // repose pas seulement sur RLS côté base, elle est déjà exprimée ici.
+  const user = await requireCurrentUser();
   const [logs, clients, orders, payments, documents, workshop] = await Promise.all([
-    getMessageLog(),
-    getClients(),
-    getOrders(),
-    getPayments(),
-    getDocuments(),
+    getMessageLog(user.workshopId),
+    getClients(user.workshopId),
+    getOrders(user.workshopId),
+    getPayments(user.workshopId),
+    getDocuments(user.workshopId),
     getWorkshop(),
   ]);
 

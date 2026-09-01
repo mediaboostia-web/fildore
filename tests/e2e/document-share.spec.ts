@@ -20,7 +20,11 @@ async function signIn(page: Page) {
 /** Ouvre le premier document de la liste sans dépendre du rendu tableau/carte. */
 async function openFirstDocument(page: Page) {
   await page.goto("/factures");
-  const href = await page.getByRole("link", { name: "Ouvrir" }).first().getAttribute("href");
+  const href = await page
+    .locator('a[href^="/factures/doc_"]')
+    .filter({ visible: true })
+    .first()
+    .getAttribute("href");
   expect(href).toMatch(/^\/factures\/doc_/);
   await page.goto(href!);
   await expect(page.getByRole("heading", { name: /^Document / })).toBeVisible({ timeout: 15000 });

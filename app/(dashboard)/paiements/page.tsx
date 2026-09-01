@@ -14,6 +14,7 @@ import { formatDateFr } from "@/lib/utils/dates";
 import { matchesQuery } from "@/lib/utils/search";
 import { clientDisplayName } from "@/features/clients/types";
 import { PAYMENT_METHOD_LABELS, type Payment, type PaymentMethod } from "@/features/payments/types";
+import { requireCurrentUser } from "@/lib/auth/session";
 
 interface PaymentRow {
   payment: Payment;
@@ -106,10 +107,13 @@ export default async function PaiementsPage({
   const query = q?.trim() ?? "";
   const methodFilter = method?.trim() || "all";
 
+  // Toute lecture métier est portée par l'atelier du demandeur : la sécurité ne
+  // repose pas seulement sur RLS côté base, elle est déjà exprimée ici.
+  const user = await requireCurrentUser();
   const [payments, orders, clients] = await Promise.all([
-    getPayments(),
-    getOrders(),
-    getClients(),
+    getPayments(user.workshopId),
+    getOrders(user.workshopId),
+    getClients(user.workshopId),
   ]);
 
   const clientMap = new Map(clients.map((c) => [c.id, c]));
@@ -145,7 +149,11 @@ export default async function PaiementsPage({
     key: definition.key,
     label: definition.label,
     count: searchedRows.filter((row) => matchesPaymentFilter(row.payment, definition.key)).length,
-  })).filter((chip) => chip.key === "all" || chip.count > 0);
+  }));
+  // Les puces restent les mêmes quoi qu'il arrive : masquer celles à zéro faisait
+  // changer la barre de filtres pendant la frappe, et un atelier sans devis ne
+  // trouvait plus le filtre « Devis » du tout. Un compteur à 0 est une réponse,
+  // pas une absence. Même règle que la liste des commandes.
 
   const filteredRows = searchedRows.filter((row) =>
     matchesPaymentFilter(row.payment, methodFilter)

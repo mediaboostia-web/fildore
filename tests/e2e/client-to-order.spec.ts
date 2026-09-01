@@ -31,7 +31,7 @@ test.describe("Fiche client → commande préremplie", () => {
     const clientHref = await findClientHref(page, "Adjoavi");
     await page.goto(clientHref);
 
-    await page.getByRole("link", { name: "Nouvelle commande" }).first().click();
+    await page.getByRole("link", { name: /Commande pour/ }).click();
 
     await expect(page).toHaveURL(/\/commandes\/nouveau\/client\?client=client_/, {
       timeout: 15000,
@@ -40,7 +40,7 @@ test.describe("Fiche client → commande préremplie", () => {
     await expect(page.getByText(/Commande pour\s+Adjoavi/)).toBeVisible();
 
     // On enchaîne sans rien choisir : c'est tout l'intérêt.
-    await page.getByRole("button", { name: /Continuer vers Détails/i }).click();
+    await page.getByTestId("wizard-continuer").click();
     await expect(page).toHaveURL(/\/commandes\/nouveau\/details/, { timeout: 15000 });
   });
 

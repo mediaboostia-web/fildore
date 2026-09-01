@@ -3,9 +3,9 @@ import { generateId } from "./ids";
 import type { CatalogItem, CatalogCategory } from "@/features/catalog/types";
 import type { GarmentType } from "@/features/measurements/types";
 
-export async function getCatalogItems(): Promise<CatalogItem[]> {
+export async function getCatalogItems(workshopId: string): Promise<CatalogItem[]> {
   await wait();
-  return getDb().catalogItems.filter((c) => !c.isArchived);
+  return getDb().catalogItems.filter((c) => c.workshopId === workshopId && !c.isArchived);
 }
 
 export async function getCatalogItemById(id: string): Promise<CatalogItem | undefined> {

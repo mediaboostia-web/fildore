@@ -34,9 +34,9 @@ export default async function TableauDeBordPage() {
 
   const today = new Date().toISOString().slice(0, 10);
   const [orders, clients, payments] = await Promise.all([
-    getOrders(),
-    getClients(),
-    getPayments(),
+    getOrders(user.workshopId),
+    getClients(user.workshopId),
+    getPayments(user.workshopId),
   ]);
 
   const clientMap = new Map(clients.map((c) => [c.id, c]));

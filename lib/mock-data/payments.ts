@@ -4,9 +4,9 @@ import { generateDocumentNumber } from "@/features/invoices/types";
 import { sumConfirmedPayments } from "@/features/payments/types";
 import type { Payment, PaymentMethod, PaymentType } from "@/features/payments/types";
 
-export async function getPayments(): Promise<Payment[]> {
+export async function getPayments(workshopId: string): Promise<Payment[]> {
   await wait();
-  return getDb().payments;
+  return getDb().payments.filter((p) => p.workshopId === workshopId);
 }
 
 export async function getPaymentsByOrder(orderId: string): Promise<Payment[]> {

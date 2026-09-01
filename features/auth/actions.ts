@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createSession, destroySession, requireCurrentUser } from "@/lib/auth/session";
+import { safeRedirectPath } from "@/lib/auth/safe-redirect";
 import { createUser, findUserByEmail, getUsers } from "@/lib/mock-data/users";
 import { getWorkshop, updateWorkshop } from "@/lib/mock-data/workshop";
 import {
@@ -32,8 +33,7 @@ function firstErrorCode(fieldErrors: Record<string, string[] | undefined>): stri
  * partie du code ne dépende de ce raccourci.
  */
 export async function googleAuthAction(formData?: FormData): Promise<void> {
-  const redirectTo = formData?.get("redirect");
-  const target = typeof redirectTo === "string" && redirectTo ? redirectTo : "/tableau-de-bord";
+  const target = safeRedirectPath(formData?.get("redirect"));
 
   const users = await getUsers();
   const demoUser = users.find((u) => u.role === "owner") ?? users[0];
@@ -53,8 +53,7 @@ export async function googleAuthAction(formData?: FormData): Promise<void> {
  * quelle saisie.
  */
 export async function loginAction(formData: FormData): Promise<void> {
-  const redirectTo = formData.get("redirect");
-  const target = typeof redirectTo === "string" && redirectTo ? redirectTo : "/tableau-de-bord";
+  const target = safeRedirectPath(formData.get("redirect"));
 
   const userId = formData.get("userId");
   if (typeof userId === "string" && userId) {

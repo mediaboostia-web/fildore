@@ -24,6 +24,7 @@ import {
 import { sumConfirmedPayments } from "@/features/payments/types";
 import { matchesQuery } from "@/lib/utils/search";
 import { ListToolbar } from "@/components/ui/list-toolbar";
+import { requireCurrentUser } from "@/lib/auth/session";
 
 interface OrderRowView {
   order: Order;
@@ -124,10 +125,11 @@ export default async function CommandesPage({
 
   try {
     const today = new Date().toISOString().slice(0, 10);
+    const user = await requireCurrentUser();
     const [rawOrders, clients, payments] = await Promise.all([
-      getOrders(),
-      getClients(),
-      getPayments(),
+      getOrders(user.workshopId),
+      getClients(user.workshopId),
+      getPayments(user.workshopId),
     ]);
     orders = rawOrders;
 

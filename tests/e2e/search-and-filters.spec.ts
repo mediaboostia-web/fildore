@@ -34,7 +34,7 @@ test.describe("Recherche et filtres des listes", () => {
     // Anti-rebond de 250 ms : l'URL n'est réécrite qu'une fois la frappe finie.
     await expect(page).toHaveURL(/[?&]q=Adjoavi/, { timeout: 10000 });
     await expect(page.getByText(/\d+ clients? sur \d+/)).toBeVisible();
-    await expect(page.getByText("Adjoavi").first()).toBeVisible();
+    await expect(page.getByText("Adjoavi").filter({ visible: true }).first()).toBeVisible();
 
     // Une seule croix : Chrome dessine la sienne sur `type="search"`, masquée en CSS.
     const clear = page.getByRole("button", { name: "Effacer la recherche" });
@@ -48,18 +48,18 @@ test.describe("Recherche et filtres des listes", () => {
   test("clients : la recherche est un accent près", async ({ page }) => {
     // « Houngbedji » sans accent doit trouver « Houngbédji ».
     await page.goto("/clients?q=Houngbedji");
-    await expect(page.getByText("Houngbédji").first()).toBeVisible();
+    await expect(page.getByText("Houngbédji").filter({ visible: true }).first()).toBeVisible();
   });
 
   test("commandes : le filtre et la recherche cohabitent dans l'URL", async ({ page }) => {
     await page.goto("/commandes");
     await expect(page.getByRole("heading", { name: "Commandes" })).toBeVisible();
 
-    await page.getByRole("button", { name: /^En cours/ }).click();
+    await page.getByRole("link", { name: /^En cours/ }).click();
     await expect(page).toHaveURL(/[?&]status=in_progress/, { timeout: 10000 });
-    await expect(page.getByRole("button", { name: /^En cours/ })).toHaveAttribute(
-      "aria-pressed",
-      "true"
+    await expect(page.getByRole("link", { name: /^En cours/ })).toHaveAttribute(
+      "aria-current",
+      "page"
     );
 
     await page.getByPlaceholder("Référence, titre, client ou numéro").fill("robe");
@@ -68,16 +68,16 @@ test.describe("Recherche et filtres des listes", () => {
     await expect(page).toHaveURL(/[?&]q=robe/, { timeout: 10000 });
     await expect(page).toHaveURL(/[?&]status=in_progress/);
 
-    await page.getByRole("button", { name: "Réinitialiser" }).click();
+    await page.getByRole("link", { name: "Réinitialiser" }).click();
     await expect(page).not.toHaveURL(/status=in_progress/, { timeout: 10000 });
     await expect(page).toHaveURL(/[?&]q=robe/);
   });
 
   test("commandes : une valeur de filtre inconnue ne vide pas la liste", async ({ page }) => {
     await page.goto("/commandes?status=nimportequoi");
-    await expect(page.getByRole("button", { name: /^Toutes/ })).toHaveAttribute(
-      "aria-pressed",
-      "true"
+    await expect(page.getByRole("link", { name: /^Toutes/ })).toHaveAttribute(
+      "aria-current",
+      "page"
     );
   });
 
@@ -85,7 +85,7 @@ test.describe("Recherche et filtres des listes", () => {
     await page.goto("/factures");
     await expect(page.getByRole("heading", { name: "Factures" })).toBeVisible();
 
-    await page.getByRole("button", { name: /^Devis/ }).click();
+    await page.getByRole("link", { name: /^Devis/ }).click();
     await expect(page).toHaveURL(/[?&]type=devis/, { timeout: 10000 });
     await expect(page.getByText(/\d+ documents? sur \d+/)).toBeVisible();
   });
@@ -95,11 +95,11 @@ test.describe("Recherche et filtres des listes", () => {
     await page.goto("/paiements");
     await expect(page.getByRole("heading", { name: /Paiements/ })).toBeVisible();
 
-    await page.getByRole("button", { name: /^Espèces/ }).click();
+    await page.getByRole("link", { name: /^Espèces/ }).click();
     await expect(page).toHaveURL(/[?&]method=especes/, { timeout: 10000 });
-    await expect(page.getByRole("button", { name: /^Espèces/ })).toHaveAttribute(
-      "aria-pressed",
-      "true"
+    await expect(page.getByRole("link", { name: /^Espèces/ })).toHaveAttribute(
+      "aria-current",
+      "page"
     );
   });
 
@@ -108,8 +108,8 @@ test.describe("Recherche et filtres des listes", () => {
     await page.getByPlaceholder("Nom, description ou mot-clé").fill("boubou");
 
     await expect(page).toHaveURL(/[?&]q=boubou/, { timeout: 10000 });
-    await expect(page.getByText("Boubou brodé homme").first()).toBeVisible();
-    await expect(page.getByText("Uniforme scolaire")).toHaveCount(0);
+    await expect(page.getByText("Boubou brodé homme").filter({ visible: true }).first()).toBeVisible();
+    await expect(page.getByText("Uniforme scolaire").filter({ visible: true })).toHaveCount(0);
   });
 
   test("une recherche sans résultat l'explique au lieu de laisser un écran vide", async ({

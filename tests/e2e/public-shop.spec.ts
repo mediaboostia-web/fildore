@@ -27,7 +27,7 @@ async function openOnlineOrdering(page: Page) {
   await expect(toggle).toBeVisible({ timeout: 15000 });
   await toggle.check();
   await page.getByRole("button", { name: "Enregistrer ces règles" }).click();
-  await expect(page.getByText("Vos commandes en ligne sont ouvertes")).toBeVisible({
+  await expect(page.getByText("Vos commandes en ligne sont ouvertes").filter({ visible: true }).first()).toBeVisible({
     timeout: 15000,
   });
 }
@@ -70,7 +70,7 @@ test.describe("Boutique publique et demandes en ligne", () => {
 
     // --- Côté atelier : la demande arrive, et n'est encore rien d'autre ---
     await page.goto(`/demandes?q=${encodeURIComponent(phone)}`);
-    await expect(page.getByText("Christiane Dossou").first()).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText("Christiane Dossou").filter({ visible: true }).first()).toBeVisible({ timeout: 15000 });
 
     const href = await page
       .getByRole("link", { name: /Christiane Dossou/ })
@@ -80,18 +80,18 @@ test.describe("Boutique publique et demandes en ligne", () => {
     await page.goto(href!);
 
     await expect(page.getByRole("heading", { name: "Christiane Dossou" })).toBeVisible();
-    await expect(page.getByText("À traiter")).toBeVisible();
-    await expect(page.getByText("Tissu wax bleu, pour un baptême.")).toBeVisible();
+    await expect(page.getByText("À traiter").filter({ visible: true }).first()).toBeVisible();
+    await expect(page.getByText("Tissu wax bleu, pour un baptême.").filter({ visible: true }).first()).toBeVisible();
 
     // --- Acceptation : c'est là, et seulement là, que la commande naît ---
     await page.getByRole("button", { name: "Accepter et créer la commande" }).click();
     await expect(page).toHaveURL(/\/commandes\/order_/, { timeout: 20000 });
-    await expect(page.getByText(/FIL-CTN-/).first()).toBeVisible();
-    await expect(page.getByText("Christiane Dossou").first()).toBeVisible();
+    await expect(page.getByText(/FIL-CTN-/).filter({ visible: true }).first()).toBeVisible();
+    await expect(page.getByText("Christiane Dossou").filter({ visible: true }).first()).toBeVisible();
 
     // La fiche client existe désormais, avec le numéro donné en ligne.
     await page.goto(`/clients?q=${encodeURIComponent(phone)}`);
-    await expect(page.getByText("Christiane Dossou").first()).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText("Christiane Dossou").filter({ visible: true }).first()).toBeVisible({ timeout: 15000 });
   });
 
   test("refuser une demande ne crée ni client ni commande", async ({ page, browser }) => {
@@ -145,7 +145,7 @@ test.describe("Boutique publique et demandes en ligne", () => {
     await expect(toggle).toBeVisible({ timeout: 15000 });
     await toggle.uncheck();
     await page.getByRole("button", { name: "Enregistrer ces règles" }).click();
-    await expect(page.getByText("Vos commandes en ligne sont fermées")).toBeVisible({
+    await expect(page.getByText("Vos commandes en ligne sont fermées").filter({ visible: true }).first()).toBeVisible({
       timeout: 15000,
     });
 

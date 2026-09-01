@@ -1,15 +1,19 @@
-export type MessageTemplateKey =
-  | "confirmation_commande"
-  | "demande_acompte"
-  | "confirmation_paiement"
-  | "rendez_vous_mesures"
-  | "mise_a_jour_production"
-  | "invitation_essayage"
-  | "commande_prete"
-  | "rappel_solde"
-  | "confirmation_livraison"
-  | "remerciement"
-  | "demande_avis";
+/** Source unique des clés de modèle : le type ET la validation Zod en dérivent. */
+export const MESSAGE_TEMPLATE_KEYS = [
+  "confirmation_commande",
+  "demande_acompte",
+  "confirmation_paiement",
+  "rendez_vous_mesures",
+  "mise_a_jour_production",
+  "invitation_essayage",
+  "commande_prete",
+  "rappel_solde",
+  "confirmation_livraison",
+  "remerciement",
+  "demande_avis",
+] as const;
+
+export type MessageTemplateKey = (typeof MESSAGE_TEMPLATE_KEYS)[number];
 
 export interface MessageTemplate {
   key: MessageTemplateKey;

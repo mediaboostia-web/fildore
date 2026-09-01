@@ -4,9 +4,9 @@ import { normalizePhoneBenin, isSamePhone } from "@/lib/utils/phone";
 import { matchesQuery } from "@/lib/utils/search";
 import type { Client } from "@/features/clients/types";
 
-export async function getClients(): Promise<Client[]> {
+export async function getClients(workshopId: string): Promise<Client[]> {
   await wait();
-  return getDb().clients.filter((c) => c.status === "active");
+  return getDb().clients.filter((c) => c.workshopId === workshopId && c.status === "active");
 }
 
 export async function getClientById(id: string): Promise<Client | undefined> {

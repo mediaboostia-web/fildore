@@ -119,6 +119,11 @@ export async function updateOrderStatusAction(input: unknown): Promise<ActionRes
   if (!parsed.success) {
     return { success: false, fieldErrors: parsed.error.flatten().fieldErrors };
   }
+  const existing = await getOrderById(parsed.data.orderId);
+  if (!existing || existing.workshopId !== user.workshopId) {
+    return { success: false, error: "Commande introuvable." };
+  }
+
   const order = await updateOrderStatus(parsed.data.orderId, parsed.data.status, user.id, parsed.data.note);
   revalidatePath("/commandes");
   revalidatePath(`/commandes/${order.id}`);
@@ -132,6 +137,11 @@ export async function cancelOrderAction(input: unknown): Promise<ActionResult<{ 
   if (!parsed.success) {
     return { success: false, fieldErrors: parsed.error.flatten().fieldErrors };
   }
+  const existing = await getOrderById(parsed.data.orderId);
+  if (!existing || existing.workshopId !== user.workshopId) {
+    return { success: false, error: "Commande introuvable." };
+  }
+
   const order = await cancelOrder(parsed.data.orderId, parsed.data.reason, user.id);
   revalidatePath("/commandes");
   revalidatePath(`/commandes/${order.id}`);

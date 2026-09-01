@@ -62,8 +62,25 @@ export async function duplicateMeasurementProfileAction(
   newLabel: string,
   clientId: string
 ): Promise<ActionResult<{ id: string }>> {
-  await requireCan("mesures:enregistrer");
-  const duplicate = await duplicateMeasurementProfile(profileId, newLabel);
+  const user = await requireCan("mesures:enregistrer");
+
+  // Les mesures corporelles font partie des données sensibles
+  // (PROJECT_RULES.md §7) : on vérifie que le profil dupliqué appartient bien à
+  // l'atelier ET au client visé, et que le libellé saisi est exploitable.
+  const source = await getProfileById(profileId);
+  if (!source || source.workshopId !== user.workshopId || source.clientId !== clientId) {
+    return { success: false, error: "Profil de mesures introuvable." };
+  }
+
+  const label = newLabel.trim();
+  if (label.length === 0 || label.length > 80) {
+    return {
+      success: false,
+      fieldErrors: { label: ["Donnez un nom court à ce profil (80 caractères maximum)."] },
+    };
+  }
+
+  const duplicate = await duplicateMeasurementProfile(profileId, label);
   revalidatePath(`/clients/${clientId}`);
   return { success: true, data: { id: duplicate.id } };
 }

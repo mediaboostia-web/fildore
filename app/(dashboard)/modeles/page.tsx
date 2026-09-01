@@ -8,6 +8,7 @@ import { getCatalogItems } from "@/lib/mock-data/catalog";
 import { formatAmount } from "@/lib/money/format";
 import { matchesQuery } from "@/lib/utils/search";
 import { CATALOG_CATEGORY_LABELS } from "@/features/catalog/types";
+import { requireCurrentUser } from "@/lib/auth/session";
 
 export default async function ModelesPage({
   searchParams,
@@ -18,7 +19,8 @@ export default async function ModelesPage({
   const query = q?.trim() ?? "";
   const activeCategory = cat?.trim() || "all";
 
-  const allItems = await getCatalogItems();
+  const user = await requireCurrentUser();
+  const allItems = await getCatalogItems(user.workshopId);
 
   const searchedItems = allItems.filter((item) =>
     matchesQuery([item.name, item.description, ...item.tags], query)

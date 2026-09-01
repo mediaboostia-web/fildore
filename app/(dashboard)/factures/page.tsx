@@ -13,6 +13,7 @@ import { formatAmount } from "@/lib/money/format";
 import { formatDateFr } from "@/lib/utils/dates";
 import { matchesQuery } from "@/lib/utils/search";
 import { clientDisplayName } from "@/features/clients/types";
+import { requireCurrentUser } from "@/lib/auth/session";
 import {
   DOCUMENT_TYPE_LABELS,
   type DocumentType,
@@ -97,6 +98,10 @@ const DOCUMENT_COLUMNS: DataTableColumn<DocumentRow>[] = [
   {
     key: "actions",
     label: "Action",
+    // Réservée au tableau desktop : sur mobile la carte entière est déjà un lien,
+    // et un <a> dans un <a> est invalide — le navigateur réécrit l'arbre et
+    // l'hydratation échoue.
+    hideOnCard: true,
     render: (row) => (
       <LinkButton
         href={`/factures/${row.doc.id}`}
@@ -119,10 +124,13 @@ export default async function FacturesPage({
   const query = q?.trim() ?? "";
   const typeFilter = type?.trim() || "all";
 
+  // Toute lecture métier est portée par l'atelier du demandeur : la sécurité ne
+  // repose pas seulement sur RLS côté base, elle est déjà exprimée ici.
+  const user = await requireCurrentUser();
   const [documents, orders, clients] = await Promise.all([
-    getDocuments(),
-    getOrders(),
-    getClients(),
+    getDocuments(user.workshopId),
+    getOrders(user.workshopId),
+    getClients(user.workshopId),
   ]);
 
   const clientMap = new Map(clients.map((c) => [c.id, c]));
@@ -158,7 +166,11 @@ export default async function FacturesPage({
     key: definition.key,
     label: definition.label,
     count: searchedRows.filter((row) => matchesDocumentFilter(row.doc, definition.key)).length,
-  })).filter((chip) => chip.key === "all" || chip.count > 0);
+  }));
+  // Les puces restent les mêmes quoi qu'il arrive : masquer celles à zéro faisait
+  // changer la barre de filtres pendant la frappe, et un atelier sans devis ne
+  // trouvait plus le filtre « Devis » du tout. Un compteur à 0 est une réponse,
+  // pas une absence. Même règle que la liste des commandes.
 
   const rows = searchedRows.filter((row) => matchesDocumentFilter(row.doc, typeFilter));
 

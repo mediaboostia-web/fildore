@@ -1,6 +1,6 @@
 import { getClients, getClientById } from "@/lib/mock-data/clients";
 import { getCatalogItemById } from "@/lib/mock-data/catalog";
-import { getCurrentUser } from "@/lib/auth/session";
+import { requireCurrentUser } from "@/lib/auth/session";
 import { OrderWizardClientStepClient } from "./_components/client-step-client";
 import type { WizardCatalogItem, WizardClient } from "@/features/orders/wizard-actions";
 import type { Client } from "@/features/clients/types";
@@ -27,7 +27,8 @@ export default async function OrderWizardClientStepPage({
   searchParams: Promise<{ modele?: string; client?: string; profil?: string }>;
 }) {
   const { modele, client: clientId, profil } = await searchParams;
-  const [clients, user] = await Promise.all([getClients(), getCurrentUser()]);
+  const user = await requireCurrentUser();
+  const clients = await getClients(user.workshopId);
 
   // Commande lancée depuis une fiche modèle : on prérempli le brouillon avec ce
   // modèle (titre, type de vêtement, prix indicatif) et on garde le lien

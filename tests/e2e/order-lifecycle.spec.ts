@@ -18,7 +18,7 @@ async function creerCommande(page: Page, titre: string, montant: string) {
   const premierClient = page.getByTestId(/client-select-/).first();
   await expect(premierClient).toBeVisible({ timeout: 15000 });
   await premierClient.click();
-  await page.getByRole("button", { name: /Continuer vers Détails/i }).click();
+  await page.getByTestId("wizard-continuer").click();
 
   await expect(page).toHaveURL(/\/commandes\/nouveau\/details/);
   await page.getByPlaceholder(/Robe sirène/i).fill(titre);
@@ -50,7 +50,7 @@ test.describe("Cycle de vie d'une commande", () => {
     const premierClient = page.getByTestId(/client-select-/).first();
     await expect(premierClient).toBeVisible({ timeout: 15000 });
     await premierClient.click();
-    await page.getByRole("button", { name: /Continuer vers Détails/i }).click();
+    await page.getByTestId("wizard-continuer").click();
 
     await page.getByPlaceholder(/Robe sirène/i).fill("Commande sans prix");
     await page.getByRole("button", { name: /Continuer vers Mesures/i }).click();

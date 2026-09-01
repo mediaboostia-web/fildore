@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils/cn";
 import { SearchInput } from "./search-input";
 import { FilterBar, type FilterChip } from "./filter-bar";
@@ -67,16 +68,34 @@ export function ListToolbar({
 }: ListToolbarProps) {
   const search = useSearchParamInput(searchParam ?? "q", searchValue);
   const { set, isPending: isFilterPending } = useSearchParamSetter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const hasSearch = Boolean(searchParam);
   const hasFilters = Boolean(filterParam && filters && filters.length > 0);
   const isFiltered = resultCount !== totalCount;
   const [singular, plural] = noun;
 
+  /**
+   * Chaque puce est aussi une URL complète : le filtre reste utilisable avant
+   * l'hydratation et survit à un partage de lien. On repart des paramètres
+   * courants pour ne perdre ni la recherche ni un paramètre propre à la page
+   * (`?commande=` sur les factures, par exemple).
+   */
+  const buildFilterHref = (key: string): string | undefined => {
+    if (!filterParam) return undefined;
+    const next = new URLSearchParams(searchParams?.toString() ?? "");
+    if (key === allFilterKey) next.delete(filterParam);
+    else next.set(filterParam, key);
+    const query = next.toString();
+    return query ? `${pathname}?${query}` : pathname;
+  };
+
   const chips: FilterChip[] = (filters ?? []).map((filter) => ({
     key: filter.key,
     label: filter.count === undefined ? filter.label : `${filter.label} (${filter.count})`,
     active: filterValue === filter.key,
+    href: buildFilterHref(filter.key),
   }));
 
   const handleToggle = (key: string) => {
@@ -114,6 +133,7 @@ export function ListToolbar({
           filters={chips}
           onToggle={handleToggle}
           onReset={filterValue !== allFilterKey ? handleReset : undefined}
+          resetHref={filterValue !== allFilterKey ? buildFilterHref(allFilterKey) : undefined}
         />
       ) : null}
 

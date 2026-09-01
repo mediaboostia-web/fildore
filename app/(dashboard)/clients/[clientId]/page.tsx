@@ -86,11 +86,16 @@ export default async function ClientDetailPage({
         description={client.district ? `${client.city} · ${client.district}` : client.city}
         action={
           // `?client=` évite de redemander le client qu'on vient d'ouvrir.
+          // Le libellé nomme le client : la barre latérale porte elle aussi un
+          // « Nouvelle commande », mais générique. Deux boutons au libellé
+          // identique et au comportement différent sur le même écran, c'est
+          // exactement le préremplissage perdu sans comprendre pourquoi.
           <LinkButton
             href={`/commandes/nouveau/client?client=${client.id}`}
             icon={<Plus className="size-4" />}
+            fullWidth="mobile"
           >
-            Nouvelle commande
+            Commande pour {client.firstName}
           </LinkButton>
         }
       />

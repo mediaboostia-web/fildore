@@ -17,7 +17,7 @@ test.describe("Parcours de commande (Wizard 5 étapes)", () => {
     const firstClient = page.getByTestId(/client-select-/).first();
     await expect(firstClient).toBeVisible({ timeout: 15000 });
     await firstClient.click();
-    await page.getByRole("button", { name: /Continuer vers Détails/i }).click();
+    await page.getByTestId("wizard-continuer").click();
 
     // 2. Étape Détails
     await expect(page).toHaveURL(/\/commandes\/nouveau\/details/);

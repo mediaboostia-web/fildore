@@ -8,7 +8,7 @@ import { getWorkshop } from "@/lib/mock-data/workshop";
 import { getUsers } from "@/lib/mock-data/users";
 import { getCatalogItems } from "@/lib/mock-data/catalog";
 import { ROLE_LABELS } from "@/features/auth/types";
-import { getCurrentUser } from "@/lib/auth/session";
+import { requireCurrentUser } from "@/lib/auth/session";
 import { logoutAction } from "@/features/auth/actions";
 import type { CatalogCategory } from "@/features/catalog/types";
 import { WorkshopSettingsForm } from "./_components/workshop-settings-form";
@@ -16,11 +16,13 @@ import { InviteMemberDialog } from "./_components/invite-member-dialog";
 import { OnlineOrderingForm } from "./_components/online-ordering-form";
 
 export default async function ParametresPage() {
-  const [workshop, users, currentUser, catalogItems] = await Promise.all([
+  // La session est lue d'abord : les lectures métier ont besoin de l'atelier
+  // du demandeur pour ne renvoyer que ses données.
+  const currentUser = await requireCurrentUser();
+  const [workshop, users, catalogItems] = await Promise.all([
     getWorkshop(),
     getUsers(),
-    getCurrentUser(),
-    getCatalogItems(),
+    getCatalogItems(currentUser.workshopId),
   ]);
 
   // Ne proposer que les catégories réellement présentes : cocher « Uniformes »

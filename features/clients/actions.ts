@@ -3,7 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { requireCan } from "@/lib/auth/session";
 import { clientFormSchema } from "./schemas";
-import { createClient, updateClient, archiveClient, findClientByPhone } from "@/lib/mock-data/clients";
+import {
+  createClient,
+  updateClient,
+  archiveClient,
+  findClientByPhone,
+  getClientById,
+} from "@/lib/mock-data/clients";
 import type { Client } from "./types";
 
 export interface ActionResult<T> {
@@ -56,7 +62,15 @@ export async function updateClientAction(
   clientId: string,
   formData: FormData
 ): Promise<ActionResult<{ id: string }>> {
-  await requireCan("client:modifier");
+  const user = await requireCan("client:modifier");
+
+  // Même règle que pour l'archivage : le droit ne dit pas à qui appartient la
+  // fiche. Sans ce contrôle, un identifiant suffirait à modifier le client d'un
+  // autre atelier.
+  const existing = await getClientById(clientId);
+  if (!existing || existing.workshopId !== user.workshopId) {
+    return { success: false, error: "Client introuvable." };
+  }
 
   const parsed = clientFormSchema.partial().safeParse({
     firstName: formData.get("firstName") || undefined,
@@ -79,7 +93,16 @@ export async function updateClientAction(
 }
 
 export async function archiveClientAction(clientId: string): Promise<ActionResult<{ id: string }>> {
-  await requireCan("client:archiver");
+  const user = await requireCan("client:archiver");
+
+  // Le droit ne suffit pas : il faut aussi que la fiche appartienne à cet
+  // atelier. Sans ce contrôle, un identifiant deviné suffirait à archiver le
+  // client d'un autre atelier — RLS ne doit pas être la seule barrière.
+  const existing = await getClientById(clientId);
+  if (!existing || existing.workshopId !== user.workshopId) {
+    return { success: false, error: "Client introuvable." };
+  }
+
   const client = await archiveClient(clientId);
   revalidatePath("/clients");
   return { success: true, data: { id: client.id } };

@@ -60,6 +60,11 @@ export async function createSession(userId: string): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.set(SESSION_COOKIE_NAME, userId, {
     httpOnly: true,
+    // Sans `secure`, le cookie repart aussi sur une requête HTTP en clair :
+    // sur le réseau partagé d'un marché ou d'un cybercafé, la session d'un
+    // atelier se lit alors au passage. Laissé à faux en local, où il n'y a
+    // pas de HTTPS et où le cookie ne serait jamais posé.
+    secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
     maxAge: 60 * 60 * 24 * 7,

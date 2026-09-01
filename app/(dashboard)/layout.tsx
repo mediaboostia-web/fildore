@@ -19,9 +19,9 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   }
 
   const [orders, clients, payments, orderRequests] = await Promise.all([
-    getOrders(),
-    getClients(),
-    getPayments(),
+    getOrders(user.workshopId),
+    getClients(user.workshopId),
+    getPayments(user.workshopId),
     getOrderRequests(user.workshopId),
   ]);
 

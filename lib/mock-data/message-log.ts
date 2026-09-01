@@ -2,9 +2,12 @@ import { getDb, wait } from "./store";
 import { generateId } from "./ids";
 import type { MessageLogEntry, MessageTemplateKey } from "@/features/messaging/types";
 
-export async function getMessageLog(clientId?: string): Promise<MessageLogEntry[]> {
+export async function getMessageLog(
+  workshopId: string,
+  clientId?: string
+): Promise<MessageLogEntry[]> {
   await wait();
-  const log = getDb().messageLog;
+  const log = getDb().messageLog.filter((m) => m.workshopId === workshopId);
   return clientId ? log.filter((m) => m.clientId === clientId) : log;
 }
 

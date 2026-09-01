@@ -13,6 +13,7 @@ import { formatPhoneDisplay } from "@/lib/utils/phone";
 import { matchesQuery } from "@/lib/utils/search";
 import { ListToolbar } from "@/components/ui/list-toolbar";
 import { LinkButton } from "@/components/ui/link-button";
+import { requireCurrentUser } from "@/lib/auth/session";
 
 /**
  * Config de colonnes unique, partagée entre `Table` (desktop) et
@@ -65,7 +66,8 @@ export default async function ClientsPage({
   let allClients: Client[] = [];
   let loadFailed = false;
   try {
-    allClients = await getClients();
+    const user = await requireCurrentUser();
+    allClients = await getClients(user.workshopId);
   } catch {
     loadFailed = true;
   }
