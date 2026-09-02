@@ -14,8 +14,11 @@ test("se connecter comme Amina donne accès au tableau de bord", async ({ page }
 
   await accesRapideAmina.click();
 
-  await expect(page).toHaveURL(/\/tableau-de-bord/);
-  await expect(page.getByText("Bienvenue, Amina.")).toBeVisible();
+  // Délai large : en `next dev`, la première visite du tableau de bord le
+  // compile à la demande. C'est du temps de compilation, pas de la lenteur
+  // applicative — en production la page est déjà construite.
+  await expect(page).toHaveURL(/\/tableau-de-bord/, { timeout: 30000 });
+  await expect(page.getByText("Bienvenue, Amina.")).toBeVisible({ timeout: 15000 });
 });
 
 test("se déconnecter ramène à la page de connexion", async ({ page }) => {

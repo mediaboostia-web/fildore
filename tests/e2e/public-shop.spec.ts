@@ -8,6 +8,11 @@ import { test, expect, type Page } from "@playwright/test";
  * client, ni commande. C'est l'atelier qui décide, et qui fixe le prix.
  */
 
+// Ce parcours traverse deux contextes de navigateur (l'atelier et le visiteur)
+// et six routes, dont trois publiques compilées à la demande en développement.
+// Le budget par défaut de 30 s est trop court pour ce seul scénario.
+test.describe.configure({ timeout: 120000 });
+
 /** Numéro unique par exécution : la limite anti-robot est de 3 demandes / 24 h. */
 function uniquePhone(): string {
   const suffix = String(Math.floor(1000000 + Math.random() * 8999999));
